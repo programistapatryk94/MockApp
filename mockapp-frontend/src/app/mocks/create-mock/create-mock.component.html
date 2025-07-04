@@ -1,0 +1,36 @@
+<mat-card>
+  <div class="container">
+    <h2>Dodaj nowy mock</h2>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Ścieżka (np. /ping)</mat-label>
+        <input matInput formControlName="urlPath" />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Metoda</mat-label>
+        <mat-select formControlName="method">
+          <mat-option value="GET">GET</mat-option>
+          <mat-option value="POST">POST</mat-option>
+          <mat-option value="PUT">PUT</mat-option>
+          <mat-option value="DELETE">DELETE</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Response Body (JSON)</mat-label>
+        <textarea matInput formControlName="responseBody" rows="4"></textarea>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Nagłówki (opcjonalnie, JSON)</mat-label>
+        <textarea matInput formControlName="headersJson" rows="3"></textarea>
+      </mat-form-field>
+
+      <button mat-flat-button color="primary" type="submit">Zapisz</button>
+    </form>
+
+    <mat-error *ngIf="error">{{ error }}</mat-error>
+  </div>
+</mat-card>

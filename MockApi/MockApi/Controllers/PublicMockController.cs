@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MockApi.Data;
 
@@ -6,6 +7,7 @@ namespace MockApi.Controllers
 {
     [ApiController]
     [Route("mock/{*path}")]
+    [EnableCors("AllowAll")]
     public class PublicMockController : ControllerBase
     {
         private readonly AppDbContext _context;

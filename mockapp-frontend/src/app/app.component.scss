@@ -1,3 +1,5 @@
+@use '../styles/variables' as *;
+
 :host {
   mat-toolbar {
     position: sticky;
@@ -11,7 +13,7 @@
   }
 
   .content-wrapper {
-    max-width: 900px;
+    max-width: $max-width;
     margin: 32px auto;
     padding: 0 16px;
   }

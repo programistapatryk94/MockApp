@@ -1,0 +1,18 @@
+<h1 mat-dialog-title>{{ data?.project ? "Edytuj" : "Nowy" }} projekt</h1>
+<div mat-dialog-content>
+  <form [formGroup]="form">
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Nazwa</mat-label>
+      <input matInput formControlName="name" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>ApiPrefix</mat-label>
+      <input matInput formControlName="apiPrefix" />
+    </mat-form-field>
+  </form>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Anuluj</button>
+  <button mat-flat-button color="primary" (click)="save()">Zapisz</button>
+</div>

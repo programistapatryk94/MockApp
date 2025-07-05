@@ -13,6 +13,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 
+builder.Services.AddHttpContextAccessor();
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenLocalhost(44313, listenOptions =>
+    {
+        listenOptions.UseHttps();
+    });
+});
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",
@@ -36,7 +46,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title= "MockAPI", Version="v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "MockAPI", Version = "v1" });
 
     var jwtSecurityScheme = new OpenApiSecurityScheme
     {
@@ -92,5 +102,26 @@ app.UseAuthorization();
 
 app.UseCors("AllowFrontend");
 app.MapControllers();
+
+app.MapWhen(context =>
+{
+    var host = context.Request.Host.Host;
+    var isSubdomain = host.EndsWith(".localhost", StringComparison.OrdinalIgnoreCase) &&
+                      host != "localhost";
+    var path = context.Request.Path.Value ?? "";
+
+    return isSubdomain && path.StartsWith("/api", StringComparison.OrdinalIgnoreCase);
+}, builder =>
+{
+    builder.UseRouting();
+    builder.UseEndpoints(endpoints =>
+    {
+        endpoints.MapControllerRoute(
+            name: "mock-fallback",
+            pattern: "{*path}",
+            defaults: new { controller = "PublicMock", action = "HandleRequest" }
+            );
+    });
+});
 
 app.Run();

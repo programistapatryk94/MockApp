@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
-using MockApi.Dtos;
+using MockApi.Dtos.Mock;
+using MockApi.Dtos.Project;
 using MockApi.Models;
 
 namespace MockApi.Mappings
@@ -10,6 +11,9 @@ namespace MockApi.Mappings
         {
             CreateMap<Mock, MockDto>();
             CreateMap<CreateMockInput, Mock>();
+
+            CreateMap<Project, ProjectDto>();
+            CreateMap<CreateProjectInput, Project>();
         }
     }
 }

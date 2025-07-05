@@ -1,0 +1,39 @@
+<mat-card class="header-card">
+  <div class="header-content">
+    <h2><mat-icon>folder</mat-icon> Twoje Projekty</h2>
+    <button mat-flat-button color="primary" (click)="createProject()">
+      <mat-icon>add</mat-icon>
+      Nowy Projekt
+    </button>
+  </div>
+</mat-card>
+
+<mat-card *ngIf="loading">Ładowanie...</mat-card>
+
+<mat-card *ngIf="error">
+  <mat-error>{{ error }}</mat-error>
+</mat-card>
+
+<div *ngFor="let project of projects" class="project-tile">
+  <div class="avatar">{{ project.name[0] }}</div>
+  <div class="name">{{ project.name }}</div>
+  <div class="actions">
+    <button mat-icon-button [matMenuTriggerFor]="menu">
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item (click)="editProject(project)">Edytuj</button>
+      <button mat-menu-item (click)="deleteProject(project)">Usuń</button>
+    </mat-menu>
+
+    <button mat-icon-button (click)="goToMocks(project)">
+      <mat-icon>arrow_forward_ios</mat-icon>
+    </button>
+  </div>
+</div>
+
+<mat-card *ngIf="!loading && projects.length === 0">
+  <div class="container full-width">
+    <p>Brak projektów.</p>
+  </div>
+</mat-card>

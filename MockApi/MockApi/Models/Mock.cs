@@ -12,5 +12,7 @@
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public virtual User? User { get; set; }
+        public Guid ProjectId { get; set; }
+        public virtual Project Project { get; set; }
     }
 }

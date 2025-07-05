@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MockApi.Data;
-using MockApi.Dtos;
+using MockApi.Dtos.Auth;
 using MockApi.Models;
 using MockApi.Services;
 

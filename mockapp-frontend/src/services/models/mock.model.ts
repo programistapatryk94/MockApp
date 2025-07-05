@@ -16,4 +16,5 @@ export interface CreateMockInput {
     statusCode: number;
     responseBody: string;
     headersJson?: string;
+    projectId: string;
 }

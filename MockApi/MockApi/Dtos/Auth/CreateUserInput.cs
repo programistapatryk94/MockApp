@@ -1,4 +1,4 @@
-﻿namespace MockApi.Dtos
+﻿namespace MockApi.Dtos.Auth
 {
     public class CreateUserInput
     {

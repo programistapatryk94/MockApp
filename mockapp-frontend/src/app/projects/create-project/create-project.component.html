@@ -1,0 +1,28 @@
+<mat-card>
+  <div class="container">
+    <h2>Nowy Projekt</h2>
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Nazwa projektu</mat-label>
+        <input matInput formControlName="name" />
+        <mat-error
+          *ngIf="
+            form.controls.name.getError('required') ||
+            form.controls.name.getError('whitespace')
+          "
+        >
+          Pole jest wymagane
+        </mat-error>
+      </mat-form-field>
+      <button
+        mat-flat-button
+        color="primary"
+        type="submit"
+        [disabled]="form.invalid && form.touched"
+      >
+        Zapisz
+      </button>
+    </form>
+    <mat-error *ngIf="error">{{ error }}</mat-error>
+  </div>
+</mat-card>

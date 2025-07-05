@@ -8,6 +8,7 @@ import {
   withInterceptorsFromDi,
 } from '@angular/common/http';
 import { TokenInterceptor } from '../helpers/token.interceptor';
+import { MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -19,5 +20,9 @@ export const appConfig: ApplicationConfig = {
       useClass: TokenInterceptor,
       multi: true,
     },
+    {provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: {
+      hasBackdrop: true,
+      disableClose: true
+    }}
   ],
 };

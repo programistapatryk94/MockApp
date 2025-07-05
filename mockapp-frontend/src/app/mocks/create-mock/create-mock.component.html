@@ -6,6 +6,14 @@
       <mat-form-field appearance="fill" class="full-width">
         <mat-label>Ścieżka (np. /ping)</mat-label>
         <input matInput formControlName="urlPath" />
+        <mat-error
+          *ngIf="
+            form.controls.urlPath.getError('required') ||
+            form.controls.urlPath.getError('whitespace')
+          "
+        >
+          Pole jest wymagane
+        </mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="fill" class="full-width">
@@ -21,6 +29,14 @@
       <mat-form-field appearance="fill" class="full-width">
         <mat-label>Response Body (JSON)</mat-label>
         <textarea matInput formControlName="responseBody" rows="4"></textarea>
+        <mat-error
+          *ngIf="
+            form.controls.responseBody.getError('required') ||
+            form.controls.responseBody.getError('whitespace')
+          "
+        >
+          Pole jest wymagane
+        </mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="fill" class="full-width">
@@ -28,7 +44,7 @@
         <textarea matInput formControlName="headersJson" rows="3"></textarea>
       </mat-form-field>
 
-      <button mat-flat-button color="primary" type="submit">Zapisz</button>
+      <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid && form.touched">Zapisz</button>
     </form>
 
     <mat-error *ngIf="error">{{ error }}</mat-error>

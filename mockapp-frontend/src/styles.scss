@@ -1,5 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
 
+@import "styles/variables";
+
+* {
+  box-sizing: border-box;
+}
+
 html,
 body {
   margin: 0;
@@ -24,6 +30,10 @@ h2 {
   font-weight: bold;
 }
 
+button {
+  border-radius: $button-border-radius;
+}
+
 .container {
   margin: 2rem auto;
   padding: 2rem;
@@ -34,6 +44,27 @@ h2 {
   & > table {
     background-color: inherit;
   }
+}
+
+.header-card {
+  background-color: white;
+  margin: 16px auto;
+  max-width: $max-width;
+  box-shadow: none;
+  border-bottom: 1px solid #ddd;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-content h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-left: 1rem;
 }
 
 mat-card {

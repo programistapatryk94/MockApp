@@ -9,6 +9,16 @@
     }
   },
   "profiles": {
+    "MockApi": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchUrl": "swagger",
+      "launchBrowser": true,
+      "applicationUrl": "https://localhost:44313;https://abc.localhost:44313;https://58c49cebf67f48f1b349a714d6b40d66.localhost:44313",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
     "http": {
       "commandName": "Project",
       "dotnetRunMessages": true,

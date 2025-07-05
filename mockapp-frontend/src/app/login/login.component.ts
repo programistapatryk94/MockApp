@@ -12,6 +12,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { Router } from '@angular/router';
 
 interface LoginFormModel {
   email: string;
@@ -35,7 +36,7 @@ export class LoginComponent {
   form: FormGroup<TypedFormControls<LoginFormModel>>;
   error: string = '';
 
-  constructor(private fb: FormBuilder, private auth: AuthService) {
+  constructor(private fb: FormBuilder, private auth: AuthService, private router: Router) {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
@@ -48,7 +49,9 @@ export class LoginComponent {
     const { email, password } = this.form.value;
 
     this.auth.login(email!, password!).subscribe({
-      next: () => {},
+      next: () => {
+        this.router.navigate(['/projects']);
+      },
       error: (err) => {
         this.error = err.error || 'Nieprawidłowe dane logowania';
       },

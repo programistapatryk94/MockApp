@@ -1,6 +1,6 @@
 ﻿namespace MockApi.Dtos.Mock
 {
-    public class CreateMockInput
+    public class CreateOrUpdateMockInput
     {
         public string UrlPath { get; set; } = "";
         public string Method { get; set; } = "GET";
@@ -8,5 +8,6 @@
         public string ResponseBody { get; set; } = "{}";
         public string? HeadersJson { get; set; }
         public Guid ProjectId { get; set; }
+        public bool Enabled { get; set; }
     }
 }

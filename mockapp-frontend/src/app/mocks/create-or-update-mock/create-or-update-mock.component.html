@@ -1,4 +1,4 @@
-<h1 mat-dialog-title>{{ data?.mock ? "Edytuj" : "Nowy" }} mock</h1>
+<h1 mat-dialog-title>{{ data.mock ? "Edytuj" : "Nowy" }} mock</h1>
 <div mat-dialog-content>
   <form [formGroup]="form">
     <mat-form-field appearance="fill" class="full-width">
@@ -12,6 +12,20 @@
       >
         Pole jest wymagane
       </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Kod odpowiedzi (HTTP)</mat-label>
+      <input
+        matInput
+        type="number"
+        formControlName="statusCode"
+        min="100"
+        max="599"
+      />
+      <mat-hint
+        >Najczęściej: 200 (OK), 404 (Not Found), 500 (Błąd serwera)</mat-hint
+      >
     </mat-form-field>
 
     <mat-form-field appearance="fill" class="full-width">
@@ -42,9 +56,15 @@
       <mat-label>Nagłówki (opcjonalnie, JSON)</mat-label>
       <textarea matInput formControlName="headersJson" rows="3"></textarea>
     </mat-form-field>
+
+    <mat-slide-toggle formControlName="enabled">
+      Endpoint aktywny
+    </mat-slide-toggle>
   </form>
 </div>
 <div mat-dialog-actions align="end">
-  <button mat-button (click)="cancel()">Anuluj</button>
-  <button mat-flat-button color="primary" (click)="save()">Zapisz</button>
+  <button mat-button (click)="cancel()" [disabled]="saving">Anuluj</button>
+  <button mat-flat-button color="primary" (click)="save()" [disabled]="saving">
+    Zapisz
+  </button>
 </div>

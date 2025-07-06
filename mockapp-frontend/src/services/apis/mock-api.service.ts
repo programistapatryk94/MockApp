@@ -11,14 +11,17 @@ export class MockApiService {
 
   constructor(private http: HttpClient) {}
 
-  getMocks(projectId: string): Observable<Mock[]> {
-
+  getAll(projectId: string): Observable<Mock[]> {
     const params = new HttpParams().set('projectId', projectId);
 
-    return this.http.get<Mock[]>(this.apiUrl, {params});
+    return this.http.get<Mock[]>(this.apiUrl, { params });
   }
 
-  createMock(mock: CreateMockInput): Observable<Mock> {
+  create(mock: CreateMockInput): Observable<Mock> {
     return this.http.post<Mock>(this.apiUrl, mock);
+  }
+
+  update(mockId: string, mock: CreateMockInput): Observable<Mock> {
+    return this.http.put<Mock>(`${this.apiUrl}/${mockId}`, mock);
   }
 }

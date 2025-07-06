@@ -8,6 +8,8 @@ export interface Mock {
     responseBody: string;
     headersJson?: string;
     createdAt: Date;
+    enabled: boolean;
+    projectId: string;
 }
 
 export interface CreateMockInput {
@@ -17,4 +19,5 @@ export interface CreateMockInput {
     responseBody: string;
     headersJson?: string;
     projectId: string;
+    enabled: boolean;
 }

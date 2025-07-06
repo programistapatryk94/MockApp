@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { CreateMockInput, Mock } from '../../../services/models/mock.model';
 import {
   FormBuilder,
@@ -18,14 +18,12 @@ import {
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MockApiService } from '../../../services/apis/mock-api.service';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { finalize } from 'rxjs';
 
-interface CreateOrUpdateMockFormModel {
-  urlPath: string;
-  method: string;
-  statusCode: number;
-  responseBody: string;
-  headersJson: string | null;
-}
+type CreateOrUpdateMockFormModel = Omit<CreateMockInput, 'projectId'>;
 
 export interface CreateOrUpdateMockDialogData {
   mock?: CreateMockInput | Mock;
@@ -44,46 +42,80 @@ export interface CreateOrUpdateMockDialogData {
     ReactiveFormsModule,
     MatInputModule,
     MatSelectModule,
+    MatSlideToggleModule,
+    MatSnackBarModule,
   ],
 })
-export class CreateOrUpdateMockComponent {
-  form: FormGroup<TypedFormControls<CreateOrUpdateMockFormModel>>;
+export class CreateOrUpdateMockComponent implements OnInit {
+  form!: FormGroup<TypedFormControls<CreateOrUpdateMockFormModel>>;
+  saving: boolean = false;
 
   constructor(
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<CreateOrUpdateMockComponent>,
+    private mockApiService: MockApiService,
+    private snackBar: MatSnackBar,
     @Inject(MAT_DIALOG_DATA) public data: CreateOrUpdateMockDialogData
-  ) {
-    this.form = this.fb.group({
-      urlPath: ['', [Validators.required, noWhitespaceValidator()]],
-      method: ['GET', Validators.required],
-      statusCode: [200, Validators.required],
-      responseBody: ['{}', [Validators.required, noWhitespaceValidator()]],
-      headersJson: [''],
-    });
+  ) {}
 
-    if (this.data?.mock) {
-      this.form.patchValue(data.mock!);
-    }
+  get isEdit(): boolean {
+    return !!(this.data.mock as Mock)?.id;
+  }
+
+  get id(): string {
+    return (this.data.mock as Mock)?.id;
+  }
+
+  get mock(): Partial<Mock | CreateMockInput> {
+    return this.data.mock ?? {};
   }
 
   save() {
-    if (this.form.invalid) return;
-    const value = this.form.value;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+    this.saving = true;
 
-    var output: CreateMockInput = {
-      method: value.method!,
-      projectId: this.data.projectId,
-      responseBody: value.responseBody!,
-      statusCode: value.statusCode!,
-      urlPath: value.urlPath!,
-      headersJson: value.headersJson || undefined,
+    const dto: CreateMockInput = {
+      ...this.form.getRawValue(),
+      projectId: this.data.projectId ?? '',
     };
 
-    this.dialogRef.close(output);
+    const action$ = this.isEdit
+      ? this.mockApiService.update(this.id, dto)
+      : this.mockApiService.create(dto);
+
+    action$.pipe(finalize(() => (this.saving = false))).subscribe({
+      next: (result) => this.dialogRef.close(result),
+      error: () =>
+        this.snackBar.open('Wystąpił błąd przy zapisie', 'Zamknij', {
+          duration: 3000,
+        }),
+    });
   }
 
   cancel() {
     this.dialogRef.close();
+  }
+
+  ngOnInit(): void {
+    this.form = this.fb.group({
+      urlPath: [
+        this.mock.urlPath ?? '',
+        [Validators.required, noWhitespaceValidator()],
+      ],
+      method: [this.mock.method ?? 'GET', Validators.required],
+      statusCode: [
+        this.mock.statusCode ?? 200,
+        [Validators.required, Validators.min(100), Validators.max(599)],
+      ],
+      responseBody: [
+        this.mock.responseBody ?? '{}',
+        [Validators.required, noWhitespaceValidator()],
+      ],
+      headersJson: [this.mock.headersJson ?? ''],
+      enabled: [this.mock.enabled ?? true, Validators.required],
+    }) as FormGroup<TypedFormControls<CreateOrUpdateMockFormModel>>;
   }
 }

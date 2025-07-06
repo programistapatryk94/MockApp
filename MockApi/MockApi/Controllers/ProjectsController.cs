@@ -6,6 +6,7 @@ using MockApi.Data;
 using MockApi.Dtos.Project;
 using MockApi.Helpers;
 using MockApi.Models;
+using MockApi.Runtime.Session;
 
 namespace MockApi.Controllers
 {
@@ -16,19 +17,19 @@ namespace MockApi.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IAppSession _appSession;
 
-        public ProjectsController(AppDbContext context, IMapper mapper)
+        public ProjectsController(AppDbContext context, IMapper mapper, IAppSession appSession)
         {
             _context = context;
             _mapper = mapper;
+            _appSession = appSession;
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<ProjectDto>> GetProjectById(Guid id)
         {
-            var userId = GetUserId();
-
-            var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id && p.UserId == userId);
+            var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id);
 
             if (null == project) return NotFound();
 
@@ -40,18 +41,16 @@ namespace MockApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProjectDto>>> GetProjects()
         {
-            var userId = GetUserId();
-
-            var projects = await _context.Projects.Where(p => p.UserId == userId).ToListAsync();
+            var projects = await _context.Projects.ToListAsync();
             var mappedProjects = _mapper.Map<IEnumerable<ProjectDto>>(projects);
 
             return Ok(mappedProjects);
         }
 
         [HttpPost]
-        public async Task<ActionResult<ProjectDto>> CreateProject([FromBody] CreateProjectInput createProjectInput)
+        public async Task<ActionResult<ProjectDto>> CreateProject([FromBody] CreateOrUpdateProjectInput createProjectInput)
         {
-            var userId = GetUserId();
+            var userId = _appSession.UserId!.Value;
 
             var project = _mapper.Map<Project>(createProjectInput);
             project.Id = Guid.NewGuid();
@@ -66,23 +65,41 @@ namespace MockApi.Controllers
             return Ok(projectDto);
         }
 
+        [HttpPut("{id}")]
+        public async Task<ActionResult<ProjectDto>> UpdateProject(Guid id, [FromBody] CreateOrUpdateProjectInput updateProjectInput)
+        {
+            var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id && p.UserId == _appSession.UserId);
+
+            if (null == project)
+            {
+                return NotFound();
+            }
+
+            _mapper.Map(updateProjectInput, project);
+
+            await _context.SaveChangesAsync();
+
+            var projectDto = _mapper.Map<ProjectDto>(project);
+            return Ok(projectDto);
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProject(Guid id)
         {
-            var userId = GetUserId();
-            var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id && p.UserId == userId);
+            var isOwner = await _context.Projects.AnyAsync(p => p.Id == id && p.UserId == _appSession.UserId);
+
+            if(!isOwner)
+            {
+                return NotFound();
+            }
+
+            var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id);
             if (null == project) return NotFound();
 
             _context.Projects.Remove(project);
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private Guid GetUserId()
-        {
-            var userId = Guid.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
-            return userId;
         }
     }
 }

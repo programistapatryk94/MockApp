@@ -1,5 +1,5 @@
 import { Component, DestroyRef, OnInit } from '@angular/core';
-import { CreateMockInput, Mock } from '../../../services/models/mock.model';
+import { Mock } from '../../../services/models/mock.model';
 import { MockApiService } from '../../../services/apis/mock-api.service';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -20,6 +20,8 @@ import {
   CreateOrUpdateMockDialogData,
 } from '../create-or-update-mock/create-or-update-mock.component';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-mock-list',
@@ -35,7 +37,8 @@ import { MatMenuModule } from '@angular/material/menu';
     MatInputModule,
     MatTableModule,
     MatIconModule,
-    MatMenuModule
+    MatMenuModule,
+    MatSnackBarModule,
   ],
 })
 export class MockListComponent implements OnInit {
@@ -57,7 +60,8 @@ export class MockListComponent implements OnInit {
     private projectApiService: ProjectApiService,
     private projectService: ProjectService,
     private destroyRef: DestroyRef,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) {}
 
   createMock() {
@@ -76,23 +80,25 @@ export class MockListComponent implements OnInit {
     }
 
     this.loading = true;
-    this.mockApiService.getMocks(this.project.id).subscribe({
-      next: (mocks) => {
-        this.mocks = mocks;
-        this.loading = false;
-      },
-      error: (err) => {
-        this.error = 'Błąd podczas pobierania mocków';
-        this.loading = false;
-      },
-    });
+    this.mockApiService
+      .getAll(this.project.id)
+      .pipe(finalize(() => (this.loading = false)))
+      .subscribe({
+        next: (mocks) => (this.mocks = mocks),
+        error: (err) =>
+          this.snackBar.open(
+            'Wystąpił błąd podczas pobierania mocków',
+            'Zamknij',
+            { duration: 3000 }
+          ),
+      });
   }
 
   private openCreateOrUpdateDialog(mock?: Mock) {
     const dialogRef = this.dialog.open<
       CreateOrUpdateMockComponent,
       CreateOrUpdateMockDialogData,
-      CreateMockInput
+      Mock
     >(CreateOrUpdateMockComponent, {
       width: '400px',
       data: { mock, projectId: this.project!.id },
@@ -100,17 +106,7 @@ export class MockListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (!result) return;
-      if (mock?.id != null) {
-        //TODO: Dodaj update
-      } else {
-        //Nowy
-        this.mockApiService.createMock(result).subscribe({
-          next: (createdMock) => this.refreshMocks(),
-          error: (err) => {
-            //TODO: Dodaj obsługe błędu
-          },
-        });
-      }
+      this.refreshMocks();
     });
   }
 

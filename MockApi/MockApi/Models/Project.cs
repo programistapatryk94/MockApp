@@ -15,5 +15,6 @@ namespace MockApi.Models
         public Guid UserId { get; set; }
         public virtual User User { get; set; }
         public virtual ICollection<Mock> Mocks { get; set; } = new List<Mock>();
+        public virtual ICollection<ProjectMember> ProjectMembers { get; set; } = new List<ProjectMember>();
     }
 }

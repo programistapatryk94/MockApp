@@ -1,24 +1,18 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MockApi.Models;
-using System.Security.Claims;
+using MockApi.Runtime.Session;
 
 namespace MockApi.Data
 {
     public class AppDbContext : DbContext
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAppSession _appSession;
 
-        public Guid CurrentUserId { get; private set; }
+        public Guid? CurrentUserId => _appSession.UserId;
 
-        public AppDbContext(DbContextOptions options, IHttpContextAccessor httpContextAccessor) : base(options)
+        public AppDbContext(DbContextOptions options, IAppSession appSession) : base(options)
         {
-            _httpContextAccessor = httpContextAccessor;
-
-            var userIdClaim = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out var userId))
-            {
-                CurrentUserId = userId;
-            }
+            _appSession = appSession;
         }
 
         protected AppDbContext()
@@ -28,6 +22,7 @@ namespace MockApi.Data
         public DbSet<User> Users => Set<User>();
         public DbSet<Mock> Mocks => Set<Mock>();
         public DbSet<Project> Projects => Set<Project>();
+        public DbSet<ProjectMember> ProjectMembers => Set<ProjectMember>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -35,8 +30,21 @@ namespace MockApi.Data
 
             modelBuilder.Entity<Project>().HasIndex(p => p.Secret).IsUnique();
 
-            modelBuilder.Entity<Project>().HasQueryFilter(e => e.UserId == CurrentUserId);
-            modelBuilder.Entity<Mock>().HasQueryFilter(e => e.UserId == CurrentUserId);
+            modelBuilder.Entity<Project>().HasQueryFilter(e => CurrentUserId.HasValue && (e.UserId == CurrentUserId || e.ProjectMembers.Any(c => c.UserId == CurrentUserId)));
+            modelBuilder.Entity<Mock>().HasQueryFilter(e => CurrentUserId.HasValue && (e.Project.UserId == CurrentUserId || e.Project.ProjectMembers.Any(c => c.UserId == CurrentUserId)));
+
+            modelBuilder.Entity<ProjectMember>()
+                .HasKey(pc => new { pc.ProjectId, pc.UserId });
+
+            modelBuilder.Entity<ProjectMember>()
+                .HasOne(pc => pc.Project)
+                .WithMany(p => p.ProjectMembers)
+                .HasForeignKey(pc => pc.ProjectId);
+
+            modelBuilder.Entity<ProjectMember>()
+                .HasOne(pc => pc.User)
+                .WithMany(u => u.ProjectMembers)
+                .HasForeignKey(u => u.UserId);
         }
     }
 }

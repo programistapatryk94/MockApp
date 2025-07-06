@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -20,11 +20,14 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
 import { MatInputModule } from '@angular/material/input';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { ProjectApiService } from '../../../services/apis/project-api.service';
+import { finalize } from 'rxjs';
 
-interface CreateOrUpdateProjectFormModel {
+type CreateOrUpdateProjectFormModel = {
   name: string;
   apiPrefix: string;
-}
+};
 
 export interface CreateOrUpdateProjectDialogData {
   project?: CreateProjectInput | Project;
@@ -41,38 +44,69 @@ export interface CreateOrUpdateProjectDialogData {
     CommonModule,
     ReactiveFormsModule,
     MatInputModule,
+    MatSnackBarModule,
   ],
 })
-export class CreateOrUpdateProjectComponent {
-  form: FormGroup<TypedFormControls<CreateOrUpdateProjectFormModel>>;
+export class CreateOrUpdateProjectComponent implements OnInit {
+  form!: FormGroup<TypedFormControls<CreateOrUpdateProjectFormModel>>;
+  saving: boolean = false;
+
   constructor(
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<CreateOrUpdateProjectComponent>,
+    private projectApiService: ProjectApiService,
+    private snackBar: MatSnackBar,
     @Inject(MAT_DIALOG_DATA) public data: CreateOrUpdateProjectDialogData
-  ) {
-    this.form = this.fb.group({
-      name: ['', [Validators.required, noWhitespaceValidator()]],
-      apiPrefix: [''],
-    });
+  ) {}
 
-    if (this.data?.project) {
-      this.form.patchValue(data.project!);
-    }
+  get isEdit(): boolean {
+    return !!(this.data.project as Project)?.id;
+  }
+
+  get id(): string {
+    return (this.data.project as Project)?.id;
+  }
+
+  get project(): Partial<Project | CreateProjectInput> {
+    return this.data.project ?? {};
   }
 
   save() {
-    if (this.form.invalid) return;
-    const value = this.form.value;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
 
-    const output: CreateProjectInput = {
-      apiPrefix: value.apiPrefix!,
-      name: value.name!,
+    this.saving = true;
+
+    const dto: CreateProjectInput = {
+      ...this.form.getRawValue(),
     };
 
-    this.dialogRef.close(output);
+    const action$ = this.isEdit
+      ? this.projectApiService.update(this.id, dto)
+      : this.projectApiService.create(dto);
+
+    action$.pipe(finalize(() => (this.saving = false))).subscribe({
+      next: (result) => this.dialogRef.close(result),
+      error: () =>
+        this.snackBar.open('Wystąpił błąd przy zapisie', 'Zamknij', {
+          duration: 3000,
+        }),
+    });
   }
 
   cancel() {
     this.dialogRef.close();
+  }
+
+  ngOnInit(): void {
+    this.form = this.fb.group({
+      name: [
+        this.project.name ?? '',
+        [Validators.required, noWhitespaceValidator()],
+      ],
+      apiPrefix: [this.project.apiPrefix ?? ''],
+    }) as FormGroup<TypedFormControls<CreateOrUpdateProjectFormModel>>;
   }
 }

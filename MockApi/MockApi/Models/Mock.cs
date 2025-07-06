@@ -10,6 +10,7 @@
         public string ResponseBody { get; set; } = "{}";
         public string? HeadersJson { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public bool Enabled { get; set; } = true;
 
         public virtual User? User { get; set; }
         public Guid ProjectId { get; set; }

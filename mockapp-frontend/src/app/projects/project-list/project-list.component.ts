@@ -1,8 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  CreateProjectInput,
-  Project,
-} from '../../../services/models/project.model';
+import { Project } from '../../../services/models/project.model';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -20,6 +17,8 @@ import {
   CreateOrUpdateProjectComponent,
   CreateOrUpdateProjectDialogData,
 } from '../create-or-update-project/create-or-update-project.component';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-project-list',
@@ -36,6 +35,7 @@ import {
     MatTableModule,
     MatIconModule,
     MatMenuModule,
+    MatSnackBarModule,
   ],
 })
 export class ProjectListComponent implements OnInit {
@@ -48,21 +48,24 @@ export class ProjectListComponent implements OnInit {
     private projectApiService: ProjectApiService,
     private projectService: ProjectService,
     private router: Router,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) {}
 
   private refreshProjects() {
     this.loading = true;
-    this.projectApiService.getAll().subscribe({
-      next: (projects) => {
-        this.projects = projects;
-        this.loading = false;
-      },
-      error: (err) => {
-        this.error = 'Błąd podczas pobierania projektów';
-        this.loading = false;
-      },
-    });
+    this.projectApiService
+      .getAll()
+      .pipe(finalize(() => (this.loading = false)))
+      .subscribe({
+        next: (projects) => (this.projects = projects),
+        error: (err) =>
+          this.snackBar.open(
+            'Wystąpił błąd podczas pobierania projektów',
+            'Zamknij',
+            { duration: 3000 }
+          ),
+      });
   }
 
   createProject() {
@@ -97,7 +100,7 @@ export class ProjectListComponent implements OnInit {
     const dialogRef = this.dialog.open<
       CreateOrUpdateProjectComponent,
       CreateOrUpdateProjectDialogData,
-      CreateProjectInput
+      Project
     >(CreateOrUpdateProjectComponent, {
       width: '400px',
       data: { project },
@@ -105,17 +108,7 @@ export class ProjectListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        if (project?.id != null) {
-          //TODO: Dodaj update
-        } else {
-          //Nowy
-          this.projectApiService.create(result).subscribe({
-            next: (createdProject) => this.refreshProjects(),
-            error: (err) => {
-              //TODO: dodaj obsługę błędu
-            },
-          });
-        }
+        this.refreshProjects();
       }
     });
   }

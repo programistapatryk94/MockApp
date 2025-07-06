@@ -14,7 +14,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { Router } from '@angular/router';
 
-interface LoginFormModel {
+type LoginFormModel = {
   email: string;
   password: string;
 }
@@ -40,7 +40,7 @@ export class LoginComponent {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
-    });
+    }) as FormGroup<TypedFormControls<LoginFormModel>>;
   }
 
   submit() {

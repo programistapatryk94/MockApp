@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MockApi.Data;
+using MockApi.Runtime.Session;
 using MockApi.Services;
 using System.Text;
 
@@ -70,6 +71,7 @@ builder.Services.AddSwaggerGen(c =>
         {jwtSecurityScheme, Array.Empty<string>() }
     });
 });
+builder.Services.AddSingleton<IAppSession, ClaimsAppSession>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddAutoMapper(typeof(Program));
 

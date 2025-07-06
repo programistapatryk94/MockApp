@@ -23,6 +23,10 @@ export class ProjectApiService {
     return this.http.post<Project>(this.apiUrl, input);
   }
 
+  update(projectId: string, project: CreateProjectInput): Observable<Project> {
+    return this.http.put<Project>(`${this.apiUrl}/${projectId}`, project);
+  }
+
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }

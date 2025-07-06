@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MockApi.Dtos.Mock;
 using MockApi.Dtos.Project;
+using MockApi.Dtos.ProjectMember;
 using MockApi.Models;
 
 namespace MockApi.Mappings
@@ -10,10 +11,15 @@ namespace MockApi.Mappings
         public MappingProfile()
         {
             CreateMap<Mock, MockDto>();
-            CreateMap<CreateMockInput, Mock>();
+            CreateMap<CreateOrUpdateMockInput, Mock>()
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
             CreateMap<Project, ProjectDto>();
-            CreateMap<CreateProjectInput, Project>();
+            CreateMap<CreateOrUpdateProjectInput, Project>()
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
+            CreateMap<User, ProjectMemberDto>()
+                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.Id));
         }
     }
 }

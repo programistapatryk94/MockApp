@@ -56,7 +56,7 @@ namespace MockApi.Controllers
     ? "/"
     : "/" + pathWithoutPrefix.TrimStart('/');
 
-            var mock = await _context.Mocks.IgnoreQueryFilters().FirstOrDefaultAsync(p => p.ProjectId == project.Id && p.Method == method && p.UrlPath == urlPath);
+            var mock = await _context.Mocks.IgnoreQueryFilters().FirstOrDefaultAsync(p => p.ProjectId == project.Id && p.Method == method && p.UrlPath == urlPath && p.Enabled);
 
             if (null == mock)
             {

@@ -23,6 +23,7 @@ import { MatInputModule } from '@angular/material/input';
 import { ProjectApiService } from '../../../services/apis/project-api.service';
 import { finalize } from 'rxjs';
 import { SnackbarService } from '../../shared/snackbar/snackbar.service';
+import { SpinnerContentComponent } from '../../shared/spinner-content/spinner-content.component';
 
 type CreateOrUpdateProjectFormModel = {
   name: string;
@@ -44,11 +45,26 @@ export interface CreateOrUpdateProjectDialogData {
     CommonModule,
     ReactiveFormsModule,
     MatInputModule,
+    SpinnerContentComponent,
   ],
 })
 export class CreateOrUpdateProjectComponent implements OnInit {
   form!: FormGroup<TypedFormControls<CreateOrUpdateProjectFormModel>>;
-  saving: boolean = false;
+  private _saving = false;
+
+  get saving(): boolean {
+    return this._saving;
+  }
+
+  set saving(value: boolean) {
+    this._saving = value;
+
+    if (value) {
+      this.form.disable();
+    } else {
+      this.form.enable();
+    }
+  }
 
   constructor(
     private fb: FormBuilder,
@@ -71,6 +87,10 @@ export class CreateOrUpdateProjectComponent implements OnInit {
   }
 
   save() {
+    if (this.saving) {
+      return;
+    }
+
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;

@@ -17,8 +17,8 @@ import {
   CreateOrUpdateProjectComponent,
   CreateOrUpdateProjectDialogData,
 } from '../create-or-update-project/create-or-update-project.component';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { finalize } from 'rxjs';
+import { SnackbarService } from '../../shared/snackbar/snackbar.service';
 
 @Component({
   selector: 'app-project-list',
@@ -35,7 +35,6 @@ import { finalize } from 'rxjs';
     MatTableModule,
     MatIconModule,
     MatMenuModule,
-    MatSnackBarModule,
   ],
 })
 export class ProjectListComponent implements OnInit {
@@ -49,7 +48,7 @@ export class ProjectListComponent implements OnInit {
     private projectService: ProjectService,
     private router: Router,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackbarService: SnackbarService
   ) {}
 
   private refreshProjects() {
@@ -60,11 +59,10 @@ export class ProjectListComponent implements OnInit {
       .subscribe({
         next: (projects) => (this.projects = projects),
         error: (err) =>
-          this.snackBar.open(
-            'Wystąpił błąd podczas pobierania projektów',
-            'Zamknij',
-            { duration: 3000 }
-          ),
+          this.snackbarService.show({
+            message: 'Wystąpił błąd podczas pobierania projektów',
+            type: 'error',
+          }),
       });
   }
 

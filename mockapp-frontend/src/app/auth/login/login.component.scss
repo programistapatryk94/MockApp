@@ -1,0 +1,21 @@
+:host {
+  .register-link {
+    margin-top: 16px;
+    text-align: center;
+
+    span {
+      margin-right: 4px;
+      color: rgba(0, 0, 0, 0.6); // Material hint color
+    }
+
+    a {
+      color: #1976d2; // Material primary
+      text-decoration: none;
+      font-weight: 500;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}

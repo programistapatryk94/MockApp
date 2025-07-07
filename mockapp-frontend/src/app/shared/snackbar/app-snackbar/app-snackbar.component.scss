@@ -1,0 +1,25 @@
+:host {
+  .snackbar-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+
+    .text {
+      flex: 1;
+    }
+
+    .snackbar-close {
+      color: white !important;
+      font-weight: 600;
+      text-transform: uppercase;
+      min-width: unset;
+      padding: 0 8px;
+    }
+
+    .mat-icon {
+      color: white;
+    }
+  }
+}

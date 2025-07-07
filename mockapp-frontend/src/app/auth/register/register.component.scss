@@ -1,0 +1,21 @@
+:host {
+  .login-link {
+    margin-top: 16px;
+    text-align: center;
+
+    span {
+      margin-right: 4px;
+      color: rgba(0, 0, 0, 0.6); // subtelny tekst
+    }
+
+    a {
+      color: #1976d2; // primary
+      text-decoration: none;
+      font-weight: 500;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}

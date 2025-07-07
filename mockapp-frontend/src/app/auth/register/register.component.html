@@ -1,6 +1,7 @@
 <mat-card>
   <div class="container">
-    <h2>Logowanie</h2>
+    <h2>Rejestracja</h2>
+
     <form [formGroup]="form" (ngSubmit)="submit()">
       <mat-form-field appearance="fill" class="full-width">
         <mat-label>Email</mat-label>
@@ -12,9 +13,14 @@
         <input matInput type="password" formControlName="password" />
       </mat-form-field>
 
-      <button mat-flat-button color="primary" type="submit">Zaloguj</button>
+      <button mat-flat-button color="primary" type="submit" [disabled]="saving">
+        Zarejestruj się
+      </button>
     </form>
 
-    <mat-error *ngIf="error">{{ error }}</mat-error>
+    <div class="login-link mat-caption">
+      <span>Masz już konto?</span>
+      <a routerLink="/login">Zaloguj się</a>
+    </div>
   </div>
 </mat-card>

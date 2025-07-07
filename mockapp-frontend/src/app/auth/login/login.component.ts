@@ -5,24 +5,25 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { AuthService } from '../../helpers/auth.service';
+import { AuthService } from '../../../helpers/auth.service';
 import { CommonModule } from '@angular/common';
-import { TypedFormControls } from '../../helpers/form';
+import { TypedFormControls } from '../../../helpers/form';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { Router } from '@angular/router';
+import { SnackbarService } from '../../shared/snackbar/snackbar.service';
+import { finalize } from 'rxjs';
+import { RouterModule } from '@angular/router';
 
 type LoginFormModel = {
   email: string;
   password: string;
-}
+};
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss'],
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -30,13 +31,19 @@ type LoginFormModel = {
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
+    RouterModule
   ],
+  styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
   form: FormGroup<TypedFormControls<LoginFormModel>>;
-  error: string = '';
+  saving: boolean = false;
 
-  constructor(private fb: FormBuilder, private auth: AuthService, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private auth: AuthService,
+    private snackbarService: SnackbarService
+  ) {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
@@ -44,17 +51,24 @@ export class LoginComponent {
   }
 
   submit() {
-    if (this.form.invalid) return;
+    if (this.form.invalid || this.saving) {
+      this.form.markAllAsTouched();
+      return;
+    }
+    this.saving = true;
 
     const { email, password } = this.form.value;
 
-    this.auth.login(email!, password!).subscribe({
-      next: () => {
-        this.router.navigate(['/projects']);
-      },
-      error: (err) => {
-        this.error = err.error || 'Nieprawidłowe dane logowania';
-      },
-    });
+    this.auth
+      .login(email!, password!)
+      .pipe(finalize(() => (this.saving = false)))
+      .subscribe({
+        error: (err) => {
+          this.snackbarService.show({
+            message: err.error ?? 'Nieprawidłowe dane logowania',
+            type: 'error',
+          });
+        },
+      });
   }
 }

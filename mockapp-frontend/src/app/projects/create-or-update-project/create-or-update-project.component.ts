@@ -20,9 +20,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
 import { MatInputModule } from '@angular/material/input';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ProjectApiService } from '../../../services/apis/project-api.service';
 import { finalize } from 'rxjs';
+import { SnackbarService } from '../../shared/snackbar/snackbar.service';
 
 type CreateOrUpdateProjectFormModel = {
   name: string;
@@ -44,7 +44,6 @@ export interface CreateOrUpdateProjectDialogData {
     CommonModule,
     ReactiveFormsModule,
     MatInputModule,
-    MatSnackBarModule,
   ],
 })
 export class CreateOrUpdateProjectComponent implements OnInit {
@@ -55,7 +54,7 @@ export class CreateOrUpdateProjectComponent implements OnInit {
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<CreateOrUpdateProjectComponent>,
     private projectApiService: ProjectApiService,
-    private snackBar: MatSnackBar,
+    private snackbarService: SnackbarService,
     @Inject(MAT_DIALOG_DATA) public data: CreateOrUpdateProjectDialogData
   ) {}
 
@@ -90,8 +89,9 @@ export class CreateOrUpdateProjectComponent implements OnInit {
     action$.pipe(finalize(() => (this.saving = false))).subscribe({
       next: (result) => this.dialogRef.close(result),
       error: () =>
-        this.snackBar.open('Wystąpił błąd przy zapisie', 'Zamknij', {
-          duration: 3000,
+        this.snackbarService.show({
+          message: 'Wystąpił błąd przy zapisie',
+          type: 'error',
         }),
     });
   }

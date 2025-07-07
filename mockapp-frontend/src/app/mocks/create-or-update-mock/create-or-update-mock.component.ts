@@ -20,8 +20,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MockApiService } from '../../../services/apis/mock-api.service';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { finalize } from 'rxjs';
+import { SnackbarService } from '../../shared/snackbar/snackbar.service';
 
 type CreateOrUpdateMockFormModel = Omit<CreateMockInput, 'projectId'>;
 
@@ -43,7 +43,6 @@ export interface CreateOrUpdateMockDialogData {
     MatInputModule,
     MatSelectModule,
     MatSlideToggleModule,
-    MatSnackBarModule,
   ],
 })
 export class CreateOrUpdateMockComponent implements OnInit {
@@ -54,7 +53,7 @@ export class CreateOrUpdateMockComponent implements OnInit {
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<CreateOrUpdateMockComponent>,
     private mockApiService: MockApiService,
-    private snackBar: MatSnackBar,
+    private snackbarService: SnackbarService,
     @Inject(MAT_DIALOG_DATA) public data: CreateOrUpdateMockDialogData
   ) {}
 
@@ -89,8 +88,9 @@ export class CreateOrUpdateMockComponent implements OnInit {
     action$.pipe(finalize(() => (this.saving = false))).subscribe({
       next: (result) => this.dialogRef.close(result),
       error: () =>
-        this.snackBar.open('Wystąpił błąd przy zapisie', 'Zamknij', {
-          duration: 3000,
+        this.snackbarService.show({
+          message: 'Wystąpił błąd przy zapisie',
+          type: 'error',
         }),
     });
   }

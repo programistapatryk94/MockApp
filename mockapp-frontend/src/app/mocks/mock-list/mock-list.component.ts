@@ -20,8 +20,8 @@ import {
   CreateOrUpdateMockDialogData,
 } from '../create-or-update-mock/create-or-update-mock.component';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { finalize } from 'rxjs';
+import { SnackbarService } from '../../shared/snackbar/snackbar.service';
 
 @Component({
   selector: 'app-mock-list',
@@ -38,7 +38,6 @@ import { finalize } from 'rxjs';
     MatTableModule,
     MatIconModule,
     MatMenuModule,
-    MatSnackBarModule,
   ],
 })
 export class MockListComponent implements OnInit {
@@ -61,7 +60,7 @@ export class MockListComponent implements OnInit {
     private projectService: ProjectService,
     private destroyRef: DestroyRef,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackbarService: SnackbarService
   ) {}
 
   createMock() {
@@ -86,11 +85,10 @@ export class MockListComponent implements OnInit {
       .subscribe({
         next: (mocks) => (this.mocks = mocks),
         error: (err) =>
-          this.snackBar.open(
-            'Wystąpił błąd podczas pobierania mocków',
-            'Zamknij',
-            { duration: 3000 }
-          ),
+          this.snackbarService.show({
+            message: 'Wystąpił błąd podczas pobierania mocków',
+            type: 'error',
+          }),
       });
   }
 

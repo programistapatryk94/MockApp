@@ -1,7 +1,9 @@
 <mat-toolbar color="primary">
-  <span class="logo">MockAPI</span>
+  <span class="logo">{{ title }}</span>
   <span class="spacer"></span>
-  <button mat-button routerLink="/projects" *ngIf="isLoggedIn()" type="button">Projekty</button>
+  <button mat-button routerLink="/projects" *ngIf="isLoggedIn()" type="button">
+    Projekty
+  </button>
   <button mat-button (click)="logout()" *ngIf="isLoggedIn()">Wyloguj</button>
 </mat-toolbar>
 

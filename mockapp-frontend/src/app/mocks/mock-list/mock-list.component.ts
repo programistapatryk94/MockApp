@@ -22,6 +22,7 @@ import {
 import { MatMenuModule } from '@angular/material/menu';
 import { finalize } from 'rxjs';
 import { SnackbarService } from '../../shared/snackbar/snackbar.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-mock-list',
@@ -38,6 +39,7 @@ import { SnackbarService } from '../../shared/snackbar/snackbar.service';
     MatTableModule,
     MatIconModule,
     MatMenuModule,
+    MatTooltipModule,
   ],
 })
 export class MockListComponent implements OnInit {
@@ -52,6 +54,22 @@ export class MockListComponent implements OnInit {
     'actions',
   ];
   project: Project | null = null;
+  copiedMockId: string | null = null;
+
+  copyToClipboard(mock: Mock): void {
+    const fullUrl = `https://${this.project?.secret}.localhost:44313${this.project?.apiPrefix}${mock.urlPath}`;
+    navigator.clipboard.writeText(fullUrl).then(() => {
+      this.copiedMockId = mock.id;
+
+      setTimeout(() => {
+        this.copiedMockId = null;
+      }, 1500); // "Skopiowano!" znika po 1.5 sekundy
+    });
+  }
+
+  getMethodClass(method: string): string {
+    return method.toLowerCase(); // np. "get", "post" itd.
+  }
 
   constructor(
     private mockApiService: MockApiService,

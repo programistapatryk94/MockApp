@@ -15,8 +15,29 @@
 </mat-card>
 
 <div *ngFor="let mock of mocks" class="mock-tile">
-  <div class="method-badge" [ngClass]="mock.method.toLowerCase()">{{ mock.method }}</div>
-  <div class="url-path">{{ mock.urlPath }}</div>
+  <div class="mock-header">
+    <span class="method-chip" [ngClass]="mock.method">{{ mock.method }}</span>
+    <span class="url-path">{{ mock.urlPath }}</span>
+  </div>
+
+  <span
+    class="mock-url"
+    (click)="copyToClipboard(mock)"
+    [matTooltip]="
+      copiedMockId === mock.id ? '✔️ Skopiowano!' : 'Kliknij, aby skopiować'
+    "
+    matTooltipPosition="above"
+    matTooltipShowDelay="200"
+    matTooltipHideDelay="300"
+  >
+    <span class="url-chunk protocol">https://</span>
+    <span class="url-chunk project">{{ project?.secret }}</span>
+    <span class="url-chunk neutral">.localhost:44313</span>
+    <span class="url-chunk project">{{ project?.apiPrefix }}</span>
+    <span class="url-chunk method" [ngClass]="getMethodClass(mock.method)">
+      {{ mock.urlPath.slice(1) }}
+    </span>
+  </span>
 
   <div class="actions">
     <button mat-icon-button [matMenuTriggerFor]="menu">

@@ -10,58 +10,143 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
   }
 
-  .method-badge {
-    font-weight: bold;
-    padding: 0.25rem 0.75rem;
-    border-radius: 0.5rem;
-    font-size: 0.875rem;
-    text-transform: uppercase;
-    margin-right: 1rem;
-    color: white;
-
-    &.get {
-      background-color: #4caf50;
-    }
-
-    &.post {
-      background-color: #2196f3;
-    }
-
-    &.put {
-      background-color: #ff9800;
-    }
-
-    &.delete {
-      background-color: #f44336;
-    }
-
-    &.patch {
-      background-color: #9c27b0;
-    }
-  }
-
-  .url-path {
-    flex: 1;
-    font-weight: 500;
-  }
-
   .actions {
     display: flex;
     gap: 0.5rem;
     align-items: center;
   }
 
-  .url-path {
+  .mock-card {
+    margin-bottom: 10px;
+    padding: 12px 16px;
+  }
+
+  .mock-header {
     display: flex;
     align-items: center;
     gap: 8px;
-    word-break: break-all;
-    font-family: monospace;
-    font-size: 14px;
-    color: #333;
+
+    .method-chip {
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 12px;
+      padding: 4px 8px;
+      text-transform: uppercase;
+      color: white;
+
+      &.GET {
+        background-color: #22c55e;
+      }
+      &.POST {
+        background-color: #3b82f6;
+      }
+      &.PUT {
+        background-color: #f59e0b;
+      }
+      &.DELETE {
+        background-color: #ef4444;
+      }
+      &.PATCH {
+        background-color: #a855f7;
+      }
+    }
+
+    .url-path {
+      font-weight: 500;
+      color: #334155;
+    }
   }
 
-  .full-url {
-    flex-grow: 1;
+  .mock-url {
+    display: inline-flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: rgba(
+        59,
+        130,
+        246,
+        0.1
+      ); // delikatny niebieski efekt hover
+      border-radius: 6px;
+      padding: 2px 4px;
+    }
+  }
+
+  // Styl każdego segmentu adresu URL:
+  .url-chunk {
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+
+    &.protocol {
+      background-color: #e5e7eb;
+      color: #4b5563;
+    }
+
+    &.neutral {
+      background-color: #f3f4f6;
+      color: #4b5563;
+    }
+
+    &.project {
+      background-color: #dbeafe;
+      color: #2563eb;
+    }
+
+    &.method {
+      // dynamiczne klasy dodawane przez ngClass
+    }
+
+    &.get {
+      background-color: #dcfce7;
+      color: #16a34a;
+    }
+
+    &.post {
+      background-color: #dbeafe;
+      color: #2563eb;
+    }
+
+    &.put {
+      background-color: #fef9c3;
+      color: #ca8a04;
+    }
+
+    &.delete {
+      background-color: #fee2e2;
+      color: #dc2626;
+    }
+
+    &.patch {
+      background-color: #f3e8ff;
+      color: #9333ea;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .mock-tile {
+      flex-direction: column;
+      align-items: flex-start;
+
+      .mock-header {
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+
+      .mock-url {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .actions {
+        align-self: flex-end;
+      }
+    }
   }
 }

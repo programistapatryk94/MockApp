@@ -23,6 +23,7 @@ import { MockApiService } from '../../../services/apis/mock-api.service';
 import { finalize } from 'rxjs';
 import { SnackbarService } from '../../shared/snackbar/snackbar.service';
 import { SpinnerContentComponent } from '../../shared/spinner-content/spinner-content.component';
+import { TextFieldModule } from '@angular/cdk/text-field';
 
 type CreateOrUpdateMockFormModel = Omit<CreateMockInput, 'projectId'>;
 
@@ -44,7 +45,8 @@ export interface CreateOrUpdateMockDialogData {
     MatInputModule,
     MatSelectModule,
     MatSlideToggleModule,
-    SpinnerContentComponent
+    SpinnerContentComponent,
+    TextFieldModule
   ],
 })
 export class CreateOrUpdateMockComponent implements OnInit {

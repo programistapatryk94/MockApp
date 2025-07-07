@@ -3,7 +3,7 @@
   <form [formGroup]="form" [class.form-disabled]="form.disabled">
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Ścieżka (np. /ping)</mat-label>
-      <input matInput formControlName="urlPath" />
+      <input matInput formControlName="urlPath" autocomplete="off" />
       <mat-error
         *ngIf="
           form.controls.urlPath.getError('required') ||
@@ -41,7 +41,14 @@
 
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Response Body (JSON)</mat-label>
-      <textarea matInput formControlName="responseBody" rows="4"></textarea>
+      <textarea
+        matInput
+        formControlName="responseBody"
+        cdkTextareaAutosize
+        cdkAutosizeMinRows="4"
+        cdkAutosizeMaxRows="10"
+        placeholder="{ }"
+      ></textarea>
       <mat-error
         *ngIf="
           form.controls.responseBody.getError('required') ||
@@ -54,10 +61,17 @@
 
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Nagłówki (opcjonalnie, JSON)</mat-label>
-      <textarea matInput formControlName="headersJson" rows="3"></textarea>
+      <textarea
+        matInput
+        formControlName="headersJson"
+        cdkTextareaAutosize
+        cdkAutosizeMinRows="3"
+        cdkAutosizeMaxRows="6"
+        placeholder='{"Content-Type": "application/json"}'
+      ></textarea>
     </mat-form-field>
 
-    <mat-slide-toggle formControlName="enabled">
+    <mat-slide-toggle formControlName="enabled" color="primary">
       Endpoint aktywny
     </mat-slide-toggle>
   </form>

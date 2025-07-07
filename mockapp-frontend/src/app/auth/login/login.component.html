@@ -1,31 +1,31 @@
 <mat-card>
   <div class="container">
-    <h2>Logowanie</h2>
+    <h2>{{ "LOGOWANIE" | translate }}</h2>
     <form
       [formGroup]="form"
       (ngSubmit)="submit()"
       [class.form-disabled]="form.disabled"
     >
       <mat-form-field appearance="fill" class="full-width">
-        <mat-label>Email</mat-label>
+        <mat-label>{{ "ADRES_EMAIL" | translate }}</mat-label>
         <input matInput formControlName="email" />
       </mat-form-field>
 
       <mat-form-field appearance="fill" class="full-width">
-        <mat-label>Hasło</mat-label>
+        <mat-label>{{ "HASLO" | translate }}</mat-label>
         <input matInput type="password" formControlName="password" />
       </mat-form-field>
 
       <button mat-flat-button color="primary" type="submit" [disabled]="saving">
         <app-spinner-content [loading]="saving">
-          <span>Zaloguj się</span>
+          <span>{{ "ZALOGUJ_SIE" | translate }}</span>
         </app-spinner-content>
       </button>
     </form>
 
     <div class="register-link mat-caption">
-      <span>Nie masz konta?</span>
-      <a routerLink="/register">Zarejestruj się</a>
+      <span>{{ "NIE_MASZ_KONTA" | translate }}</span>
+      <a routerLink="/register">{{ "ZAREJESTRUJ_SIE" | translate }}</a>
     </div>
   </div>
 </mat-card>

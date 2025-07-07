@@ -1,10 +1,29 @@
 <mat-toolbar color="primary">
   <span class="logo">{{ title }}</span>
   <span class="spacer"></span>
+  <div style="margin-left: auto; display: flex; gap: 8px">
+    <button
+      mat-button
+      (click)="switchLanguage('en')"
+      [disabled]="currentLang() === 'en'"
+    >
+      🇬🇧 EN
+    </button>
+    <button
+      mat-button
+      (click)="switchLanguage('pl')"
+      [disabled]="currentLang() === 'pl'"
+    >
+      🇵🇱 PL
+    </button>
+  </div>
+
   <button mat-button routerLink="/projects" *ngIf="isLoggedIn()" type="button">
-    Projekty
+    {{ "PROJEKTY" | translate }}
   </button>
-  <button mat-button (click)="logout()" *ngIf="isLoggedIn()">Wyloguj</button>
+  <button mat-button (click)="logout()" *ngIf="isLoggedIn()">
+    {{ "WYLOGUJ" | translate }}
+  </button>
 </mat-toolbar>
 
 <div class="content-wrapper">

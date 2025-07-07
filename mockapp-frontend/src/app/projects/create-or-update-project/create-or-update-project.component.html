@@ -1,22 +1,28 @@
-<h1 mat-dialog-title>{{ data.project ? "Edytuj" : "Nowy" }} projekt</h1>
+<h1 mat-dialog-title>
+  {{
+    data.project ? ("EDYTUJ_PROJEKT" | translate) : ("NOWY_PROJEKT" | translate)
+  }}
+</h1>
 <div mat-dialog-content>
   <form [formGroup]="form" [class.form-disabled]="form.disabled">
     <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Nazwa</mat-label>
+      <mat-label>{{ "NAZWA" | translate }}</mat-label>
       <input matInput formControlName="name" />
     </mat-form-field>
 
     <mat-form-field appearance="fill" class="full-width">
-      <mat-label>ApiPrefix</mat-label>
+      <mat-label>{{ "API_PREFIX" | translate }}</mat-label>
       <input matInput formControlName="apiPrefix" />
     </mat-form-field>
   </form>
 </div>
 <div mat-dialog-actions align="end">
-  <button mat-button (click)="cancel()" [disabled]="saving">Anuluj</button>
+  <button mat-button (click)="cancel()" [disabled]="saving">
+    {{ "ANULUJ" | translate }}
+  </button>
   <button mat-flat-button color="primary" (click)="save()" [disabled]="saving">
     <app-spinner-content [loading]="saving">
-      <span>Zapisz</span>
+      <span>{{ "ZAPISZ" | translate }}</span>
     </app-spinner-content>
   </button>
 </div>

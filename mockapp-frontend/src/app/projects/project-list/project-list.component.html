@@ -1,18 +1,14 @@
 <mat-card class="header-card">
   <div class="header-content">
-    <h2><mat-icon>folder</mat-icon> Twoje Projekty</h2>
+    <h2><mat-icon>folder</mat-icon> {{ "TWOJE_PROJEKTY" | translate }}</h2>
     <button mat-flat-button color="primary" (click)="createProject()">
       <mat-icon>add</mat-icon>
-      Nowy Projekt
+      {{ "NOWY_PROJEKT" | translate }}
     </button>
   </div>
 </mat-card>
 
-<mat-card *ngIf="loading">Ładowanie...</mat-card>
-
-<mat-card *ngIf="error">
-  <mat-error>{{ error }}</mat-error>
-</mat-card>
+<mat-card *ngIf="loading">{{ "LADOWANIE_Z_KROPKAMI" | translate }}</mat-card>
 
 <div *ngFor="let project of projects" class="project-tile">
   <div class="avatar">{{ project.name[0] }}</div>
@@ -22,8 +18,12 @@
       <mat-icon>more_vert</mat-icon>
     </button>
     <mat-menu #menu="matMenu">
-      <button mat-menu-item (click)="editProject(project)">Edytuj</button>
-      <button mat-menu-item (click)="deleteProject(project)">Usuń</button>
+      <button mat-menu-item (click)="editProject(project)">
+        {{ "EDYTUJ" | translate }}
+      </button>
+      <button mat-menu-item (click)="deleteProject(project)">
+        {{ "USUN" | translate }}
+      </button>
     </mat-menu>
 
     <button mat-icon-button (click)="goToMocks(project)">
@@ -34,6 +34,6 @@
 
 <mat-card *ngIf="!loading && projects.length === 0">
   <div class="container full-width">
-    <p>Brak projektów.</p>
+    <p>{{ "BRAK_PROJEKTOW" | translate }}</p>
   </div>
 </mat-card>

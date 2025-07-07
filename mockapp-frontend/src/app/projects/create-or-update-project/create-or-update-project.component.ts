@@ -24,6 +24,7 @@ import { ProjectApiService } from '../../../services/apis/project-api.service';
 import { finalize } from 'rxjs';
 import { SnackbarService } from '../../shared/snackbar/snackbar.service';
 import { SpinnerContentComponent } from '../../shared/spinner-content/spinner-content.component';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 type CreateOrUpdateProjectFormModel = {
   name: string;
@@ -46,6 +47,7 @@ export interface CreateOrUpdateProjectDialogData {
     ReactiveFormsModule,
     MatInputModule,
     SpinnerContentComponent,
+    TranslateModule,
   ],
 })
 export class CreateOrUpdateProjectComponent implements OnInit {
@@ -71,6 +73,7 @@ export class CreateOrUpdateProjectComponent implements OnInit {
     public dialogRef: MatDialogRef<CreateOrUpdateProjectComponent>,
     private projectApiService: ProjectApiService,
     private snackbarService: SnackbarService,
+    private translate: TranslateService,
     @Inject(MAT_DIALOG_DATA) public data: CreateOrUpdateProjectDialogData
   ) {}
 
@@ -110,7 +113,7 @@ export class CreateOrUpdateProjectComponent implements OnInit {
       next: (result) => this.dialogRef.close(result),
       error: () =>
         this.snackbarService.show({
-          message: 'Wystąpił błąd przy zapisie',
+          message: this.translate.instant('WYSTPI_BD_PRZY_ZAPISIE'),
           type: 'error',
         }),
     });

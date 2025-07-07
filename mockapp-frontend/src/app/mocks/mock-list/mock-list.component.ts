@@ -23,6 +23,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { finalize } from 'rxjs';
 import { SnackbarService } from '../../shared/snackbar/snackbar.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-mock-list',
@@ -40,12 +41,12 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatIconModule,
     MatMenuModule,
     MatTooltipModule,
+    TranslateModule,
   ],
 })
 export class MockListComponent implements OnInit {
   mocks: Mock[] = [];
   loading: boolean = true;
-  error: string = '';
   columns: string[] = [
     'method',
     'urlPath',
@@ -78,7 +79,8 @@ export class MockListComponent implements OnInit {
     private projectService: ProjectService,
     private destroyRef: DestroyRef,
     private dialog: MatDialog,
-    private snackbarService: SnackbarService
+    private snackbarService: SnackbarService,
+    private translate: TranslateService
   ) {}
 
   createMock() {
@@ -104,7 +106,9 @@ export class MockListComponent implements OnInit {
         next: (mocks) => (this.mocks = mocks),
         error: (err) =>
           this.snackbarService.show({
-            message: 'Wystąpił błąd podczas pobierania mocków',
+            message: this.translate.instant(
+              'WYSTPI_BD_PODCZAS_POBIERANIA_MOCKW'
+            ),
             type: 'error',
           }),
       });

@@ -1,8 +1,10 @@
-<h1 mat-dialog-title>{{ data.mock ? "Edytuj" : "Nowy" }} mock</h1>
+<h1 mat-dialog-title>
+  {{ data.mock ? ("EDYTUJ_MOCK" | translate) : ("NOWY_MOCK" | translate) }}
+</h1>
 <div mat-dialog-content>
   <form [formGroup]="form" [class.form-disabled]="form.disabled">
     <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Ścieżka (np. /ping)</mat-label>
+      <mat-label>{{ "MOCK_SCIEZKA" | translate }}</mat-label>
       <input matInput formControlName="urlPath" autocomplete="off" />
       <mat-error
         *ngIf="
@@ -10,12 +12,12 @@
           form.controls.urlPath.getError('whitespace')
         "
       >
-        Pole jest wymagane
+        {{ "POLE_JEST_WYMAGANE" | translate }}
       </mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Kod odpowiedzi (HTTP)</mat-label>
+      <mat-label>{{ "MOCK_KOD_ODPOWIEDZI" | translate }}</mat-label>
       <input
         matInput
         type="number"
@@ -23,13 +25,11 @@
         min="100"
         max="599"
       />
-      <mat-hint
-        >Najczęściej: 200 (OK), 404 (Not Found), 500 (Błąd serwera)</mat-hint
-      >
+      <mat-hint>{{ "MOCK_KOD_ODPOWIEDZI_WSKAZOWKA" | translate }}</mat-hint>
     </mat-form-field>
 
     <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Metoda</mat-label>
+      <mat-label>{{ "MOCK_METODA" | translate }}</mat-label>
       <mat-select formControlName="method">
         <mat-option value="GET">GET</mat-option>
         <mat-option value="POST">POST</mat-option>
@@ -40,7 +40,7 @@
     </mat-form-field>
 
     <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Response Body (JSON)</mat-label>
+      <mat-label>{{ "MOCK_ODPOWIEDZ" | translate }}</mat-label>
       <textarea
         matInput
         formControlName="responseBody"
@@ -55,12 +55,12 @@
           form.controls.responseBody.getError('whitespace')
         "
       >
-        Pole jest wymagane
+        {{ "POLE_JEST_WYMAGANE" | translate }}
       </mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Nagłówki (opcjonalnie, JSON)</mat-label>
+      <mat-label>{{ "MOCK_NAGLOWKI_ODPOWIEDZI" | translate }}</mat-label>
       <textarea
         matInput
         formControlName="headersJson"
@@ -72,15 +72,17 @@
     </mat-form-field>
 
     <mat-slide-toggle formControlName="enabled" color="primary">
-      Endpoint aktywny
+      {{ "MOCK_AKTYWNY" | translate }}
     </mat-slide-toggle>
   </form>
 </div>
 <div mat-dialog-actions align="end">
-  <button mat-button (click)="cancel()" [disabled]="saving">Anuluj</button>
+  <button mat-button (click)="cancel()" [disabled]="saving">
+    {{ "ANULUJ" | translate }}
+  </button>
   <button mat-flat-button color="primary" (click)="save()" [disabled]="saving">
     <app-spinner-content [loading]="saving">
-      <span>Zapisz</span>
+      <span>{{ "ZAPISZ" | translate }}</span>
     </app-spinner-content>
   </button>
 </div>

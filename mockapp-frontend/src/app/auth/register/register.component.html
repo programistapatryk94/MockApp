@@ -1,6 +1,6 @@
 <mat-card>
   <div class="container">
-    <h2>Rejestracja</h2>
+    <h2>{{ "REJESTRACJA" | translate }}</h2>
 
     <form
       [formGroup]="form"
@@ -8,25 +8,25 @@
       [class.form-disabled]="form.disabled"
     >
       <mat-form-field appearance="fill" class="full-width">
-        <mat-label>Email</mat-label>
+        <mat-label>{{ "ADRES_EMAIL" | translate }}</mat-label>
         <input matInput formControlName="email" />
       </mat-form-field>
 
       <mat-form-field appearance="fill" class="full-width">
-        <mat-label>Hasło</mat-label>
+        <mat-label>{{ "HASLO" | translate }}</mat-label>
         <input matInput type="password" formControlName="password" />
       </mat-form-field>
 
       <button mat-flat-button color="primary" type="submit" [disabled]="saving">
         <app-spinner-content [loading]="saving">
-          <span>Zarejestruj się</span>
+          <span>{{ "ZAREJESTRUJ_SIE" | translate }}</span>
         </app-spinner-content>
       </button>
     </form>
 
     <div class="login-link mat-caption">
-      <span>Masz już konto?</span>
-      <a routerLink="/login">Zaloguj się</a>
+      <span>{{ "MASZ_JUZ_KONTO" | translate }}</span>
+      <a routerLink="/login">{{ "ZALOGUJ_SIE" | translate }}</a>
     </div>
   </div>
 </mat-card>

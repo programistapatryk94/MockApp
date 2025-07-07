@@ -17,6 +17,7 @@ import { MatInputModule } from '@angular/material/input';
 import { SnackbarService } from '../../shared/snackbar/snackbar.service';
 import { RouterModule } from '@angular/router';
 import { SpinnerContentComponent } from '../../shared/spinner-content/spinner-content.component';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 type RegisterFormModel = CreateUserInput;
 
@@ -32,6 +33,7 @@ type RegisterFormModel = CreateUserInput;
     MatButtonModule,
     RouterModule,
     SpinnerContentComponent,
+    TranslateModule,
   ],
   styleUrls: ['./register.component.scss'],
 })
@@ -56,7 +58,8 @@ export class RegisterComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
-    private snackbarService: SnackbarService
+    private snackbarService: SnackbarService,
+    private translate: TranslateService
   ) {}
 
   submit() {
@@ -79,7 +82,9 @@ export class RegisterComponent implements OnInit {
       .subscribe({
         error: (err) =>
           this.snackbarService.show({
-            message: err.error ?? 'Wystąpił błąd podczas rejestracji',
+            message:
+              err.error ??
+              this.translate.instant('WYSTAPIL_BLAD_PRZY_REJESTRACJI'),
             type: 'error',
           }),
       });

@@ -16,6 +16,7 @@ import { SnackbarService } from '../../shared/snackbar/snackbar.service';
 import { finalize } from 'rxjs';
 import { RouterModule } from '@angular/router';
 import { SpinnerContentComponent } from '../../shared/spinner-content/spinner-content.component';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 type LoginFormModel = {
   email: string;
@@ -34,6 +35,7 @@ type LoginFormModel = {
     MatButtonModule,
     RouterModule,
     SpinnerContentComponent,
+    TranslateModule,
   ],
   styleUrls: ['./login.component.scss'],
 })
@@ -58,7 +60,8 @@ export class LoginComponent {
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
-    private snackbarService: SnackbarService
+    private snackbarService: SnackbarService,
+    private translate: TranslateService
   ) {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -85,7 +88,9 @@ export class LoginComponent {
       .subscribe({
         error: (err) => {
           this.snackbarService.show({
-            message: err.error ?? 'Nieprawidłowe dane logowania',
+            message:
+              err.error ??
+              this.translate.instant('NIEPRAWIDOWE_DANE_LOGOWANIA'),
             type: 'error',
           });
         },

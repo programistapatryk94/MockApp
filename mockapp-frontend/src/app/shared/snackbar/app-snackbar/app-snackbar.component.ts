@@ -5,6 +5,7 @@ import {
   MAT_SNACK_BAR_DATA,
   MatSnackBarRef,
 } from '@angular/material/snack-bar';
+import { TranslateModule } from '@ngx-translate/core';
 
 export type SnackbarType = 'success' | 'error' | 'warning';
 
@@ -21,11 +22,11 @@ export interface SnackbarOptions {
       <mat-icon>{{ icon }}</mat-icon>
       <span class="text">{{ data.message }}</span>
       <button mat-button class="snackbar-close" (click)="close()">
-        Zamknij
+        {{ 'ZAMKNIJ' | translate }}
       </button>
     </div>
   `,
-  imports: [MatIconModule, MatButtonModule],
+  imports: [MatIconModule, MatButtonModule, TranslateModule],
   styleUrls: ['./app-snackbar.component.scss'],
 })
 export class AppSnackbarComponent {
@@ -36,7 +37,6 @@ export class AppSnackbarComponent {
     public data: { message: string; type: SnackbarType },
     private snackBarRef: MatSnackBarRef<AppSnackbarComponent>
   ) {
-    // Wybór ikony na podstawie typu
     this.icon = this.getIcon(data.type);
   }
 

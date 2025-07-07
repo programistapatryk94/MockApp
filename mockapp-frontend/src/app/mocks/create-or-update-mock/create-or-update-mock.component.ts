@@ -24,6 +24,7 @@ import { finalize } from 'rxjs';
 import { SnackbarService } from '../../shared/snackbar/snackbar.service';
 import { SpinnerContentComponent } from '../../shared/spinner-content/spinner-content.component';
 import { TextFieldModule } from '@angular/cdk/text-field';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 type CreateOrUpdateMockFormModel = Omit<CreateMockInput, 'projectId'>;
 
@@ -46,7 +47,8 @@ export interface CreateOrUpdateMockDialogData {
     MatSelectModule,
     MatSlideToggleModule,
     SpinnerContentComponent,
-    TextFieldModule
+    TextFieldModule,
+    TranslateModule,
   ],
 })
 export class CreateOrUpdateMockComponent implements OnInit {
@@ -72,6 +74,7 @@ export class CreateOrUpdateMockComponent implements OnInit {
     public dialogRef: MatDialogRef<CreateOrUpdateMockComponent>,
     private mockApiService: MockApiService,
     private snackbarService: SnackbarService,
+    private translate: TranslateService,
     @Inject(MAT_DIALOG_DATA) public data: CreateOrUpdateMockDialogData
   ) {}
 
@@ -111,7 +114,7 @@ export class CreateOrUpdateMockComponent implements OnInit {
       next: (result) => this.dialogRef.close(result),
       error: () =>
         this.snackbarService.show({
-          message: 'Wystąpił błąd przy zapisie',
+          message: this.translate.instant('WYSTPI_BD_PRZY_ZAPISIE'),
           type: 'error',
         }),
     });

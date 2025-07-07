@@ -19,6 +19,7 @@ import {
 } from '../create-or-update-project/create-or-update-project.component';
 import { finalize } from 'rxjs';
 import { SnackbarService } from '../../shared/snackbar/snackbar.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-project-list',
@@ -35,12 +36,12 @@ import { SnackbarService } from '../../shared/snackbar/snackbar.service';
     MatTableModule,
     MatIconModule,
     MatMenuModule,
+    TranslateModule,
   ],
 })
 export class ProjectListComponent implements OnInit {
   projects: Project[] = [];
   loading: boolean = true;
-  error: string = '';
   columns: string[] = ['name', 'secret', 'createdAt', 'actions'];
 
   constructor(
@@ -48,7 +49,8 @@ export class ProjectListComponent implements OnInit {
     private projectService: ProjectService,
     private router: Router,
     private dialog: MatDialog,
-    private snackbarService: SnackbarService
+    private snackbarService: SnackbarService,
+    private translate: TranslateService
   ) {}
 
   private refreshProjects() {
@@ -60,7 +62,9 @@ export class ProjectListComponent implements OnInit {
         next: (projects) => (this.projects = projects),
         error: (err) =>
           this.snackbarService.show({
-            message: 'Wystąpił błąd podczas pobierania projektów',
+            message: this.translate.instant(
+              'WYSTPI_BD_PODCZAS_POBIERANIA_PROJEKTW'
+            ),
             type: 'error',
           }),
       });

@@ -1,6 +1,6 @@
 <h1 mat-dialog-title>{{ data.mock ? "Edytuj" : "Nowy" }} mock</h1>
 <div mat-dialog-content>
-  <form [formGroup]="form">
+  <form [formGroup]="form" [class.form-disabled]="form.disabled">
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Ścieżka (np. /ping)</mat-label>
       <input matInput formControlName="urlPath" />
@@ -65,6 +65,8 @@
 <div mat-dialog-actions align="end">
   <button mat-button (click)="cancel()" [disabled]="saving">Anuluj</button>
   <button mat-flat-button color="primary" (click)="save()" [disabled]="saving">
-    Zapisz
+    <app-spinner-content [loading]="saving">
+      <span>Zapisz</span>
+    </app-spinner-content>
   </button>
 </div>

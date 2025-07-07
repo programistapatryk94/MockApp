@@ -22,6 +22,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MockApiService } from '../../../services/apis/mock-api.service';
 import { finalize } from 'rxjs';
 import { SnackbarService } from '../../shared/snackbar/snackbar.service';
+import { SpinnerContentComponent } from '../../shared/spinner-content/spinner-content.component';
 
 type CreateOrUpdateMockFormModel = Omit<CreateMockInput, 'projectId'>;
 
@@ -43,11 +44,26 @@ export interface CreateOrUpdateMockDialogData {
     MatInputModule,
     MatSelectModule,
     MatSlideToggleModule,
+    SpinnerContentComponent
   ],
 })
 export class CreateOrUpdateMockComponent implements OnInit {
   form!: FormGroup<TypedFormControls<CreateOrUpdateMockFormModel>>;
-  saving: boolean = false;
+  private _saving = false;
+
+  get saving(): boolean {
+    return this._saving;
+  }
+
+  set saving(value: boolean) {
+    this._saving = value;
+
+    if (value) {
+      this.form.disable();
+    } else {
+      this.form.enable();
+    }
+  }
 
   constructor(
     private fb: FormBuilder,
@@ -70,6 +86,10 @@ export class CreateOrUpdateMockComponent implements OnInit {
   }
 
   save() {
+    if (this.saving) {
+      return;
+    }
+
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;

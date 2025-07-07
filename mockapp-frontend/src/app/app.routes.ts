@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { authGuard } from '../helpers/auth.guard';
 
 export const routes: Routes = [
   {
@@ -15,6 +16,7 @@ export const routes: Routes = [
   },
   {
     path: 'projects',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./projects/project-list/project-list.component').then(
         (m) => m.ProjectListComponent
@@ -22,10 +24,16 @@ export const routes: Routes = [
   },
   {
     path: 'projects/:id/mocks',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./mocks/mock-list/mock-list.component').then(
         (m) => m.MockListComponent
       ),
+  },
+  {
+    path: '',
+    pathMatch: 'full',
+    redirectTo: 'projects',
   },
   {
     path: '**',

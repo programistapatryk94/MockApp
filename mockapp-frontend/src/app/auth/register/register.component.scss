@@ -18,4 +18,11 @@
       }
     }
   }
+
+  .spinner-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 36px; // dopasuj do wysokości przycisku
+}
 }

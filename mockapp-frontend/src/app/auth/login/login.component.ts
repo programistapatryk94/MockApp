@@ -15,6 +15,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { SnackbarService } from '../../shared/snackbar/snackbar.service';
 import { finalize } from 'rxjs';
 import { RouterModule } from '@angular/router';
+import { SpinnerContentComponent } from '../../shared/spinner-content/spinner-content.component';
 
 type LoginFormModel = {
   email: string;
@@ -31,13 +32,28 @@ type LoginFormModel = {
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    RouterModule
+    RouterModule,
+    SpinnerContentComponent,
   ],
-  styleUrls: ['./login.component.scss']
+  styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent {
   form: FormGroup<TypedFormControls<LoginFormModel>>;
-  saving: boolean = false;
+  private _saving = false;
+
+  get saving(): boolean {
+    return this._saving;
+  }
+
+  set saving(value: boolean) {
+    this._saving = value;
+
+    if (value) {
+      this.form.disable();
+    } else {
+      this.form.enable();
+    }
+  }
 
   constructor(
     private fb: FormBuilder,
@@ -51,7 +67,11 @@ export class LoginComponent {
   }
 
   submit() {
-    if (this.form.invalid || this.saving) {
+    if (this.saving) {
+      return;
+    }
+
+    if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }

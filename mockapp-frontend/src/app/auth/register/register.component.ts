@@ -16,6 +16,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { SnackbarService } from '../../shared/snackbar/snackbar.service';
 import { RouterModule } from '@angular/router';
+import { SpinnerContentComponent } from '../../shared/spinner-content/spinner-content.component';
 
 type RegisterFormModel = CreateUserInput;
 
@@ -29,13 +30,28 @@ type RegisterFormModel = CreateUserInput;
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    RouterModule
+    RouterModule,
+    SpinnerContentComponent,
   ],
   styleUrls: ['./register.component.scss'],
 })
 export class RegisterComponent implements OnInit {
   form!: FormGroup<TypedFormControls<RegisterFormModel>>;
-  saving: boolean = false;
+  private _saving = false;
+
+  get saving(): boolean {
+    return this._saving;
+  }
+
+  set saving(value: boolean) {
+    this._saving = value;
+
+    if (value) {
+      this.form.disable();
+    } else {
+      this.form.enable();
+    }
+  }
 
   constructor(
     private fb: FormBuilder,
@@ -44,7 +60,11 @@ export class RegisterComponent implements OnInit {
   ) {}
 
   submit() {
-    if (this.form.invalid || this.saving) {
+    if (this.saving) {
+      return;
+    }
+
+    if (this.form.invalid) {
       this.form.markAsTouched();
       return;
     }

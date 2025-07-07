@@ -1,56 +1,79 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, tap } from 'rxjs';
-import { jwtDecode } from 'jwt-decode';
-import { CreateUserInput } from './auth.model';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { jwtDecode, JwtPayload } from 'jwt-decode';
+import { AuthResponse, CreateUserInput } from './auth.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private apiUrl = `https://localhost:44313/api/auth`;
+  private tokenSubject = new BehaviorSubject<string | null>(null);
+  public token$ = this.tokenSubject.asObservable();
 
-  constructor(private _http: HttpClient, private _router: Router) {}
-
-  register(input: CreateUserInput): Observable<{ token: string }> {
-    return this._http
-      .post<{ token: string }>(`${this.apiUrl}/register`, input)
-      .pipe(
-        tap((res) => {
-          localStorage.setItem('token', res.token);
-          this._router.navigate(['/mocks']);
-        })
-      );
+  constructor(private http: HttpClient, private router: Router) {
+    const token = localStorage.getItem('token');
+    this.tokenSubject.next(token);
   }
 
-  login(email: string, password: string): Observable<{ token: string }> {
-    return this._http
+  register(input: CreateUserInput): Observable<AuthResponse> {
+    return this.http
+      .post<{ token: string }>(`${this.apiUrl}/register`, input)
+      .pipe(tap((res) => this.handleAuthSuccess(res.token)));
+  }
+
+  login(email: string, password: string): Observable<AuthResponse> {
+    return this.http
       .post<{ token: string }>(`${this.apiUrl}/login`, {
         email,
         password,
       })
-      .pipe(
-        tap((res) => {
-          localStorage.setItem('token', res.token);
-          this._router.navigate(['/mocks']);
-        })
-      );
+      .pipe(tap((res) => this.handleAuthSuccess(res.token)));
+  }
+
+  getToken(): string | null {
+    return this.tokenSubject.value;
   }
 
   logout() {
     localStorage.removeItem('token');
-    this._router.navigate(['/login']);
+    this.tokenSubject.next(null);
+    this.router.navigate(['/login']);
   }
 
   isLoggedIn(): boolean {
-    return !!localStorage.getItem('token');
+    const token = this.getToken();
+    return !!token && !this.isTokenExpired();
+  }
+
+  isTokenExpired(): boolean {
+    const token = this.getToken();
+    if (!token) return true;
+
+    const decoded = jwtDecode<{ exp: number }>(token);
+    const now = Date.now() / 1000;
+
+    return decoded.exp < now;
   }
 
   getUserId(): string | null {
-    const token = localStorage.getItem('token');
+    const token = this.getToken();
     if (!token) return null;
-    const decoded = jwtDecode(token);
-    return decoded?.sub || null;
+
+    try {
+      const decoded = jwtDecode<JwtPayload>(token);
+      return decoded?.sub || null;
+    } catch (error) {
+      console.warn('Nieprawidłowy token:', error);
+      return null;
+    }
+  }
+
+  private handleAuthSuccess(token: string): void {
+    localStorage.setItem('token', token);
+    this.tokenSubject.next(token);
+    this.router.navigate(['/mocks']);
   }
 }

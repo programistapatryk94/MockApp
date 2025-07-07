@@ -95,6 +95,16 @@ mat-card {
   --mdc-snackbar-action-color: white;
 }
 
+.form-disabled {
+  pointer-events: none;
+
+  input,
+  button,
+  mat-form-field {
+    opacity: 0.5;
+  }
+}
+
 @media (max-width: 600px) {
   .container {
     padding: 1rem;

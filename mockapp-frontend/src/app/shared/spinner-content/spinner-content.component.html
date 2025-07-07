@@ -1,0 +1,13 @@
+<ng-container *ngIf="loading; else content">
+  <mat-progress-spinner
+    diameter="20"
+    mode="indeterminate"
+    color="accent"
+    class="spinner"
+  >
+  </mat-progress-spinner>
+</ng-container>
+
+<ng-template #content>
+  <ng-content></ng-content>
+</ng-template>

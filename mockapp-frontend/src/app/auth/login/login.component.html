@@ -1,7 +1,11 @@
 <mat-card>
   <div class="container">
     <h2>Logowanie</h2>
-    <form [formGroup]="form" (ngSubmit)="submit()">
+    <form
+      [formGroup]="form"
+      (ngSubmit)="submit()"
+      [class.form-disabled]="form.disabled"
+    >
       <mat-form-field appearance="fill" class="full-width">
         <mat-label>Email</mat-label>
         <input matInput formControlName="email" />
@@ -13,7 +17,9 @@
       </mat-form-field>
 
       <button mat-flat-button color="primary" type="submit" [disabled]="saving">
-        Zaloguj
+        <app-spinner-content [loading]="saving">
+          <span>Zaloguj się</span>
+        </app-spinner-content>
       </button>
     </form>
 

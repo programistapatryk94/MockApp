@@ -41,5 +41,8 @@
   "MOCK_AKTYWNY": "Active",
   "ZAMKNIJ": "Close",
   "PROJECT_SECRET": "Secret",
-  "MAX_X_ZNAKOW": "Maximum {{x}} characters"
+  "MAX_X_ZNAKOW": "Maximum {{x}} characters",
+  "POTWIERDZENIE_USUNIECIA": "Delete confirmation",
+  "CZY_NA_PEWNO_USUNAC_MOCK": "Are you sure you want to delete the mock <strong>{{method}}</strong> <code>{{url}}</code> from project <strong>{{project}}</strong>?",
+  "CZY_NA_PEWNO_USUNAC_PROJEKT": "Are you sure you want to delete the project <strong>{{project}}</strong>? All associated mocks will also be removed."
 }

@@ -20,6 +20,10 @@ import {
 import { finalize } from 'rxjs';
 import { SnackbarService } from '../../shared/snackbar/snackbar.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from '../../shared/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-project-list',
@@ -88,14 +92,29 @@ export class ProjectListComponent implements OnInit {
   }
 
   deleteProject(project: Project) {
-    this.projectApiService.delete(project.id).subscribe({
-      next: () => {
-        this.refreshProjects();
-      },
-      error: (err) => {
-        //TODO: dodaj obsługę błędu
-      },
-    });
+    this.dialog
+      .open<ConfirmDialogComponent, ConfirmDialogData, boolean>(
+        ConfirmDialogComponent,
+        {
+          data: {
+            title: 'POTWIERDZENIE_USUNIECIA',
+            message: 'CZY_NA_PEWNO_USUNAC_PROJEKT',
+            params: {
+              project: project.name,
+            },
+            confirmText: 'USUN',
+            cancelText: 'ANULUJ',
+          },
+        }
+      )
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (confirmed) {
+          this.projectApiService.delete(project.id).subscribe(() => {
+            this.refreshProjects();
+          });
+        }
+      });
   }
 
   private openCreateOrUpdateDialog(project?: Project) {

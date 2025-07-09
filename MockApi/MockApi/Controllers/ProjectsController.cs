@@ -88,7 +88,7 @@ namespace MockApi.Controllers
         {
             var isOwner = await _context.Projects.AnyAsync(p => p.Id == id && p.UserId == _appSession.UserId);
 
-            if(!isOwner)
+            if (!isOwner)
             {
                 return NotFound();
             }
@@ -96,10 +96,23 @@ namespace MockApi.Controllers
             var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id);
             if (null == project) return NotFound();
 
-            _context.Projects.Remove(project);
-            await _context.SaveChangesAsync();
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                var mocks = _context.Mocks.Where(m => m.ProjectId == id);
+                _context.Mocks.RemoveRange(mocks);
 
-            return NoContent();
+                _context.Projects.Remove(project);
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+                return NoContent();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                return StatusCode(500, "Internal server error");
+            }
         }
     }
 }

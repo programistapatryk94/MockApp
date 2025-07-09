@@ -41,5 +41,8 @@
   "MOCK_AKTYWNY": "Aktywny",
   "ZAMKNIJ": "Zamknij",
   "PROJECT_SECRET": "Sekret",
-  "MAX_X_ZNAKOW": "Maksymalnie {{x}} znaków"
+  "MAX_X_ZNAKOW": "Maksymalnie {{x}} znaków",
+  "POTWIERDZENIE_USUNIECIA": "Potwierdzenie usunięcia",
+  "CZY_NA_PEWNO_USUNAC_MOCK": "Czy na pewno chcesz usunąć mock <strong>{{method}}</strong> <code>{{url}}</code> z projektu <strong>{{project}}</strong>?",
+  "CZY_NA_PEWNO_USUNAC_PROJEKT": "Czy na pewno chcesz usunąć projekt <strong>{{project}}</strong>? Usunięte zostaną również wszystkie powiązane mocki."
 }

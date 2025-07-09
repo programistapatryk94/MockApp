@@ -24,4 +24,8 @@ export class MockApiService {
   update(mockId: string, mock: CreateMockInput): Observable<Mock> {
     return this.http.put<Mock>(`${this.apiUrl}/${mockId}`, mock);
   }
+
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
 }

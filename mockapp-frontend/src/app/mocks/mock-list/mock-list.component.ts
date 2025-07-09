@@ -24,6 +24,10 @@ import { finalize } from 'rxjs';
 import { SnackbarService } from '../../shared/snackbar/snackbar.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from '../../shared/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-mock-list',
@@ -91,7 +95,33 @@ export class MockListComponent implements OnInit {
     this.openCreateOrUpdateDialog(mock);
   }
 
-  deleteMock(mock: Mock) {}
+  deleteMock(mock: Mock) {
+    this.dialog
+      .open<ConfirmDialogComponent, ConfirmDialogData, boolean>(
+        ConfirmDialogComponent,
+        {
+          data: {
+            title: 'POTWIERDZENIE_USUNIECIA',
+            message: 'CZY_NA_PEWNO_USUNAC_MOCK',
+            params: {
+              method: mock.method,
+              url: mock.urlPath,
+              project: this.project!.name,
+            },
+            confirmText: 'USUN',
+            cancelText: 'ANULUJ',
+          },
+        }
+      )
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (confirmed) {
+          this.mockApiService.delete(mock.id).subscribe(() => {
+            this.refreshMocks();
+          });
+        }
+      });
+  }
 
   private refreshMocks() {
     if (null == this.project) {

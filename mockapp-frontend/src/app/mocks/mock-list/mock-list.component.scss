@@ -8,6 +8,18 @@
     padding: 1rem 1.5rem;
     margin: 1rem 0;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+
+    &.disabled {
+      opacity: 0.5;
+      filter: grayscale(50%);
+    }
+
+    /* Wyjątek dla akcji (trzy kropki po prawej) */
+    &.disabled .actions {
+      opacity: 1;
+      filter: none;
+      pointer-events: auto;
+    }
   }
 
   .actions {

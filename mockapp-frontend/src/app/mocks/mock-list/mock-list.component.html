@@ -25,7 +25,11 @@
 
 <mat-card *ngIf="loading">{{ "LADOWANIE_Z_KROPKAMI" | translate }}</mat-card>
 
-<div *ngFor="let mock of mocks" class="mock-tile">
+<div
+  *ngFor="let mock of mocks"
+  class="mock-tile"
+  [class.disabled]="!mock.enabled"
+>
   <div class="mock-header">
     <span class="method-chip" [ngClass]="mock.method">{{ mock.method }}</span>
     <span class="url-path">{{ mock.urlPath }}</span>

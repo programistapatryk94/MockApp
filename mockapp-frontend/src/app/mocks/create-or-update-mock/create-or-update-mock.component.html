@@ -5,7 +5,15 @@
   <form [formGroup]="form" [class.form-disabled]="form.disabled">
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>{{ "MOCK_SCIEZKA" | translate }}</mat-label>
-      <input matInput formControlName="urlPath" autocomplete="off" />
+      <input
+        matInput
+        formControlName="urlPath"
+        maxlength="200"
+        autocomplete="off"
+      />
+      <mat-hint align="end"
+        >{{ form.controls.urlPath.value.length || 0 }}/200</mat-hint
+      >
       <mat-error
         *ngIf="
           form.controls.urlPath.getError('required') ||
@@ -13,6 +21,9 @@
         "
       >
         {{ "POLE_JEST_WYMAGANE" | translate }}
+      </mat-error>
+      <mat-error *ngIf="form.controls.urlPath.getError('maxlength')">
+        {{ "MAX_X_ZNAKOW" | translate : { x: 200 } }}
       </mat-error>
     </mat-form-field>
 
@@ -48,6 +59,7 @@
         cdkAutosizeMinRows="4"
         cdkAutosizeMaxRows="10"
         placeholder="{ }"
+        autocomplete="off"
       ></textarea>
       <mat-error
         *ngIf="
@@ -63,12 +75,20 @@
       <mat-label>{{ "MOCK_NAGLOWKI_ODPOWIEDZI" | translate }}</mat-label>
       <textarea
         matInput
+        autocomplete="off"
         formControlName="headersJson"
         cdkTextareaAutosize
         cdkAutosizeMinRows="3"
         cdkAutosizeMaxRows="6"
         placeholder='{"Content-Type": "application/json"}'
+        maxlength="1000"
       ></textarea>
+      <mat-hint align="end"
+        >{{ form.controls.headersJson?.value?.length || 0 }}/1000</mat-hint
+      >
+      <mat-error *ngIf="form.controls.headersJson?.getError('maxlength')">
+        {{ "MAX_X_ZNAKOW" | translate : { x: 1000 } }}
+      </mat-error>
     </mat-form-field>
 
     <mat-slide-toggle formControlName="enabled" color="primary">

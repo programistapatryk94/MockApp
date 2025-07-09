@@ -128,9 +128,9 @@ export class CreateOrUpdateMockComponent implements OnInit {
     this.form = this.fb.group({
       urlPath: [
         this.mock.urlPath ?? '',
-        [Validators.required, noWhitespaceValidator()],
+        [Validators.required, noWhitespaceValidator(), Validators.maxLength(200)],
       ],
-      method: [this.mock.method ?? 'GET', Validators.required],
+      method: [this.mock.method ?? 'GET', [Validators.required, Validators.maxLength(10)]],
       statusCode: [
         this.mock.statusCode ?? 200,
         [Validators.required, Validators.min(100), Validators.max(599)],
@@ -139,7 +139,7 @@ export class CreateOrUpdateMockComponent implements OnInit {
         this.mock.responseBody ?? '{}',
         [Validators.required, noWhitespaceValidator()],
       ],
-      headersJson: [this.mock.headersJson ?? ''],
+      headersJson: [this.mock.headersJson ?? '', Validators.maxLength(1000)],
       enabled: [this.mock.enabled ?? true, Validators.required],
     }) as FormGroup<TypedFormControls<CreateOrUpdateMockFormModel>>;
   }

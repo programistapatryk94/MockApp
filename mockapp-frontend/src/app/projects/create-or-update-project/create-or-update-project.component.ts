@@ -135,9 +135,9 @@ export class CreateOrUpdateProjectComponent implements OnInit {
     this.form = this.fb.group({
       name: [
         this.project.name ?? '',
-        [Validators.required, noWhitespaceValidator()],
+        [Validators.required, noWhitespaceValidator(), Validators.maxLength(100)],
       ],
-      apiPrefix: [this.project.apiPrefix ?? ''],
+      apiPrefix: [this.project.apiPrefix ?? '', Validators.maxLength(50)],
     }) as FormGroup<TypedFormControls<CreateOrUpdateProjectFormModel>>;
   }
 }

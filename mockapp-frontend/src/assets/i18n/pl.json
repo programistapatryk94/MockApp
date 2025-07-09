@@ -40,5 +40,6 @@
   "MOCK_NAGLOWKI_ODPOWIEDZI": "Nagłówki (opcjonalnie, JSON)",
   "MOCK_AKTYWNY": "Aktywny",
   "ZAMKNIJ": "Zamknij",
-  "PROJECT_SECRET": "Sekret"
+  "PROJECT_SECRET": "Sekret",
+  "MAX_X_ZNAKOW": "Maksymalnie {{x}} znaków"
 }

@@ -7,12 +7,42 @@
   <form [formGroup]="form" [class.form-disabled]="form.disabled">
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>{{ "NAZWA" | translate }}</mat-label>
-      <input matInput formControlName="name" />
+      <input
+        matInput
+        formControlName="name"
+        maxlength="100"
+        autocomplete="off"
+      />
+      <mat-hint align="end"
+        >{{ form.controls.name.value.length || 0 }}/100</mat-hint
+      >
+      <mat-error
+        *ngIf="
+          form.controls.name.getError('required') ||
+          form.controls.name.getError('whitespace')
+        "
+      >
+        {{ "POLE_JEST_WYMAGANE" | translate }}
+      </mat-error>
+      <mat-error *ngIf="form.controls.name.getError('maxlength')">
+        {{ "MAX_X_ZNAKOW" | translate : { x: 100 } }}
+      </mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>{{ "API_PREFIX" | translate }}</mat-label>
-      <input matInput formControlName="apiPrefix" />
+      <input
+        matInput
+        formControlName="apiPrefix"
+        maxlength="50"
+        autocomplete="off"
+      />
+      <mat-hint align="end"
+        >{{ form.controls.apiPrefix.value.length || 0 }}/50</mat-hint
+      >
+      <mat-error *ngIf="form.controls.apiPrefix.getError('maxlength')">
+        {{ "MAX_X_ZNAKOW" | translate : { x: 50 } }}
+      </mat-error>
     </mat-form-field>
   </form>
 </div>

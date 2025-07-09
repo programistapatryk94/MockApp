@@ -40,5 +40,6 @@
   "MOCK_NAGLOWKI_ODPOWIEDZI": "Headers (optional, JSON)",
   "MOCK_AKTYWNY": "Active",
   "ZAMKNIJ": "Close",
-  "PROJECT_SECRET": "Secret"
+  "PROJECT_SECRET": "Secret",
+  "MAX_X_ZNAKOW": "Maximum {{x}} characters"
 }

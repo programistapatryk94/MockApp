@@ -1,4 +1,5 @@
 import {
+  APP_INITIALIZER,
   ApplicationConfig,
   importProvidersFrom,
   provideZoneChangeDetection,
@@ -16,29 +17,24 @@ import { MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
 import { HttpClient } from '@angular/common/http';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { AppInitializer } from '../helpers/app.initializer';
+import { AppSessionService } from './shared/session/app-session.service';
+import { ServiceApiModule } from '../services/apis/service-api.module';
 
 export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
 
+export function appInitializerFactory(
+  appInit: AppInitializer
+): () => Promise<void> {
+  return () => appInit.init();
+}
+
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes),
-    provideHttpClient(withInterceptorsFromDi()),
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: TokenInterceptor,
-      multi: true,
-    },
-    {
-      provide: MAT_DIALOG_DEFAULT_OPTIONS,
-      useValue: {
-        hasBackdrop: true,
-        disableClose: true,
-      },
-    },
     importProvidersFrom(
+      ServiceApiModule,
       TranslateModule.forRoot({
         defaultLanguage: 'pl',
         loader: {
@@ -48,5 +44,27 @@ export const appConfig: ApplicationConfig = {
         },
       })
     ),
+    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideRouter(routes),
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: TokenInterceptor,
+      multi: true,
+    },
+    AppSessionService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: appInitializerFactory,
+      deps: [AppInitializer],
+      multi: true,
+    },
+    {
+      provide: MAT_DIALOG_DEFAULT_OPTIONS,
+      useValue: {
+        hasBackdrop: true,
+        disableClose: true,
+      },
+    },
+    provideHttpClient(withInterceptorsFromDi()),
   ],
 };

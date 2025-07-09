@@ -5,14 +5,17 @@ import {
   AddProjectMemberInput,
   ProjectMemberDto,
 } from '../models/project-member.model';
+import { AppConfigService } from '../../app/shared/app-config.service';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class ProjectMemberApiService {
-  private apiUrl = 'https://localhost:44313/api/projects';
+  private readonly apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient,
+    private config: AppConfigService
+  ) {
+    this.apiUrl = `${this.config.remoteApiUrl}/api/projects`;
+  }
 
   getAll(projectId: string): Observable<ProjectMemberDto[]> {
     return this.http.get<ProjectMemberDto[]>(

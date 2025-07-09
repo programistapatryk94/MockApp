@@ -2,14 +2,18 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CreateProjectInput, Project } from '../models/project.model';
+import { AppConfigService } from '../../app/shared/app-config.service';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class ProjectApiService {
-  private apiUrl = 'https://localhost:44313/api/projects';
+  private readonly apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private config: AppConfigService
+  ) {
+    this.apiUrl = `${this.config.remoteApiUrl}/api/projects`;
+  }
 
   get(id: string): Observable<Project> {
     return this.http.get<Project>(`${this.apiUrl}/${id}`);

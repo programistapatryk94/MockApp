@@ -4,16 +4,22 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { AuthResponse, CreateUserInput } from './auth.model';
+import { AppConfigService } from '../app/shared/app-config.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = `https://localhost:44313/api/auth`;
+  private readonly apiUrl;
   private tokenSubject = new BehaviorSubject<string | null>(null);
   public token$ = this.tokenSubject.asObservable();
 
-  constructor(private http: HttpClient, private router: Router) {
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private config: AppConfigService
+  ) {
+    this.apiUrl = `${this.config.remoteApiUrl}/api/auth`;
     const token = localStorage.getItem('token');
     this.tokenSubject.next(token);
   }

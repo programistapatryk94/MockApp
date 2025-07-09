@@ -24,6 +24,10 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from '../../shared/confirm-dialog/confirm-dialog.component';
+import {
+  ProjectMembersDialogComponent,
+  ProjectMembersDialogData,
+} from '../project-members-dialog/project-members-dialog.component';
 
 @Component({
   selector: 'app-project-list',
@@ -89,6 +93,20 @@ export class ProjectListComponent implements OnInit {
 
   copySecret(secret: string) {
     navigator.clipboard.writeText(secret);
+  }
+
+  manageMembers(project: Project) {
+    this.dialog
+      .open<ProjectMembersDialogComponent, ProjectMembersDialogData, any>(
+        ProjectMembersDialogComponent,
+        {
+          data: {
+            project,
+          },
+        }
+      )
+      .afterClosed()
+      .subscribe(() => {});
   }
 
   deleteProject(project: Project) {

@@ -1,0 +1,54 @@
+<h2 mat-dialog-title>{{ "ZARZADZAJ_CZLONKAMI_PROJEKTU" | translate }}</h2>
+
+<mat-dialog-content *ngIf="!loading">
+  <form
+    [formGroup]="form"
+    (ngSubmit)="addMember()"
+    [class.form-disabled]="form.disabled"
+  >
+    <div class="email-row">
+      <mat-form-field appearance="outline" class="email-input">
+        <mat-label>{{ "ADRES_EMAIL" | translate }}</mat-label>
+        <input matInput formControlName="email" type="email" #emailInput />
+      </mat-form-field>
+
+      <button mat-flat-button color="primary" type="submit" [disabled]="saving">
+        <app-spinner-content [loading]="saving">
+          <span>{{ "DODAJ" | translate }}</span>
+        </app-spinner-content>
+      </button>
+    </div>
+    <div class="form-errors" *ngIf="form.touched && emailControl.invalid">
+      <div *ngIf="emailControl.hasError('required')">
+        {{ "POLE_JEST_WYMAGANE" | translate }}
+      </div>
+      <div *ngIf="emailControl.hasError('email')">
+        {{ "BLEDNY_EMAIL" | translate }}
+      </div>
+    </div>
+  </form>
+
+  <h3 class="mt-4">{{ "OBECNI_CZLONKOWIE" | translate }}</h3>
+  <mat-list>
+    <mat-list-item *ngFor="let member of members">
+      <div class="member-item">
+        <span class="email">{{ member.email }}</span>
+        <button
+          mat-icon-button
+          color="warn"
+          (click)="removeMember(member.userId)"
+          matTooltip="{{ 'USUN' | translate }}"
+          [ariaLabel]="'USUN' | translate"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </mat-list-item>
+  </mat-list>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close [disabled]="saving">
+    {{ "ZAMKNIJ" | translate }}
+  </button>
+</mat-dialog-actions>

@@ -45,7 +45,7 @@ namespace MockApi.Controllers
                 .Select(pc => pc.User)
                 .ToListAsync();
 
-            var outputDto = _mapper.Map<ProjectMemberDto>(users);
+            var outputDto = _mapper.Map<IEnumerable<ProjectMemberDto>>(users);
 
             return Ok(outputDto);
         }
@@ -70,7 +70,7 @@ namespace MockApi.Controllers
 
             if(null == user)
             {
-                return NotFound();
+                return NotFound("Błędny adres e-mail");
             }
 
             if (user.Id == _appSession.UserId)

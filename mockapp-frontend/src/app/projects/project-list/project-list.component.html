@@ -18,10 +18,16 @@
       <mat-icon>more_vert</mat-icon>
     </button>
     <mat-menu #menu="matMenu">
+      <button mat-menu-item (click)="manageMembers(project)">
+        <mat-icon>group</mat-icon>
+        {{ "ZARZADZAJ_CZLONKAMI" | translate }}
+      </button>
       <button mat-menu-item (click)="editProject(project)">
+        <mat-icon>edit</mat-icon>
         {{ "EDYTUJ" | translate }}
       </button>
       <button mat-menu-item (click)="deleteProject(project)">
+        <mat-icon>delete</mat-icon>
         {{ "USUN" | translate }}
       </button>
     </mat-menu>

@@ -44,5 +44,13 @@
   "MAX_X_ZNAKOW": "Maximum {{x}} characters",
   "POTWIERDZENIE_USUNIECIA": "Delete confirmation",
   "CZY_NA_PEWNO_USUNAC_MOCK": "Are you sure you want to delete the mock <strong>{{method}}</strong> <code>{{url}}</code> from project <strong>{{project}}</strong>?",
-  "CZY_NA_PEWNO_USUNAC_PROJEKT": "Are you sure you want to delete the project <strong>{{project}}</strong>? All associated mocks will also be removed."
+  "CZY_NA_PEWNO_USUNAC_PROJEKT": "Are you sure you want to delete the project <strong>{{project}}</strong>? All associated mocks will also be removed.",
+  "ZARZADZAJ_CZLONKAMI": "Manage members",
+  "ZARZADZAJ_CZLONKAMI_PROJEKTU": "Manage project members",
+  "BLEDNY_EMAIL": "Invalid email address",
+  "DODAJ": "Add",
+  "OBECNI_CZLONKOWIE": "Current Members",
+  "DODANO_CZLONKA": "Member added",
+  "USUNIETO_CZLONKA": "Member removed",
+  "WYSTAPIL_NIEOCZEKIWANY_BLAD": "An unexpected error occurred. Please try again later."
 }

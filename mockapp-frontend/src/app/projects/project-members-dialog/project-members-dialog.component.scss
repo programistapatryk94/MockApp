@@ -1,0 +1,42 @@
+:host {
+  .email-row {
+    padding-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .email-input {
+      flex: 1;
+    }
+
+    button {
+      white-space: nowrap;
+      height: 40px;
+    }
+  }
+
+  ::ng-deep .email-input .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+
+  .form-errors {
+    font-size: 12px;
+    color: #d32f2f; // standardowy kolor błędów Angular Material
+    margin-top: 4px;
+  }
+
+  .member-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .email {
+      flex: 1;
+      line-height: 1.5;
+    }
+
+    button {
+      align-self: center;
+    }
+  }
+}

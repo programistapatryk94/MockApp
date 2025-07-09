@@ -1,7 +1,8 @@
 import {
-  APP_INITIALIZER,
   ApplicationConfig,
   importProvidersFrom,
+  inject,
+  provideAppInitializer,
   provideZoneChangeDetection,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
@@ -52,12 +53,9 @@ export const appConfig: ApplicationConfig = {
       multi: true,
     },
     AppSessionService,
-    {
-      provide: APP_INITIALIZER,
-      useFactory: appInitializerFactory,
-      deps: [AppInitializer],
-      multi: true,
-    },
+    provideAppInitializer(
+      () => inject(AppInitializer).init() // <-- to działa jak `useFactory`
+    ),
     {
       provide: MAT_DIALOG_DEFAULT_OPTIONS,
       useValue: {

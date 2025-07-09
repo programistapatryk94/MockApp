@@ -10,16 +10,18 @@ import { AppConfigService } from '../app/shared/app-config.service';
   providedIn: 'root',
 })
 export class AuthService {
-  private readonly apiUrl;
   private tokenSubject = new BehaviorSubject<string | null>(null);
   public token$ = this.tokenSubject.asObservable();
+
+  get apiUrl(): string {
+    return `${this.config.remoteApiUrl}/api/auth`;
+  }
 
   constructor(
     private http: HttpClient,
     private router: Router,
     private config: AppConfigService
   ) {
-    this.apiUrl = `${this.config.remoteApiUrl}/api/auth`;
     const token = localStorage.getItem('token');
     this.tokenSubject.next(token);
   }

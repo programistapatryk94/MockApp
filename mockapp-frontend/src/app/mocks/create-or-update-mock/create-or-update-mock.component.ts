@@ -106,6 +106,11 @@ export class CreateOrUpdateMockComponent implements OnInit {
       projectId: this.data.projectId ?? '',
     };
 
+    if (dto.urlPath) {
+      const path = dto.urlPath?.trim();
+      dto.urlPath = path ? (path.startsWith('/') ? path : '/' + path) : '';
+    }
+
     const action$ = this.isEdit
       ? this.mockApiService.update(this.id, dto)
       : this.mockApiService.create(dto);
@@ -128,9 +133,16 @@ export class CreateOrUpdateMockComponent implements OnInit {
     this.form = this.fb.group({
       urlPath: [
         this.mock.urlPath ?? '',
-        [Validators.required, noWhitespaceValidator(), Validators.maxLength(200)],
+        [
+          Validators.required,
+          noWhitespaceValidator(),
+          Validators.maxLength(200),
+        ],
       ],
-      method: [this.mock.method ?? 'GET', [Validators.required, Validators.maxLength(10)]],
+      method: [
+        this.mock.method ?? 'GET',
+        [Validators.required, Validators.maxLength(10)],
+      ],
       statusCode: [
         this.mock.statusCode ?? 200,
         [Validators.required, Validators.min(100), Validators.max(599)],

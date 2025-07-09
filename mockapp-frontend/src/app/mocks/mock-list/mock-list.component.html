@@ -65,9 +65,11 @@
     </button>
     <mat-menu #menu="matMenu">
       <button mat-menu-item (click)="editMock(mock)">
+        <mat-icon>edit</mat-icon>
         {{ "EDYTUJ" | translate }}
       </button>
       <button mat-menu-item (click)="deleteMock(mock)">
+        <mat-icon>delete</mat-icon>
         {{ "USUN" | translate }}
       </button>
     </mat-menu>

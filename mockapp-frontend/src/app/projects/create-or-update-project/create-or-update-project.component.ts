@@ -104,6 +104,14 @@ export class CreateOrUpdateProjectComponent implements OnInit {
     const dto: CreateProjectInput = {
       ...this.form.getRawValue(),
     };
+    if (dto.apiPrefix) {
+      const prefix = dto.apiPrefix?.trim();
+      dto.apiPrefix = prefix
+        ? prefix.startsWith('/')
+          ? prefix
+          : '/' + prefix
+        : '';
+    }
 
     const action$ = this.isEdit
       ? this.projectApiService.update(this.id, dto)

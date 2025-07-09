@@ -59,27 +59,21 @@
 
   .mock-url {
     display: inline-flex;
-    gap: 4px;
-    flex-wrap: wrap;
+    gap: 2px;
+    flex-wrap: nowrap;
     align-items: center;
     cursor: pointer;
-    transition: background-color 0.3s ease;
 
     &:hover {
-      background-color: rgba(
-        59,
-        130,
-        246,
-        0.1
-      ); // delikatny niebieski efekt hover
+      background-color: rgba(59, 130, 246, 0.06);
       border-radius: 6px;
-      padding: 2px 4px;
+      padding: 1px 3px;
     }
   }
 
   // Styl każdego segmentu adresu URL:
   .url-chunk {
-    padding: 2px 6px;
+    padding: 1px 4px;
     border-radius: 6px;
     font-size: 0.85rem;
     font-weight: 500;
@@ -126,6 +120,42 @@
     &.patch {
       background-color: #f3e8ff;
       color: #9333ea;
+    }
+  }
+
+  .project-info-card {
+    margin-top: 16px;
+    padding: 16px 20px;
+    background-color: #f7faff; // delikatny niebieski odcień
+    border-radius: 10px;
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #222;
+    }
+
+    .info-row {
+      margin: 6px 0;
+      font-size: 14px;
+      display: flex;
+      gap: 6px;
+      color: #444;
+    }
+
+    .label {
+      font-weight: 500;
+      color: #666;
+    }
+
+    .value {
+      font-family: monospace;
+      font-weight: 500;
+      color: #1a1a1a;
     }
   }
 

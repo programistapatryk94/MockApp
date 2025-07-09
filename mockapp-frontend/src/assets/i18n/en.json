@@ -39,5 +39,6 @@
   "MOCK_ODPOWIEDZ": "Response Body (JSON)",
   "MOCK_NAGLOWKI_ODPOWIEDZI": "Headers (optional, JSON)",
   "MOCK_AKTYWNY": "Active",
-  "ZAMKNIJ": "Close"
+  "ZAMKNIJ": "Close",
+  "PROJECT_SECRET": "Secret"
 }

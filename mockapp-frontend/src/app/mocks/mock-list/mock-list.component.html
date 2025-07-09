@@ -8,6 +8,21 @@
   </div>
 </mat-card>
 
+<mat-card class="project-info-card" *ngIf="project">
+  <div class="header">
+    <mat-icon color="primary">folder</mat-icon>
+    <h3>{{ project.name }}</h3>
+  </div>
+  <div class="info-row">
+    <span class="label">{{ "API_PREFIX" | translate }}:</span>
+    <span class="value">{{ project.apiPrefix || "-" }}</span>
+  </div>
+  <div class="info-row">
+    <span class="label">{{ "PROJECT_SECRET" | translate }}:</span>
+    <span class="value">{{ project.secret }}</span>
+  </div>
+</mat-card>
+
 <mat-card *ngIf="loading">{{ "LADOWANIE_Z_KROPKAMI" | translate }}</mat-card>
 
 <div *ngFor="let mock of mocks" class="mock-tile">
@@ -31,7 +46,10 @@
     <span class="url-chunk protocol">https://</span>
     <span class="url-chunk project">{{ project?.secret }}</span>
     <span class="url-chunk neutral">.localhost:44313</span>
-    <span class="url-chunk project">{{ project?.apiPrefix }}</span>
+    <ng-container *ngIf="project?.apiPrefix">
+      <span class="url-chunk project">{{ project?.apiPrefix }}</span>
+    </ng-container>
+    <span class="url-chunk neutral" *ngIf="project?.apiPrefix !== '/'">/</span>
     <span class="url-chunk method" [ngClass]="getMethodClass(mock.method)">
       {{ mock.urlPath.slice(1) }}
     </span>

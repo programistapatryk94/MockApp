@@ -28,7 +28,10 @@ namespace MockApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MockDto>>> GetMocks([FromQuery] GetMocksInput input)
         {
-            var mocks = await _context.Mocks.Where(m => m.ProjectId == input.ProjectId).ToListAsync();
+            var mocks = await _context.Mocks.Where(m => m.ProjectId == input.ProjectId)
+                .OrderByDescending(m => m.Enabled)
+                .ThenBy(m => m.CreatedAt)
+                .ToListAsync();
             var mocksDto = _mapper.Map<IEnumerable<MockDto>>(mocks);
 
             return Ok(mocksDto);

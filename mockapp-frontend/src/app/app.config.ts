@@ -2,6 +2,7 @@ import {
   ApplicationConfig,
   importProvidersFrom,
   inject,
+  LOCALE_ID,
   provideAppInitializer,
   provideZoneChangeDetection,
 } from '@angular/core';
@@ -21,6 +22,7 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { AppInitializer } from '../helpers/app.initializer';
 import { AppSessionService } from './shared/session/app-session.service';
 import { ServiceApiModule } from '../services/apis/service-api.module';
+import { LanguageService } from '../helpers/language.service';
 
 export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -62,6 +64,11 @@ export const appConfig: ApplicationConfig = {
         hasBackdrop: true,
         disableClose: true,
       },
+    },
+    {
+      provide: LOCALE_ID,
+      useFactory: (languageService: LanguageService) => languageService.currentLocale,
+      deps: [LanguageService]
     },
     provideHttpClient(withInterceptorsFromDi()),
   ],

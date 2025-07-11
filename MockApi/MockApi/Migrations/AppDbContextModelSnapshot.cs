@@ -22,6 +22,38 @@ namespace MockApi.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("MockApi.Models.FeatureSetting", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatorUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FeatureSettings");
+                });
+
             modelBuilder.Entity("MockApi.Models.Mock", b =>
                 {
                     b.Property<Guid>("Id")
@@ -122,6 +154,68 @@ namespace MockApi.Migrations
                     b.ToTable("ProjectMembers");
                 });
 
+            modelBuilder.Entity("MockApi.Models.Subscription", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("StripeCustomerId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("StripeSubscriptionId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("Subscriptions");
+                });
+
+            modelBuilder.Entity("MockApi.Models.SubscriptionHistory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("EndedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("StripeSubscriptionId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("SubscriptionId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubscriptionId");
+
+                    b.ToTable("SubscriptionHistories");
+                });
+
             modelBuilder.Entity("MockApi.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -190,6 +284,26 @@ namespace MockApi.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("MockApi.Models.Subscription", b =>
+                {
+                    b.HasOne("MockApi.Models.User", null)
+                        .WithOne("Subscription")
+                        .HasForeignKey("MockApi.Models.Subscription", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("MockApi.Models.SubscriptionHistory", b =>
+                {
+                    b.HasOne("MockApi.Models.Subscription", "Subscription")
+                        .WithMany("History")
+                        .HasForeignKey("SubscriptionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Subscription");
+                });
+
             modelBuilder.Entity("MockApi.Models.Project", b =>
                 {
                     b.Navigation("Mocks");
@@ -197,11 +311,18 @@ namespace MockApi.Migrations
                     b.Navigation("ProjectMembers");
                 });
 
+            modelBuilder.Entity("MockApi.Models.Subscription", b =>
+                {
+                    b.Navigation("History");
+                });
+
             modelBuilder.Entity("MockApi.Models.User", b =>
                 {
                     b.Navigation("Mocks");
 
                     b.Navigation("ProjectMembers");
+
+                    b.Navigation("Subscription");
                 });
 #pragma warning restore 612, 618
         }

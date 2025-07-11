@@ -136,7 +136,7 @@ export class MockListComponent implements OnInit {
         next: (mocks) => (this.mocks = mocks),
         error: (err) =>
           this.snackbarService.show({
-            message: this.translate.instant(
+            message: err.error ?? this.translate.instant(
               'WYSTPI_BD_PODCZAS_POBIERANIA_MOCKW'
             ),
             type: 'error',

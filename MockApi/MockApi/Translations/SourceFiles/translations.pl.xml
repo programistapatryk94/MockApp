@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<translations culture="pl">
+  <text key="email_exists">Konto z tym adresem e-mail już istnieje.</text>
+  <text key="invalid_credentials">Nieprawidłowy adres e-mail lub hasło.</text>
+  <text key="MaxMockLimitReached">Osiągnięto maksymalną liczbę mocków dozwoloną w Twoim planie ({0}).</text>
+  <text key="ProjectNotFound">Projekt nie został znaleziony.</text>
+  <text key="MockNotFound">Mock nie został znaleziony.</text>
+  <text key="ProjectAccessDenied">Projekt nie został znaleziony lub nie jesteś jego właścicielem.</text>
+  <text key="UserNotFoundByEmail">Nie znaleziono użytkownika o podanym adresie e-mail.</text>
+  <text key="CannotAddSelfAsCollaborator">Nie możesz dodać siebie jako współpracownika.</text>
+  <text key="UserAlreadyCollaborator">Ten użytkownik jest już współpracownikiem projektu.</text>
+  <text key="CollaboratorNotFound">Nie znaleziono współpracownika.</text>
+  <text key="MaxProjectLimitReached">Osiągnięto maksymalną liczbę projektów dozwoloną w Twoim planie ({0}).</text>
+  <text key="ProjectDeleteError">Wystąpił nieoczekiwany błąd podczas usuwania projektu.</text>
+  <text key="SubdomainNotFound">Subdomena nie została znaleziona.</text>
+  <text key="InvalidPathPrefix">Nieprawidłowy prefiks ścieżki.</text>
+</translations>

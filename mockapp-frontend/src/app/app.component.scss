@@ -12,6 +12,10 @@
     margin-bottom: 1rem;
   }
 
+  .mat-menu-item span {
+  margin-right: 8px;
+}
+
   .content-wrapper {
     max-width: $max-width;
     margin: 32px auto;

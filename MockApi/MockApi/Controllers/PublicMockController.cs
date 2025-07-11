@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MockApi.Data;
+using MockApi.Localization;
 using System.Text.Json;
 
 namespace MockApi.Controllers
@@ -11,10 +12,12 @@ namespace MockApi.Controllers
     public class PublicMockController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly ITranslationService _translationService;
 
-        public PublicMockController(AppDbContext context)
+        public PublicMockController(AppDbContext context, ITranslationService translationService)
         {
             _context = context;
+            _translationService = translationService;
         }
 
         [Route("{*path}")]
@@ -30,14 +33,14 @@ namespace MockApi.Controllers
 
             if (string.IsNullOrWhiteSpace(subdomain))
             {
-                return NotFound(new { error = "Subdomena nieznaleziona" });
+                return NotFound(_translationService.Translate("SubdomainNotFound"));
             }
 
             var project = await _context.Projects.IgnoreQueryFilters().FirstOrDefaultAsync(p => p.Secret == subdomain);
 
             if (null == project)
             {
-                return NotFound("Projekt nie znaleziony");
+                return NotFound(_translationService.Translate("ProjectNotFound"));
             }
 
             var method = HttpContext.Request.Method.ToUpper();
@@ -47,7 +50,7 @@ namespace MockApi.Controllers
 
             if (!fullPath.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
             {
-                return NotFound("Zły prefix ścieżki");
+                return NotFound(_translationService.Translate("InvalidPathPrefix"));
             }
 
             var pathWithoutPrefix = fullPath[prefix.Length..];
@@ -60,7 +63,7 @@ namespace MockApi.Controllers
 
             if (null == mock)
             {
-                return NotFound("Mock nie znaleziony");
+                return NotFound(_translationService.Translate("MockNotFound"));
             }
 
             if (!string.IsNullOrWhiteSpace(mock.HeadersJson))

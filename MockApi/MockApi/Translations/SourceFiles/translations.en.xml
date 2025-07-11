@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<translations culture="en">
+  <text key="email_exists">An account with this email already exists.</text>
+  <text key="invalid_credentials">Invalid email or password.</text>
+  <text key="MaxMockLimitReached">You have reached the maximum number of mocks allowed in your plan ({0}).</text>
+  <text key="ProjectNotFound">Project not found.</text>
+  <text key="MockNotFound">Mock not found.</text>
+  <text key="ProjectAccessDenied">Project not found or you are not the owner.</text>
+  <text key="UserNotFoundByEmail">User with this email address was not found.</text>
+  <text key="CannotAddSelfAsCollaborator">You cannot add yourself as a collaborator.</text>
+  <text key="UserAlreadyCollaborator">This user is already a collaborator.</text>
+  <text key="CollaboratorNotFound">Collaborator not found.</text>
+  <text key="MaxProjectLimitReached">You have reached the maximum number of projects allowed in your plan ({0}).</text>
+  <text key="ProjectDeleteError">An unexpected error occurred while deleting the project.</text>
+  <text key="SubdomainNotFound">Subdomain not found.</text>
+  <text key="InvalidPathPrefix">Invalid path prefix.</text>
+</translations>

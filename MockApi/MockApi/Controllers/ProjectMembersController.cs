@@ -4,7 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MockApi.Data;
 using MockApi.Dtos.ProjectMember;
+using MockApi.Helpers;
+using MockApi.Localization;
 using MockApi.Models;
+using MockApi.Runtime.Features;
 using MockApi.Runtime.Session;
 
 namespace MockApi.Controllers
@@ -12,17 +15,20 @@ namespace MockApi.Controllers
     [ApiController]
     [Authorize]
     [Route("api/projects/{projectId}/members")]
+    [RequireFeature(AppFeatures.CollaborationEnabled)]
     public class ProjectMembersController : ControllerBase
     {
         private readonly AppDbContext _context;
         private readonly IAppSession _appSession;
         private readonly IMapper _mapper;
+        private readonly ITranslationService _translationService;
 
-        public ProjectMembersController(AppDbContext context, IAppSession appSession, IMapper mapper)
+        public ProjectMembersController(AppDbContext context, IAppSession appSession, IMapper mapper, ITranslationService translationService)
         {
             _context = context;
             _appSession = appSession;
             _mapper = mapper;
+            _translationService = translationService;
         }
 
         /// <summary>
@@ -37,7 +43,7 @@ namespace MockApi.Controllers
 
             if (!isOwner)
             {
-                return NotFound();
+                return NotFound(_translationService.Translate("ProjectAccessDenied"));
             }
 
             var users = await _context.ProjectMembers
@@ -63,26 +69,26 @@ namespace MockApi.Controllers
 
             if (!isOwner)
             {
-                return NotFound();
+                return NotFound(_translationService.Translate("ProjectAccessDenied"));
             }
 
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == input.Email);
 
             if(null == user)
             {
-                return NotFound("Błędny adres e-mail");
+                return NotFound(_translationService.Translate("UserNotFoundByEmail"));
             }
 
             if (user.Id == _appSession.UserId)
             {
-                return BadRequest("Nie można dodać siebie jako współpracownika");
+                return BadRequest(_translationService.Translate("CannotAddSelfAsCollaborator"));
             }
 
             var exists = await _context.ProjectMembers.AnyAsync(pc => pc.ProjectId == projectId && pc.UserId == user.Id);
 
             if(exists)
             {
-                return BadRequest("Użytkownik jest już współpracownikiem");
+                return BadRequest(_translationService.Translate("UserAlreadyCollaborator"));
             }
 
             _context.ProjectMembers.Add(new ProjectMember
@@ -110,7 +116,7 @@ namespace MockApi.Controllers
 
             if (!isOwner)
             {
-                return NotFound();
+                return NotFound(_translationService.Translate("ProjectAccessDenied"));
             }
 
             var entity = await _context.ProjectMembers
@@ -118,7 +124,7 @@ namespace MockApi.Controllers
 
             if(null == entity)
             {
-                return NotFound();
+                return NotFound(_translationService.Translate("CollaboratorNotFound"));
             }
 
             _context.ProjectMembers.Remove(entity);

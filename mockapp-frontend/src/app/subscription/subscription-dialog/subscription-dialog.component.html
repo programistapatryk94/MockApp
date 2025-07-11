@@ -1,0 +1,21 @@
+<h2 mat-dialog-title>{{ "SUBSKRYPCJA" | translate }}</h2>
+
+<mat-dialog-content>
+  <p>{{ "SUBSCRIPTION_INFO" | translate }}</p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()" [disabled]="loading">
+    {{ "ANULUJ" | translate }}
+  </button>
+  <button
+    mat-flat-button
+    color="primary"
+    (click)="subscribe()"
+    [disabled]="loading"
+  >
+    <app-spinner-content [loading]="loading">
+      <span>{{ "KUP_SUBSKRYPCJE" | translate }}</span>
+    </app-spinner-content>
+  </button>
+</mat-dialog-actions>

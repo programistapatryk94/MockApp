@@ -41,7 +41,7 @@ button {
   border-radius: 12px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
 
-  & > table {
+  &>table {
     background-color: inherit;
   }
 }
@@ -105,11 +105,27 @@ mat-card {
   }
 }
 
+.flag-icon {
+  width: 1.5em;
+  height: 1em;
+  background-size: cover;
+  display: inline-block;
+
+  &.pl {
+    background-image: url('/assets/flags/pl.svg');
+  }
+
+  &.us {
+    background-image: url('/assets/flags/us.svg');
+  }
+}
+
 @media (max-width: 600px) {
   .container {
     padding: 1rem;
     margin: 1rem;
   }
+
   h2 {
     font-size: 1.2rem;
   }

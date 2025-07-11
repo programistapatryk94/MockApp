@@ -70,7 +70,7 @@ export class ProjectListComponent implements OnInit {
         next: (projects) => (this.projects = projects),
         error: (err) =>
           this.snackbarService.show({
-            message: this.translate.instant(
+            message: err.error ?? this.translate.instant(
               'WYSTPI_BD_PODCZAS_POBIERANIA_PROJEKTW'
             ),
             type: 'error',

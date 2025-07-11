@@ -2,24 +2,27 @@
   <span class="logo">{{ title }}</span>
   <span class="spacer"></span>
   <div style="margin-left: auto; display: flex; gap: 8px">
-    <button
-      mat-button
-      (click)="switchLanguage('en')"
-      [disabled]="currentLang() === 'en'"
-    >
-      🇬🇧 EN
-    </button>
-    <button
-      mat-button
-      (click)="switchLanguage('pl')"
-      [disabled]="currentLang() === 'pl'"
-    >
-      🇵🇱 PL
+    <mat-menu #languageMenu="matMenu">
+      <button
+        mat-menu-item
+        *ngFor="let lang of languageService.localization.languages"
+        (click)="switchLanguage(lang.name)"
+      >
+        <span class="{{ lang.icon }}"></span> {{ lang.displayName }}
+      </button>
+    </mat-menu>
+
+    <button mat-button [matMenuTriggerFor]="languageMenu">
+      <span class="{{ currentLanguage.icon }}"></span>
+      {{ currentLanguage.displayName }}
     </button>
   </div>
 
   <button mat-button routerLink="/projects" *ngIf="isLoggedIn()" type="button">
     {{ "PROJEKTY" | translate }}
+  </button>
+  <button mat-button (click)="manageSubscription()" *ngIf="isLoggedIn()">
+    {{ "SUBSKRYPCJA" | translate }}
   </button>
   <button mat-button (click)="logout()" *ngIf="isLoggedIn()">
     {{ "WYLOGUJ" | translate }}

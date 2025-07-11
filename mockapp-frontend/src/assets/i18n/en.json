@@ -52,5 +52,8 @@
   "OBECNI_CZLONKOWIE": "Current Members",
   "DODANO_CZLONKA": "Member added",
   "USUNIETO_CZLONKA": "Member removed",
-  "WYSTAPIL_NIEOCZEKIWANY_BLAD": "An unexpected error occurred. Please try again later."
+  "WYSTAPIL_NIEOCZEKIWANY_BLAD": "An unexpected error occurred. Please try again later.",
+  "SUBSKRYPCJA": "Subscription",
+  "SUBSCRIPTION_INFO": "Activate the subscription to create unlimited mocks and access the full potential of the application.",
+  "KUP_SUBSKRYPCJE": "Buy subscription – 15 PLN/month"
 }

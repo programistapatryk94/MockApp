@@ -3,16 +3,23 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MockApi.Data;
+using MockApi.Extensions;
+using MockApi.Helpers;
+using MockApi.Localization;
+using MockApi.Runtime.Features;
 using MockApi.Runtime.Session;
 using MockApi.Services;
+using MockApi.Translations;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-
 // Add services to the container.
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
+
+builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
+builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("App"));
 
 builder.Services.AddHttpContextAccessor();
 
@@ -26,10 +33,16 @@ builder.WebHost.ConfigureKestrel(options =>
 
 builder.Services.AddCors(options =>
 {
+    var corsOrigins = builder.Configuration["App:CorsOrigins"];
+
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("http://localhost:4200")
+            policy.WithOrigins(
+                corsOrigins!.Split(",", StringSplitOptions.RemoveEmptyEntries)
+                .Select(o => o.RemovePostFix("/")!)
+                .ToArray()
+                )
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
@@ -71,8 +84,18 @@ builder.Services.AddSwaggerGen(c =>
         {jwtSecurityScheme, Array.Empty<string>() }
     });
 });
-builder.Services.AddSingleton<IAppSession, ClaimsAppSession>();
+builder.Services.AddScoped<IAppSession, ClaimsAppSession>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
+builder.Services.AddScoped<IFeatureChecker, FeatureChecker>();
+builder.Services.AddScoped<AppFeatureProvider>();
+builder.Services.AddSingleton<ILocalizationConfiguration, LocalizationConfiguration>();
+builder.Services.AddScoped<ILanguageManager, LanguageManager>();
+builder.Services.AddSingleton<ITranslationService, XmlTranslationService>();
+
+builder.Services.AddSingleton<IFeatureConfiguration, FeatureConfiguration>();
+builder.Services.AddSingleton<IFeatureManager, FeatureManager>();
+
 builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -92,6 +115,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 var app = builder.Build();
 
+app.Services.GetRequiredService<IFeatureConfiguration>().Providers.Add<AppFeatureProvider>();
+
+var localizationConfig = app.Services.GetRequiredService<ILocalizationConfiguration>();
+localizationConfig.Languages.Add(new LanguageInfo("en-US", "English", "flag-icon us", isDefault: true));
+localizationConfig.Languages.Add(new LanguageInfo("pl-PL", "Polski", "flag-icon pl"));
+MockApiLocalizationConfigurator.Configure(localizationConfig);
+
+(app.Services.GetRequiredService<IFeatureManager>() as FeatureManager)!.Initialize();
+(app.Services.GetRequiredService<ITranslationService>() as XmlTranslationService)!.Initialize();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -102,6 +135,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseAppRequestLocalization();
 
 app.UseCors("AllowFrontend");
 app.MapControllers();

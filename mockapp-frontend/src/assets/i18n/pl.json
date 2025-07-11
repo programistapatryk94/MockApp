@@ -52,5 +52,8 @@
   "OBECNI_CZLONKOWIE": "Obecni członkowie",
   "DODANO_CZLONKA": "Dodano członka",
   "USUNIETO_CZLONKA": "Usunięto członka",
-  "WYSTAPIL_NIEOCZEKIWANY_BLAD": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie później."
+  "WYSTAPIL_NIEOCZEKIWANY_BLAD": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie później.",
+  "SUBSKRYPCJA": "Subskrypcja",
+  "SUBSCRIPTION_INFO": "Aktywuj subskrypcję, aby tworzyć nielimitowane mocki i korzystać z pełnych możliwości aplikacji.",
+  "KUP_SUBSKRYPCJE": "Kup subskrypcję – 15 zł/mies."
 }

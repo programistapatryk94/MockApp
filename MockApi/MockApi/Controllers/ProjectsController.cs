@@ -4,8 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MockApi.Data;
 using MockApi.Dtos.Project;
+using MockApi.Extensions;
 using MockApi.Helpers;
+using MockApi.Localization;
 using MockApi.Models;
+using MockApi.Runtime.Features;
 using MockApi.Runtime.Session;
 
 namespace MockApi.Controllers
@@ -18,20 +21,32 @@ namespace MockApi.Controllers
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
         private readonly IAppSession _appSession;
+        private readonly IFeatureChecker _featureChecker;
+        private readonly ITranslationService _translationService;
 
-        public ProjectsController(AppDbContext context, IMapper mapper, IAppSession appSession)
+        public ProjectsController(AppDbContext context, IMapper mapper, IAppSession appSession, IFeatureChecker featureChecker, ITranslationService translationService)
         {
             _context = context;
             _mapper = mapper;
             _appSession = appSession;
+            _featureChecker = featureChecker;
+            _translationService = translationService;
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<ProjectDto>> GetProjectById(Guid id)
         {
-            var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id);
+            var ownerId = await _context.Projects.IgnoreQueryFilters().Where(p => p.Id == id).Select(p => p.UserId).FirstOrDefaultAsync();
+            var collaborationEnabled = await _featureChecker.IsEnabledAsync(ownerId, AppFeatures.CollaborationEnabled);
 
-            if (null == project) return NotFound();
+            Project? project;
+
+            using(_context.MaybeWithFilterOff(nameof(AppDbContext.ApplyCollaborationFilter), !collaborationEnabled))
+            {
+                project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id);
+            }
+
+            if (null == project) return NotFound(_translationService.Translate("ProjectNotFound"));
 
             var projectDto = _mapper.Map<ProjectDto>(project);
 
@@ -41,7 +56,16 @@ namespace MockApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProjectDto>>> GetProjects()
         {
-            var projects = await _context.Projects.ToListAsync();
+            var ownerId = _appSession.UserId!.Value;
+            var collaborationEnabled = await _featureChecker.IsEnabledAsync(ownerId, AppFeatures.CollaborationEnabled);
+
+            List<Project> projects;
+
+            using(_context.MaybeWithFilterOff(nameof(AppDbContext.ApplyCollaborationFilter), !collaborationEnabled))
+            {
+                projects = await _context.Projects.ToListAsync();
+            }
+
             var mappedProjects = _mapper.Map<IEnumerable<ProjectDto>>(projects);
 
             return Ok(mappedProjects);
@@ -51,6 +75,19 @@ namespace MockApi.Controllers
         public async Task<ActionResult<ProjectDto>> CreateProject([FromBody] CreateOrUpdateProjectInput createProjectInput)
         {
             var userId = _appSession.UserId!.Value;
+
+            var maxProjectLimit = (await _featureChecker.GetValueAsync(userId, AppFeatures.MaxProjectCreationLimit)).To<int>();
+            int projectsCount = 0;
+
+            using (_context.WithFilterOff(nameof(AppDbContext.ApplyCollaborationFilter)))
+            {
+                projectsCount = await _context.Projects.CountAsync();
+            }
+
+            if(projectsCount > maxProjectLimit)
+            {
+                return BadRequest(_translationService.Translate("MaxProjectLimitReached", maxProjectLimit));
+            }
 
             var project = _mapper.Map<Project>(createProjectInput);
             project.Id = Guid.NewGuid();
@@ -68,11 +105,19 @@ namespace MockApi.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<ProjectDto>> UpdateProject(Guid id, [FromBody] CreateOrUpdateProjectInput updateProjectInput)
         {
-            var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id && p.UserId == _appSession.UserId);
+            var ownerId = _appSession.UserId!.Value;
+            var collaborationEnabled = await _featureChecker.IsEnabledAsync(ownerId, AppFeatures.CollaborationEnabled);
+
+            Project? project;
+
+            using(_context.MaybeWithFilterOff(nameof(AppDbContext.ApplyCollaborationFilter), !collaborationEnabled))
+            {
+                project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id && p.UserId == _appSession.UserId);
+            }
 
             if (null == project)
             {
-                return NotFound();
+                return NotFound(_translationService.Translate("ProjectNotFound"));
             }
 
             _mapper.Map(updateProjectInput, project);
@@ -86,15 +131,24 @@ namespace MockApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProject(Guid id)
         {
-            var isOwner = await _context.Projects.AnyAsync(p => p.Id == id && p.UserId == _appSession.UserId);
+            var ownerId = await _context.Projects.Where(p => p.Id == id).Select(p => p.UserId).FirstOrDefaultAsync();
+            var collaborationEnabled = await _featureChecker.IsEnabledAsync(ownerId, AppFeatures.CollaborationEnabled);
 
-            if (!isOwner)
+            Project? project;
+
+            using(_context.MaybeWithFilterOff(nameof(AppDbContext.ApplyCollaborationFilter), !collaborationEnabled))
             {
-                return NotFound();
+                var isOwner = await _context.Projects.AnyAsync(p => p.Id == id && p.UserId == _appSession.UserId);
+
+                if (!isOwner)
+                {
+                    return NotFound(_translationService.Translate("ProjectAccessDenied"));
+                }
+
+                project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id);
             }
 
-            var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id);
-            if (null == project) return NotFound();
+            if (null == project) return NotFound(_translationService.Translate("ProjectNotFound"));
 
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
@@ -111,7 +165,7 @@ namespace MockApi.Controllers
             catch (Exception)
             {
                 await transaction.RollbackAsync();
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, _translationService.Translate("ProjectDeleteError"));
             }
         }
     }

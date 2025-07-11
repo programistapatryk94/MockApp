@@ -117,9 +117,9 @@ export class CreateOrUpdateMockComponent implements OnInit {
 
     action$.pipe(finalize(() => (this.saving = false))).subscribe({
       next: (result) => this.dialogRef.close(result),
-      error: () =>
+      error: (err) =>
         this.snackbarService.show({
-          message: this.translate.instant('WYSTPI_BD_PRZY_ZAPISIE'),
+          message: err.error ?? this.translate.instant('WYSTPI_BD_PRZY_ZAPISIE'),
           type: 'error',
         }),
     });

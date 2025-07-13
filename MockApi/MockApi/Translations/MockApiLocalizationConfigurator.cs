@@ -32,11 +32,13 @@ namespace MockApi.Translations
                 var userProvider = new UserRequestCultureProvider();
 
                 options.RequestCultureProviders.Insert(1, userProvider);
-                options.RequestCultureProviders.Insert(4, new DefaultRequestCultureProvider());
+                options.RequestCultureProviders.Insert(2, new LocalizationHeaderRequestCultureProvider());
+                options.RequestCultureProviders.Insert(5, new DefaultRequestCultureProvider());
 
                 optionsAction?.Invoke(options);
 
                 userProvider.CookieProvider = options.RequestCultureProviders.OfType<CookieRequestCultureProvider>().FirstOrDefault();
+                userProvider.HeaderProvider = options.RequestCultureProviders.OfType<LocalizationHeaderRequestCultureProvider>().FirstOrDefault();
 
                 app.UseRequestLocalization(options);
             }

@@ -3,14 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MockApi.Data;
 using MockApi.Dtos.Auth;
-using MockApi.Helpers;
 using MockApi.Localization;
-using MockApi.Migrations;
 using MockApi.Models;
-using MockApi.Runtime.Features;
 using MockApi.Runtime.Session;
 using MockApi.Services;
-using System.Globalization;
 
 namespace MockApi.Controllers
 {
@@ -23,16 +19,16 @@ namespace MockApi.Controllers
         private readonly ITranslationService _translationService;
         private readonly ILanguageManager _languageManager;
         private readonly IAppSession _appSession;
-        private readonly IFeatureManager _featureManager;
+        private readonly ILanguageService _languageService;
 
-        public AuthController(AppDbContext context, ITokenService tokenService, ITranslationService translationService, ILanguageManager languageManager, IAppSession appSession, IFeatureManager featureManager)
+        public AuthController(AppDbContext context, ITokenService tokenService, ITranslationService translationService, ILanguageManager languageManager, IAppSession appSession, ILanguageService languageService)
         {
             _context = context;
             _tokenService = tokenService;
             _translationService = translationService;
             _languageManager = languageManager;
             _appSession = appSession;
-            _featureManager = featureManager;
+            _languageService = languageService;
         }
 
         [HttpPost("register")]
@@ -75,38 +71,7 @@ namespace MockApi.Controllers
             if (!userId.HasValue)
                 return Unauthorized();
 
-            var feature = _featureManager.Get(AppFeatures.DefaultLanguage);
-            var defaultLanguage = feature.DefaultValue;
-            var userFeature = await _context.FeatureSettings
-                .FirstOrDefaultAsync(f => f.UserId == userId.Value && f.Name == AppFeatures.DefaultLanguage);
-
-            // Jeśli użytkownik wybrał język domyślny – usuń nadpisane ustawienie
-            if (input.LanguageName.Equals(defaultLanguage, StringComparison.OrdinalIgnoreCase))
-            {
-                if (userFeature != null)
-                {
-                    _context.FeatureSettings.Remove(userFeature);
-                }
-            }
-            else
-            {
-                if (userFeature != null)
-                {
-                    userFeature.Value = input.LanguageName;
-                }
-                else
-                {
-                    _context.FeatureSettings.Add(new FeatureSetting
-                    {
-                        UserId = userId.Value,
-                        CreatorUserId = userId.Value,
-                        Name = AppFeatures.DefaultLanguage,
-                        Value = input.LanguageName
-                    });
-                }
-            }
-
-            await _context.SaveChangesAsync();
+            await _languageService.ChangeLanguageAsync(input.LanguageName, userId.Value);
 
             return Ok();
         }
@@ -114,7 +79,7 @@ namespace MockApi.Controllers
         [HttpGet("me")]
         public async Task<ActionResult<UserInfoDto>> Me()
         {
-            var currentCulture = CultureInfo.CurrentUICulture;
+            var currentCulture = _languageManager.CurrentLanguage;
 
             var dto = new UserInfoDto
             {

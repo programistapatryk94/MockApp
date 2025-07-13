@@ -5,6 +5,7 @@ import { ProjectApiService } from './project-api.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from '../../helpers/token.interceptor';
 import { SubscriptionApiService } from './subscription-api.service';
+import { LanguageTokenInterceptor } from '../../helpers/language-token.interceptor';
 
 @NgModule({
   providers: [
@@ -15,6 +16,11 @@ import { SubscriptionApiService } from './subscription-api.service';
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
+      multi: true,
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: LanguageTokenInterceptor,
       multi: true,
     },
   ],

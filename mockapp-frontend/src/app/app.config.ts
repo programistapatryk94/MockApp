@@ -23,6 +23,7 @@ import { AppInitializer } from '../helpers/app.initializer';
 import { AppSessionService } from './shared/session/app-session.service';
 import { ServiceApiModule } from '../services/apis/service-api.module';
 import { LanguageService } from '../helpers/language.service';
+import { LanguageTokenInterceptor } from '../helpers/language-token.interceptor';
 
 export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -53,6 +54,11 @@ export const appConfig: ApplicationConfig = {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
       multi: true,
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: LanguageTokenInterceptor,
+      multi: true
     },
     AppSessionService,
     provideAppInitializer(

@@ -1,7 +1,7 @@
 <mat-toolbar color="primary">
   <span class="logo">{{ title }}</span>
   <span class="spacer"></span>
-  <div style="margin-left: auto; display: flex; gap: 8px">
+  <div style="margin-left: auto; display: flex; gap: 8px" *ngIf="isLoggedIn()">
     <mat-menu #languageMenu="matMenu">
       <button
         mat-menu-item

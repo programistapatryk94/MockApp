@@ -12,7 +12,7 @@ namespace MockApi.Helpers
 
             context.Create(AppFeatures.CollaborationEnabled, "false");
 
-            context.Create(AppFeatures.DefaultLanguage, "en-US");
+            context.Create(AppFeatures.DefaultLanguage, "en");
         }
     }
 }

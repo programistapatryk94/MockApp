@@ -57,11 +57,11 @@ export class LanguageService {
 
   private detectInitialLocale(): string {
     // kolejność: localStorage > cookie > przeglądarka
-    return localStorage.getItem('app.locale') || navigator.language || 'en-US';
+    return localStorage.getItem('app.locale') || navigator.language || 'en';
   }
 
   shouldLoadLocale(): boolean {
-    return this._locale !== 'en-US';
+    return this._locale !== 'en';
   }
 
   getAngularLocale(): string {
@@ -84,6 +84,7 @@ export class LanguageService {
   private mapToShortLang(locale: string): string {
     if (!locale) return 'en';
     const normalized = locale.split('-')[0].toLowerCase();
+    return normalized;
 
     if (normalized.startsWith('pl')) return 'pl';
     if (normalized.startsWith('en')) return 'en';

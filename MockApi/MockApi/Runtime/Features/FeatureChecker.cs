@@ -17,31 +17,61 @@ namespace MockApi.Runtime.Features
             _context = context;
         }
 
-        public string GetValue(string name)
+        public string GetValue(string name, bool fallbackToDefault = true)
         {
             var feature = _featureManager.Get(name);
 
             var dbValue = GetValueFromDb(feature, _appSession.UserId);
 
-            return dbValue ?? feature.DefaultValue;
+            if(dbValue != null)
+            {
+                return dbValue;
+            }
+
+            if(!fallbackToDefault)
+            {
+                return null;
+            }
+
+            return feature.DefaultValue;
         }
 
-        public async Task<string> GetValueAsync(string name)
+        public async Task<string> GetValueAsync(string name, bool fallbackToDefault = true)
         {
             var feature = _featureManager.Get(name);
 
             var dbValue = await GetValueFromDbAsync(feature, _appSession.UserId);
 
-            return dbValue ?? feature.DefaultValue;
+            if (dbValue != null)
+            {
+                return dbValue;
+            }
+
+            if (!fallbackToDefault)
+            {
+                return null;
+            }
+
+            return feature.DefaultValue;
         }
 
-        public async Task<string> GetValueAsync(Guid userId, string name)
+        public async Task<string> GetValueAsync(Guid userId, string name, bool fallbackToDefault = true)
         {
             var feature = _featureManager.Get(name);
 
             var dbValue = await GetValueFromDbAsync(feature, userId);
 
-            return dbValue ?? feature.DefaultValue;
+            if (dbValue != null)
+            {
+                return dbValue;
+            }
+
+            if (!fallbackToDefault)
+            {
+                return null;
+            }
+
+            return feature.DefaultValue;
         }
 
         public async Task<bool> IsEnabledAsync(string name)

@@ -3,13 +3,16 @@ import { Injectable } from '@angular/core';
 import { AppConfigService } from '../app-config.service';
 import { LocalizationConfigurationDto, UserInfoDto } from '../../../helpers/auth.model';
 import { catchError, EMPTY, take } from 'rxjs';
+import { LanguageService } from '../../../helpers/language.service';
 
 @Injectable()
 export class AppSessionService {
   private readonly apiUrl;
   private _userInfo!: UserInfoDto;
 
-  constructor(private http: HttpClient, private config: AppConfigService) {
+  constructor(private http: HttpClient, private config: AppConfigService,
+    private languageService: LanguageService
+  ) {
     this.apiUrl = `${this.config.remoteApiUrl}/api/auth`;
   }
 

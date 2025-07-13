@@ -91,6 +91,7 @@ builder.Services.AddScoped<IFeatureChecker, FeatureChecker>();
 builder.Services.AddScoped<AppFeatureProvider>();
 builder.Services.AddSingleton<ILocalizationConfiguration, LocalizationConfiguration>();
 builder.Services.AddScoped<ILanguageManager, LanguageManager>();
+builder.Services.AddScoped<ILanguageService, LanguageService>();
 builder.Services.AddSingleton<ITranslationService, XmlTranslationService>();
 
 builder.Services.AddSingleton<IFeatureConfiguration, FeatureConfiguration>();
@@ -118,8 +119,8 @@ var app = builder.Build();
 app.Services.GetRequiredService<IFeatureConfiguration>().Providers.Add<AppFeatureProvider>();
 
 var localizationConfig = app.Services.GetRequiredService<ILocalizationConfiguration>();
-localizationConfig.Languages.Add(new LanguageInfo("en-US", "English", "flag-icon us", isDefault: true));
-localizationConfig.Languages.Add(new LanguageInfo("pl-PL", "Polski", "flag-icon pl"));
+localizationConfig.Languages.Add(new LanguageInfo("en", "English", "flag-icon us", isDefault: true));
+localizationConfig.Languages.Add(new LanguageInfo("pl", "Polski", "flag-icon pl"));
 MockApiLocalizationConfigurator.Configure(localizationConfig);
 
 (app.Services.GetRequiredService<IFeatureManager>() as FeatureManager)!.Initialize();

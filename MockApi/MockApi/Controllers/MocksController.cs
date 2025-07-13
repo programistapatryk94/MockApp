@@ -63,14 +63,17 @@ namespace MockApi.Controllers
 
             var collaborationEnabled = await _featureChecker.IsEnabledAsync(ownerId, AppFeatures.CollaborationEnabled);
 
-            using (_context.MaybeWithFilterOff(nameof(AppDbContext.ApplyCollaborationFilter), !collaborationEnabled))
+            using (_context.WithFilterOff(nameof(AppDbContext.ApplyCollaborationFilter)))
             {
                 var count = await _context.Mocks.CountAsync(m => m.Project.UserId == ownerId);
                 if (count > maxMocksLimit)
                 {
                     return BadRequest(_translationService.Translate("MaxMockLimitReached", maxMocksLimit));
                 }
+            }
 
+            using (_context.MaybeWithFilterOff(nameof(AppDbContext.ApplyCollaborationFilter), !collaborationEnabled))
+            {
                 if (!await _context.Projects.AnyAsync(p => p.Id == createMockInput.ProjectId))
                 {
                     return NotFound(_translationService.Translate("ProjectNotFound"));

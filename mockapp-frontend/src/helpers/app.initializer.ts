@@ -30,6 +30,7 @@ export class AppInitializer {
 
     if (langService.shouldLoadLocale()) {
       const angularLocale = langService.getAngularLocale();
+      
       try {
         const module = await import(
           `@angular/common/locales/${angularLocale}.mjs`

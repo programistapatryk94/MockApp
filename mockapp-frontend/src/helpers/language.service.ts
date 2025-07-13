@@ -4,12 +4,27 @@ import { HttpClient } from '@angular/common/http';
 import { AppConfigService } from '../app/shared/app-config.service';
 import { Observable, tap } from 'rxjs';
 
+interface ILocaleMapping {
+  from: string;
+  to: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class LanguageService {
   private _locale: string;
   private _localization!: LocalizationConfigurationDto;
   private _defaultLanguage!: LanguageInfo;
   private _currentLanguage!: LanguageInfo;
+  private readonly localeMappings: ILocaleMapping[] = [
+    {
+      from: 'pl',
+      to: 'pl-PL',
+    },
+    {
+      from: 'en',
+      to: 'en-US',
+    },
+  ];
 
   get apiUrl(): string {
     return `${this.config.remoteApiUrl}/api/auth`;
@@ -30,7 +45,7 @@ export class LanguageService {
   set localization(loc: LocalizationConfigurationDto) {
     this._localization = loc;
     this._defaultLanguage = loc.languages.find((p) => p.isDefault)!;
-    this._currentLanguage = loc.languages.find(p => p.name == this._locale)!;
+    this._currentLanguage = loc.languages.find((p) => p.name == this._locale)!;
   }
 
   get localization(): LocalizationConfigurationDto {
@@ -65,6 +80,10 @@ export class LanguageService {
   }
 
   getAngularLocale(): string {
+    var find = this.localeMappings.find((p) => p.from == this._locale);
+    if (find != null) {
+      return find.to;
+    }
     return this._locale;
   }
 

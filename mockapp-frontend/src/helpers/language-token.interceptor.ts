@@ -17,7 +17,7 @@ export class LanguageTokenInterceptor implements HttpInterceptor {
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
     var currentLanguage = this.language.currentLocale;
-    console.log('this', this.language);
+    
     const langReq = currentLanguage
       ? req.clone({
           setHeaders: {

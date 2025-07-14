@@ -36,8 +36,13 @@ namespace MockApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MockDto>>> GetMocks([FromQuery] GetMocksInput input)
         {
-            var ownerId = await _context.Projects.Where(p => p.Id == input.ProjectId).Select(p => p.UserId).FirstOrDefaultAsync();
-            var collaborationEnabled = await _featureChecker.IsEnabledAsync(ownerId, AppFeatures.CollaborationEnabled);
+            var ownerId = await _context.Projects.Where(p => p.Id == input.ProjectId).Select(p => p.CreatorUserId).FirstOrDefaultAsync();
+            if(null == ownerId)
+            {
+                return NotFound(_translationService.Translate("ProjectNotFound"));
+            }
+            
+            var collaborationEnabled = await _featureChecker.IsEnabledAsync(ownerId.Value, AppFeatures.CollaborationEnabled);
 
             List<Mock> mocks;
 
@@ -57,15 +62,20 @@ namespace MockApi.Controllers
         [HttpPost]
         public async Task<ActionResult<MockDto>> CreateMock([FromBody] CreateOrUpdateMockInput createMockInput)
         {
-            var ownerId = await _context.Projects.IgnoreQueryFilters().Where(p => p.Id == createMockInput.ProjectId).Select(p => p.UserId).FirstOrDefaultAsync();
+            var ownerId = await _context.Projects.IgnoreQueryFilters().Where(p => p.Id == createMockInput.ProjectId).Select(p => p.CreatorUserId).FirstOrDefaultAsync();
 
-            var maxMocksLimit = (await _featureChecker.GetValueAsync(ownerId, AppFeatures.MaxMockCreationLimit)).To<int>();
+            if(null == ownerId)
+            {
+                return NotFound(_translationService.Translate("ProjectNotFound"));
+            }
 
-            var collaborationEnabled = await _featureChecker.IsEnabledAsync(ownerId, AppFeatures.CollaborationEnabled);
+            var maxMocksLimit = (await _featureChecker.GetValueAsync(ownerId.Value, AppFeatures.MaxMockCreationLimit)).To<int>();
+
+            var collaborationEnabled = await _featureChecker.IsEnabledAsync(ownerId.Value, AppFeatures.CollaborationEnabled);
 
             using (_context.WithFilterOff(nameof(AppDbContext.ApplyCollaborationFilter)))
             {
-                var count = await _context.Mocks.CountAsync(m => m.Project.UserId == ownerId);
+                var count = await _context.Mocks.CountAsync(m => m.Project.CreatorUserId == ownerId);
                 if (count > maxMocksLimit)
                 {
                     return BadRequest(_translationService.Translate("MaxMockLimitReached", maxMocksLimit));
@@ -80,8 +90,6 @@ namespace MockApi.Controllers
                 }
             }
             var mock = _mapper.Map<Mock>(createMockInput);
-            mock.Id = Guid.NewGuid();
-            mock.UserId = _appSession.UserId!.Value;
             _context.Mocks.Add(mock);
             await _context.SaveChangesAsync();
 
@@ -93,8 +101,13 @@ namespace MockApi.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<MockDto>> UpdateMock(Guid id, [FromBody] CreateOrUpdateMockInput updateMockInput)
         {
-            var ownerId = await _context.Projects.IgnoreQueryFilters().Where(p => p.Id == updateMockInput.ProjectId).Select(p => p.UserId).FirstOrDefaultAsync();
-            var collaborationEnabled = await _featureChecker.IsEnabledAsync(ownerId, AppFeatures.CollaborationEnabled);
+            var ownerId = await _context.Projects.IgnoreQueryFilters().Where(p => p.Id == updateMockInput.ProjectId).Select(p => p.CreatorUserId).FirstOrDefaultAsync();
+            if(null == ownerId)
+            {
+                return NotFound(_translationService.Translate("ProjectNotFound"));
+            }
+            
+            var collaborationEnabled = await _featureChecker.IsEnabledAsync(ownerId.Value, AppFeatures.CollaborationEnabled);
 
             Mock? mock;
 
@@ -119,20 +132,23 @@ namespace MockApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMock(Guid id)
         {
-            var ownerId = await _context.Mocks.IgnoreQueryFilters().Where(p => p.Id == id).Select(p => p.Project.UserId).FirstOrDefaultAsync();
-            var collaborationEnabled = await _featureChecker.IsEnabledAsync(ownerId, AppFeatures.CollaborationEnabled);
-
-            Mock? mock;
+            var ownerId = await _context.Mocks.IgnoreQueryFilters().Where(p => p.Id == id).Select(p => p.Project.CreatorUserId).FirstOrDefaultAsync();
+            if(null == ownerId)
+            {
+                return NotFound(_translationService.Translate("ProjectNotFound"));
+            }
+            
+            var collaborationEnabled = await _featureChecker.IsEnabledAsync(ownerId.Value, AppFeatures.CollaborationEnabled);
 
             using (_context.MaybeWithFilterOff(nameof(AppDbContext.ApplyCollaborationFilter), !collaborationEnabled))
             {
-                mock = await _context.Mocks.FirstOrDefaultAsync(m => m.Id == id);
+                var mock = await _context.Mocks.FirstOrDefaultAsync(m => m.Id == id);
+
+                if (null == mock) return NotFound(_translationService.Translate("MockNotFound"));
+
+                _context.Mocks.Remove(mock);
+                await _context.SaveChangesAsync();
             }
-
-            if (null == mock) return NotFound(_translationService.Translate("MockNotFound"));
-
-            _context.Mocks.Remove(mock);
-            await _context.SaveChangesAsync();
 
             return NoContent();
         }

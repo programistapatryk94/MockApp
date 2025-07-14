@@ -39,7 +39,7 @@ namespace MockApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProjectMemberDto>>> GetMembers(Guid projectId)
         {
-            var isOwner = await _context.Projects.AnyAsync(p => p.Id == projectId && p.UserId == _appSession.UserId);
+            var isOwner = await _context.Projects.AnyAsync(p => p.Id == projectId && p.CreatorUserId == _appSession.UserId);
 
             if (!isOwner)
             {
@@ -65,7 +65,7 @@ namespace MockApi.Controllers
         [HttpPost]
         public async Task<ActionResult<ProjectMemberDto>> AddMember(Guid projectId, [FromBody] AddProjectMemberInput input)
         {
-            var isOwner = await _context.Projects.AnyAsync(p => p.Id == projectId && p.UserId == _appSession.UserId);
+            var isOwner = await _context.Projects.AnyAsync(p => p.Id == projectId && p.CreatorUserId == _appSession.UserId);
 
             if (!isOwner)
             {
@@ -112,7 +112,7 @@ namespace MockApi.Controllers
         [HttpDelete("{userId}")]
         public async Task<IActionResult> RemoveMember(Guid projectId, Guid userId)
         {
-            var isOwner = await _context.Projects.AnyAsync(p => p.Id == projectId && p.UserId == _appSession.UserId);
+            var isOwner = await _context.Projects.AnyAsync(p => p.Id == projectId && p.CreatorUserId == _appSession.UserId);
 
             if (!isOwner)
             {

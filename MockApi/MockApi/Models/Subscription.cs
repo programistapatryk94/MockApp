@@ -1,12 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using MockApi.Runtime.DataModels.Auditing;
+using System.ComponentModel.DataAnnotations;
 
 namespace MockApi.Models
 {
-    public class Subscription
+    public class Subscription : AuditedEntity
     {
-        [Key]
-        public Guid Id { get; set; }
-
         [Required]
         public Guid UserId { get; set; }
 
@@ -19,7 +17,6 @@ namespace MockApi.Models
         [Required]
         public string Status { get; set; } = "active"; // np. active, past_due, canceled itd.
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public virtual List<SubscriptionHistory> History { get; set; } = new();
     }
 }

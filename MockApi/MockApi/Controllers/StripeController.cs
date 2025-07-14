@@ -113,18 +113,15 @@ namespace MockApi.Controllers
 
                                     _context.SubscriptionHistories.Add(new SubscriptionHistory
                                     {
-                                        Id = Guid.NewGuid(),
                                         SubscriptionId = existing.Id,
                                         Status = "active",
-                                        StripeSubscriptionId = session.SubscriptionId,
-                                        CreatedAt = DateTime.UtcNow
+                                        StripeSubscriptionId = session.SubscriptionId
                                     });
                                 }
                                 else
                                 {
                                     var newSub = new Models.Subscription
                                     {
-                                        Id = Guid.NewGuid(),
                                         UserId = userId,
                                         StripeCustomerId = session.CustomerId,
                                         StripeSubscriptionId = session.SubscriptionId,
@@ -134,11 +131,9 @@ namespace MockApi.Controllers
                                     _context.Subscriptions.Add(newSub);
                                     _context.SubscriptionHistories.Add(new SubscriptionHistory
                                     {
-                                        Id = Guid.NewGuid(),
                                         SubscriptionId = newSub.Id,
                                         Status = "active",
                                         StripeSubscriptionId = session.SubscriptionId,
-                                        CreatedAt = DateTime.UtcNow
                                     });
                                 }
 
@@ -171,8 +166,7 @@ namespace MockApi.Controllers
                                     Id = Guid.NewGuid(),
                                     SubscriptionId = sub.Id,
                                     Status = status,
-                                    StripeSubscriptionId=stripeSubId,
-                                    CreatedAt = DateTime.UtcNow
+                                    StripeSubscriptionId=stripeSubId
                                 });
 
                                 await _context.SaveChangesAsync();
@@ -201,11 +195,9 @@ namespace MockApi.Controllers
 
                                 _context.SubscriptionHistories.Add(new SubscriptionHistory
                                 {
-                                    Id = Guid.NewGuid(),
                                     SubscriptionId = sub.Id,
                                     Status = "canceled",
                                     StripeSubscriptionId = stripeSubId,
-                                    CreatedAt = DateTime.UtcNow
                                 });
 
                                 await _context.SaveChangesAsync();

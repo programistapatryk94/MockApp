@@ -36,8 +36,13 @@ namespace MockApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ProjectDto>> GetProjectById(Guid id)
         {
-            var ownerId = await _context.Projects.IgnoreQueryFilters().Where(p => p.Id == id).Select(p => p.UserId).FirstOrDefaultAsync();
-            var collaborationEnabled = await _featureChecker.IsEnabledAsync(ownerId, AppFeatures.CollaborationEnabled);
+            var ownerId = await _context.Projects.IgnoreQueryFilters().Where(p => p.Id == id).Select(p => p.CreatorUserId).FirstOrDefaultAsync();
+            if(null == ownerId)
+            {
+                return NotFound(_translationService.Translate("ProjectNotFound"));
+            }
+
+            var collaborationEnabled = await _featureChecker.IsEnabledAsync(ownerId.Value, AppFeatures.CollaborationEnabled);
 
             Project? project;
 
@@ -91,7 +96,6 @@ namespace MockApi.Controllers
 
             var project = _mapper.Map<Project>(createProjectInput);
             project.Id = Guid.NewGuid();
-            project.UserId = userId;
             project.Secret = SecretGenerator.Generate();
 
             _context.Projects.Add(project);
@@ -112,7 +116,7 @@ namespace MockApi.Controllers
 
             using(_context.MaybeWithFilterOff(nameof(AppDbContext.ApplyCollaborationFilter), !collaborationEnabled))
             {
-                project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id && p.UserId == _appSession.UserId);
+                project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id && p.CreatorUserId == _appSession.UserId);
             }
 
             if (null == project)
@@ -131,14 +135,18 @@ namespace MockApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProject(Guid id)
         {
-            var ownerId = await _context.Projects.Where(p => p.Id == id).Select(p => p.UserId).FirstOrDefaultAsync();
-            var collaborationEnabled = await _featureChecker.IsEnabledAsync(ownerId, AppFeatures.CollaborationEnabled);
+            var ownerId = await _context.Projects.Where(p => p.Id == id).Select(p => p.CreatorUserId).FirstOrDefaultAsync();
+            if(null == ownerId)
+            {
+                return NotFound(_translationService.Translate("ProjectNotFound"));
+            }
+            var collaborationEnabled = await _featureChecker.IsEnabledAsync(ownerId.Value, AppFeatures.CollaborationEnabled);
 
             Project? project;
 
             using(_context.MaybeWithFilterOff(nameof(AppDbContext.ApplyCollaborationFilter), !collaborationEnabled))
             {
-                var isOwner = await _context.Projects.AnyAsync(p => p.Id == id && p.UserId == _appSession.UserId);
+                var isOwner = await _context.Projects.AnyAsync(p => p.Id == id && p.CreatorUserId == _appSession.UserId);
 
                 if (!isOwner)
                 {

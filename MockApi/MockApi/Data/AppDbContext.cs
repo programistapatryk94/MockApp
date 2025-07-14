@@ -1,5 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.ValueGeneration;
+using MockApi.Extensions;
+using MockApi.Helpers;
 using MockApi.Models;
+using MockApi.Runtime.DataModels;
 using MockApi.Runtime.Session;
 
 namespace MockApi.Data
@@ -38,13 +43,13 @@ namespace MockApi.Data
             modelBuilder.Entity<Project>().HasQueryFilter(e =>
             !ApplyOwnershipFilter && !ApplyCollaborationFilter
             || (
-                (ApplyOwnershipFilter && e.UserId == CurrentUserId)
+                (ApplyOwnershipFilter && e.CreatorUserId == CurrentUserId)
                 || (ApplyCollaborationFilter && e.ProjectMembers.Any(c => c.UserId == CurrentUserId))
             ));
             modelBuilder.Entity<Mock>().HasQueryFilter(e =>
             !ApplyOwnershipFilter && !ApplyCollaborationFilter
             || (
-                (ApplyOwnershipFilter && e.Project.UserId == CurrentUserId)
+                (ApplyOwnershipFilter && e.Project.CreatorUserId == CurrentUserId)
                 || (ApplyCollaborationFilter && e.Project.ProjectMembers.Any(c => c.UserId == CurrentUserId))
             ));
 
@@ -66,6 +71,88 @@ namespace MockApi.Data
                 .WithOne(h => h.Subscription)
                 .HasForeignKey(h => h.SubscriptionId)
                 .OnDelete(DeleteBehavior.Cascade);
+        }
+
+        public override int SaveChanges()
+        {
+            ApplyAuditConcepts();
+            var result = base.SaveChanges();
+            return result;
+        }
+
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            ApplyAuditConcepts();
+            var result = await base.SaveChangesAsync(cancellationToken);
+            return result;
+        }
+
+        private void ApplyAuditConcepts()
+        {
+            var userId = GetAuditUserId();
+
+            foreach (var entry in ChangeTracker.Entries().ToList())
+            {
+                if (entry.State != EntityState.Modified && entry.CheckOwnedEntityChange())
+                {
+                    Entry(entry.Entity).State = EntityState.Modified;
+                }
+
+                ApplyAuditConcepts(entry, userId);
+            }
+        }
+
+        private void ApplyAuditConcepts(EntityEntry entry, Guid? userId)
+        {
+            switch (entry.State)
+            {
+                case EntityState.Added:
+                    ApplyAuditConceptsForAddedEntity(entry, userId);
+                    break;
+                case EntityState.Modified:
+                    ApplyAuditConceptsForModifiedEntity(entry, userId);
+                    break;
+            }
+        }
+
+        private void ApplyAuditConceptsForAddedEntity(EntityEntry entry, Guid? userId)
+        {
+            CheckAndSetId(entry);
+            SetCreationAuditProperties(entry.Entity, userId);
+        }
+
+        private void ApplyAuditConceptsForModifiedEntity(EntityEntry entry, Guid? userId)
+        {
+            SetModificationAuditProperties(entry.Entity, userId);
+        }
+
+        private void CheckAndSetId(EntityEntry entry)
+        {
+            var entity = entry.Entity as IEntity<Guid>;
+            if (entity != null && entity.Id == Guid.Empty)
+            {
+                var idPropertyEntry = entry.Property(nameof(IEntity.Id));
+
+                if (idPropertyEntry != null && idPropertyEntry.Metadata.ValueGenerated == Microsoft.EntityFrameworkCore.Metadata.ValueGenerated.Never)
+                {
+                    entity.Id = Guid.NewGuid();
+                }
+            }
+        }
+
+        private void SetCreationAuditProperties(object entity, Guid? userId)
+        {
+            AuditingHelper.SetCreationAuditProperties(entity, userId);
+        }
+
+        private void SetModificationAuditProperties(object entity, Guid? userId)
+        {
+            AuditingHelper.SetModificationAuditProperties(entity, userId);
+        }
+
+        private Guid? GetAuditUserId()
+        {
+            return _appSession.UserId;
         }
     }
 }

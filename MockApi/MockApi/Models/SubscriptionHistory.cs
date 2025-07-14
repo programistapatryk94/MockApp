@@ -1,13 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using MockApi.Runtime.DataModels;
+using MockApi.Runtime.DataModels.Auditing;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MockApi.Models
 {
-    public class SubscriptionHistory
+    public class SubscriptionHistory : AuditedEntity
     {
-        [Key]
-        public Guid Id { get; set; }
-
         [Required]
         public Guid SubscriptionId { get; set; }
 
@@ -19,9 +18,6 @@ namespace MockApi.Models
 
         [Required]
         public string StripeSubscriptionId { get; set; } = default!;
-
-        [Required]
-        public DateTime CreatedAt { get; set; }
 
         public DateTime? EndedAt { get; set; }
     }

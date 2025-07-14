@@ -15,13 +15,13 @@ namespace MockApi.Services
         public async Task<bool> IsProjectOwnedBySubscribedUser(Guid projectId)
         {
             var project = await _context.Projects
-                .Include(p => p.User)
+                .Include(p => p.CreatorUser)
                 .ThenInclude(p => p.Subscription)
                 .FirstOrDefaultAsync(p => p.Id == projectId);
 
             if (null == project) return false;
 
-            var sub = project.User.Subscription;
+            var sub = project.CreatorUser.Subscription;
             throw new NotImplementedException("Not implemenete");
 
             //return sub != null && (sub.EndsAt == null || sub.EndsAt > DateTime.UtcNow);

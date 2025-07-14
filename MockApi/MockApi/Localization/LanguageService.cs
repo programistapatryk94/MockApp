@@ -35,6 +35,7 @@ namespace MockApi.Localization
                 if (userFeature != null)
                 {
                     userFeature.Value = languageName;
+                    userFeature.LastModifierUserId = userId;
                 }
                 else
                 {

@@ -1,14 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using MockApi.Runtime.DataModels.Auditing;
+using System.ComponentModel.DataAnnotations;
 
 namespace MockApi.Models
 {
-    public class FeatureSetting
+    public class FeatureSetting : AuditedEntity<long>
     {
         public const int MaxNameLength = 128;
         public const int MaxValueLength = 2000;
-
-        [Key]
-        public long Id { get; set; }
 
         [Required]
         [MaxLength(MaxNameLength)]
@@ -18,8 +16,6 @@ namespace MockApi.Models
         [MaxLength(MaxValueLength)]
         public string Value { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public Guid? CreatorUserId { get; set; }
         public Guid UserId { get; set; }
 
         public FeatureSetting()

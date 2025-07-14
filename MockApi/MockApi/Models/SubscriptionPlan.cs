@@ -1,8 +1,9 @@
-﻿namespace MockApi.Models
+﻿using MockApi.Runtime.DataModels;
+
+namespace MockApi.Models
 {
-    public class SubscriptionPlan
+    public class SubscriptionPlan : Entity
     {
-        public Guid Id { get; set; }
         public string Name { get; set; } = default!;
         public string StripePriceId { get; set; } = default!;
         public decimal Price { get; set; }

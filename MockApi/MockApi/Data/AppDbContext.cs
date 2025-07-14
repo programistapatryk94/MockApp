@@ -33,6 +33,7 @@ namespace MockApi.Data
         public DbSet<Subscription> Subscriptions => Set<Subscription>();
         public DbSet<SubscriptionHistory> SubscriptionHistories => Set<SubscriptionHistory>();
         public DbSet<FeatureSetting> FeatureSettings => Set<FeatureSetting>();
+        public DbSet<RequestLog> RequestLogs => Set<RequestLog>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -1,10 +1,37 @@
-﻿using System.Globalization;
-using System.Text.RegularExpressions;
-
-namespace MockApi.Extensions
+﻿namespace MockApi.Extensions
 {
     public static class StringExtensions
     {
+        public static string TruncateWithPostfix(this string str, int maxLength)
+        {
+            return TruncateWithPostfix(str, maxLength, "...");
+        }
+
+        public static string TruncateWithPostfix(this string str, int maxLength, string postfix)
+        {
+            if (str == null)
+            {
+                return null;
+            }
+
+            if (string.IsNullOrEmpty(str) || maxLength == 0)
+            {
+                return string.Empty;
+            }
+
+            if (str.Length <= maxLength)
+            {
+                return str;
+            }
+
+            if (maxLength <= postfix.Length)
+            {
+                return postfix.Left(maxLength);
+            }
+
+            return str.Left(maxLength - postfix.Length) + postfix;
+        }
+
         public static string? RemovePostFix(this string str, params string[] postFixes)
         {
             if (str == null)

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -6,10 +7,12 @@ using MockApi.Data;
 using MockApi.Extensions;
 using MockApi.Helpers;
 using MockApi.Localization;
+using MockApi.Runtime.DataModels.Auditing;
 using MockApi.Runtime.Features;
 using MockApi.Runtime.Session;
 using MockApi.Services;
 using MockApi.Translations;
+using System.Linq.Expressions;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -92,12 +95,21 @@ builder.Services.AddScoped<AppFeatureProvider>();
 builder.Services.AddSingleton<ILocalizationConfiguration, LocalizationConfiguration>();
 builder.Services.AddScoped<ILanguageManager, LanguageManager>();
 builder.Services.AddScoped<ILanguageService, LanguageService>();
+builder.Services.AddScoped<IAuditSerializer, AuditSerializer>();
+builder.Services.AddScoped<IRequestLogHelper, RequestLogHelper>();
+builder.Services.AddScoped<RequestResponseLoggingFilter>();
 builder.Services.AddSingleton<ITranslationService, XmlTranslationService>();
+builder.Services.AddSingleton<IRequestLogConfiguration, RequestLogConfiguration>();
 
 builder.Services.AddSingleton<IFeatureConfiguration, FeatureConfiguration>();
 builder.Services.AddSingleton<IFeatureManager, FeatureManager>();
 
 builder.Services.AddAutoMapper(typeof(Program));
+
+builder.Services.Configure<MvcOptions>(options =>
+{
+    options.Filters.AddService<RequestResponseLoggingFilter>();
+});
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -122,6 +134,10 @@ var localizationConfig = app.Services.GetRequiredService<ILocalizationConfigurat
 localizationConfig.Languages.Add(new LanguageInfo("en", "English", "flag-icon us", isDefault: true));
 localizationConfig.Languages.Add(new LanguageInfo("pl", "Polski", "flag-icon pl"));
 MockApiLocalizationConfigurator.Configure(localizationConfig);
+
+var auditingConfig = app.Services.GetRequiredService<IRequestLogConfiguration>();
+auditingConfig.IgnoredTypes.Add(typeof(Stream));
+auditingConfig.IgnoredTypes.Add(typeof(Expression));
 
 (app.Services.GetRequiredService<IFeatureManager>() as FeatureManager)!.Initialize();
 (app.Services.GetRequiredService<ITranslationService>() as XmlTranslationService)!.Initialize();

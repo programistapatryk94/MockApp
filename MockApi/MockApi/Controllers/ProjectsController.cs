@@ -8,6 +8,7 @@ using MockApi.Extensions;
 using MockApi.Helpers;
 using MockApi.Localization;
 using MockApi.Models;
+using MockApi.Runtime.DataModels.UoW;
 using MockApi.Runtime.Features;
 using MockApi.Runtime.Session;
 
@@ -133,6 +134,7 @@ namespace MockApi.Controllers
         }
 
         [HttpDelete("{id}")]
+        [UnitOfWork]
         public async Task<IActionResult> DeleteProject(Guid id)
         {
             var ownerId = await _context.Projects.Where(p => p.Id == id).Select(p => p.CreatorUserId).FirstOrDefaultAsync();
@@ -158,23 +160,13 @@ namespace MockApi.Controllers
 
             if (null == project) return NotFound(_translationService.Translate("ProjectNotFound"));
 
-            using var transaction = await _context.Database.BeginTransactionAsync();
-            try
-            {
-                var mocks = _context.Mocks.Where(m => m.ProjectId == id);
-                _context.Mocks.RemoveRange(mocks);
+            var mocks = _context.Mocks.Where(m => m.ProjectId == id);
+            _context.Mocks.RemoveRange(mocks);
 
-                _context.Projects.Remove(project);
-                await _context.SaveChangesAsync();
+            _context.Projects.Remove(project);
+            await _context.SaveChangesAsync();
 
-                await transaction.CommitAsync();
-                return NoContent();
-            }
-            catch (Exception)
-            {
-                await transaction.RollbackAsync();
-                return StatusCode(500, _translationService.Translate("ProjectDeleteError"));
-            }
+            return NoContent();
         }
     }
 }

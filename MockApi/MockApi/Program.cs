@@ -8,6 +8,7 @@ using MockApi.Extensions;
 using MockApi.Helpers;
 using MockApi.Localization;
 using MockApi.Runtime.DataModels.Auditing;
+using MockApi.Runtime.DataModels.UoW;
 using MockApi.Runtime.Features;
 using MockApi.Runtime.Session;
 using MockApi.Services;
@@ -100,6 +101,8 @@ builder.Services.AddScoped<IRequestLogHelper, RequestLogHelper>();
 builder.Services.AddScoped<RequestResponseLoggingFilter>();
 builder.Services.AddSingleton<ITranslationService, XmlTranslationService>();
 builder.Services.AddSingleton<IRequestLogConfiguration, RequestLogConfiguration>();
+builder.Services.AddSingleton<IUnitOfWorkConfiguration, UnitOfWorkConfiguration>();
+builder.Services.AddScoped<UowFilter>();
 
 builder.Services.AddSingleton<IFeatureConfiguration, FeatureConfiguration>();
 builder.Services.AddSingleton<IFeatureManager, FeatureManager>();
@@ -109,6 +112,7 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.Configure<MvcOptions>(options =>
 {
     options.Filters.AddService<RequestResponseLoggingFilter>();
+    options.Filters.AddService<UowFilter>();
 });
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

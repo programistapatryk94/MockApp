@@ -33,11 +33,6 @@ namespace MockApi.Controllers
         [HttpPost("create-checkout-session")]
         public IActionResult CreateCheckoutSession()
         {
-            if(null == _appSession.UserId)
-            {
-                return NotFound("Użytkownik nie jest zalogowany.");
-            }
-
             var domain = _clientRootAddress;
             var options = new SessionCreateOptions
             {
@@ -55,7 +50,7 @@ namespace MockApi.Controllers
                 CancelUrl = $"{domain}/cancel",
                 Metadata = new Dictionary<string, string>
     {
-        { "userId", _appSession.UserId.ToString() }, // <- dodaj userId z Twojej aplikacji
+        { "userId", _appSession.UserId.ToString()! }, // <- dodaj userId z Twojej aplikacji
     }
             };
 

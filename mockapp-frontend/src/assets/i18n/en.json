@@ -55,5 +55,6 @@
   "WYSTAPIL_NIEOCZEKIWANY_BLAD": "An unexpected error occurred. Please try again later.",
   "SUBSKRYPCJA": "Subscription",
   "SUBSCRIPTION_INFO": "Activate the subscription to create unlimited mocks and access the full potential of the application.",
-  "KUP_SUBSKRYPCJE": "Buy subscription – 15 PLN/month"
+  "KUP_SUBSKRYPCJE": "Buy subscription – 15 PLN/month",
+  "BLAD_SERWERA": "An unexpected server error occurred."
 }

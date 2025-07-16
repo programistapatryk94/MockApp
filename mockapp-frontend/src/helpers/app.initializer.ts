@@ -33,7 +33,7 @@ export class AppInitializer {
       
       try {
         const module = await import(
-          `@angular/common/locales/${angularLocale}.mjs`
+          `@angular/common/locales/${angularLocale}`
         );
         registerLocaleData(module.default);
       } catch (error) {

@@ -55,5 +55,6 @@
   "WYSTAPIL_NIEOCZEKIWANY_BLAD": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie później.",
   "SUBSKRYPCJA": "Subskrypcja",
   "SUBSCRIPTION_INFO": "Aktywuj subskrypcję, aby tworzyć nielimitowane mocki i korzystać z pełnych możliwości aplikacji.",
-  "KUP_SUBSKRYPCJE": "Kup subskrypcję – 15 zł/mies."
+  "KUP_SUBSKRYPCJE": "Kup subskrypcję – 15 zł/mies.",
+  "BLAD_SERWERA": "Wystąpił nieoczekiwany błąd serwera."
 }

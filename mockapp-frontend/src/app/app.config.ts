@@ -24,6 +24,7 @@ import { AppSessionService } from './shared/session/app-session.service';
 import { ServiceApiModule } from '../services/apis/service-api.module';
 import { LanguageService } from '../helpers/language.service';
 import { LanguageTokenInterceptor } from '../helpers/language-token.interceptor';
+import { ErrorInterceptor } from '../helpers/error.interceptor';
 
 export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -58,7 +59,12 @@ export const appConfig: ApplicationConfig = {
     {
       provide: HTTP_INTERCEPTORS,
       useClass: LanguageTokenInterceptor,
-      multi: true
+      multi: true,
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: ErrorInterceptor,
+      multi: true,
     },
     AppSessionService,
     provideAppInitializer(
@@ -73,8 +79,9 @@ export const appConfig: ApplicationConfig = {
     },
     {
       provide: LOCALE_ID,
-      useFactory: (languageService: LanguageService) => languageService.currentLocale,
-      deps: [LanguageService]
+      useFactory: (languageService: LanguageService) =>
+        languageService.currentLocale,
+      deps: [LanguageService],
     },
     provideHttpClient(withInterceptorsFromDi()),
   ],

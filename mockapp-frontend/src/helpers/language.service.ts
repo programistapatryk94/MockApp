@@ -80,10 +80,10 @@ export class LanguageService {
   }
 
   getAngularLocale(): string {
-    var find = this.localeMappings.find((p) => p.from == this._locale);
-    if (find != null) {
-      return find.to;
-    }
+    // var find = this.localeMappings.find((p) => p.from == this._locale);
+    // if (find != null) {
+    //   return find.to;
+    // }
     return this._locale;
   }
 

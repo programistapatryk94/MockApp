@@ -6,6 +6,7 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from '../../helpers/token.interceptor';
 import { SubscriptionApiService } from './subscription-api.service';
 import { LanguageTokenInterceptor } from '../../helpers/language-token.interceptor';
+import { ErrorInterceptor } from '../../helpers/error.interceptor';
 
 @NgModule({
   providers: [
@@ -21,6 +22,11 @@ import { LanguageTokenInterceptor } from '../../helpers/language-token.intercept
     {
       provide: HTTP_INTERCEPTORS,
       useClass: LanguageTokenInterceptor,
+      multi: true,
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: ErrorInterceptor,
       multi: true,
     },
   ],

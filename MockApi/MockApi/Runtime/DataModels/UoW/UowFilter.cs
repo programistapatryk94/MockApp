@@ -7,10 +7,12 @@ namespace MockApi.Runtime.DataModels.UoW
     public class UowFilter : IAsyncActionFilter
     {
         private readonly IUnitOfWorkConfiguration _unitOfWorkConfiguration;
+        private readonly ILogger<UowFilter> _logger;
 
-        public UowFilter(IUnitOfWorkConfiguration unitOfWorkConfiguration)
+        public UowFilter(IUnitOfWorkConfiguration unitOfWorkConfiguration, ILogger<UowFilter> logger)
         {
             _unitOfWorkConfiguration = unitOfWorkConfiguration;
+            _logger = logger;
         }
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
@@ -56,6 +58,7 @@ namespace MockApi.Runtime.DataModels.UoW
             }
             catch (Exception ex)
             {
+                _logger.LogWarning(ex, ex.ToString());
                 throw;
             }
         }

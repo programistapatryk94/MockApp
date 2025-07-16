@@ -7,17 +7,27 @@ using MockApi.Data;
 using MockApi.Extensions;
 using MockApi.Helpers;
 using MockApi.Localization;
+using MockApi.Localization.RequestCulture;
+using MockApi.Runtime.Configuration;
 using MockApi.Runtime.DataModels.Auditing;
 using MockApi.Runtime.DataModels.UoW;
+using MockApi.Runtime.Exceptions.Handling;
 using MockApi.Runtime.Features;
 using MockApi.Runtime.Session;
 using MockApi.Services;
 using MockApi.Translations;
+using Serilog;
 using System.Linq.Expressions;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
+
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
@@ -99,10 +109,15 @@ builder.Services.AddScoped<ILanguageService, LanguageService>();
 builder.Services.AddScoped<IAuditSerializer, AuditSerializer>();
 builder.Services.AddScoped<IRequestLogHelper, RequestLogHelper>();
 builder.Services.AddScoped<RequestResponseLoggingFilter>();
+builder.Services.AddScoped<AppExceptionFilter>();
 builder.Services.AddSingleton<ITranslationService, XmlTranslationService>();
 builder.Services.AddSingleton<IRequestLogConfiguration, RequestLogConfiguration>();
 builder.Services.AddSingleton<IUnitOfWorkConfiguration, UnitOfWorkConfiguration>();
+builder.Services.AddSingleton<IAppConfiguration, AppConfiguration>();
 builder.Services.AddScoped<UowFilter>();
+builder.Services.AddSingleton<LocalizationHeaderRequestCultureProvider>();
+builder.Services.AddSingleton<DefaultRequestCultureProvider>();
+builder.Services.AddSingleton<UserRequestCultureProvider>();
 
 builder.Services.AddSingleton<IFeatureConfiguration, FeatureConfiguration>();
 builder.Services.AddSingleton<IFeatureManager, FeatureManager>();
@@ -113,6 +128,7 @@ builder.Services.Configure<MvcOptions>(options =>
 {
     options.Filters.AddService<RequestResponseLoggingFilter>();
     options.Filters.AddService<UowFilter>();
+    options.Filters.AddService<AppExceptionFilter>();
 });
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

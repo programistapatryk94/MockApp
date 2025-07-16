@@ -34,7 +34,7 @@ namespace MockApi.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] CreateUserInput user)
         {
-            if (await _context.Users.AnyAsync(u => u.Email == user.Email))
+            if (await _context.Users.AnyAsync(u => u.NormalizedEmailAddress == user.Email.ToUpperInvariant()))
             {
                 return BadRequest(_translationService.Translate("email_exists"));
             }
@@ -44,6 +44,7 @@ namespace MockApi.Controllers
                 Email = user.Email,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.Password)
             };
+            newUser.SetNormalizedNames();
 
             _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
@@ -54,7 +55,7 @@ namespace MockApi.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginUserInput loginData)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == loginData.Email);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.NormalizedEmailAddress == loginData.Email.ToUpperInvariant());
             if (null == user || !BCrypt.Net.BCrypt.Verify(loginData.Password, user.PasswordHash))
             {
                 return Unauthorized(_translationService.Translate("invalid_credentials"));
@@ -67,11 +68,7 @@ namespace MockApi.Controllers
         [Authorize]
         public async Task<IActionResult> ChangeLanguage([FromBody] ChangeLanguageInput input)
         {
-            var userId = _appSession.UserId;
-            if (!userId.HasValue)
-                return Unauthorized();
-
-            await _languageService.ChangeLanguageAsync(input.LanguageName, userId.Value);
+            await _languageService.ChangeLanguageAsync(input.LanguageName, _appSession.UserId!.Value);
 
             return Ok();
         }

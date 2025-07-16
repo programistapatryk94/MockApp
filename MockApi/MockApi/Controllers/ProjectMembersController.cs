@@ -72,7 +72,7 @@ namespace MockApi.Controllers
                 return NotFound(_translationService.Translate("ProjectAccessDenied"));
             }
 
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == input.Email);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.NormalizedEmailAddress == input.Email.ToUpperInvariant());
 
             if(null == user)
             {

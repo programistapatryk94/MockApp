@@ -29,11 +29,13 @@ namespace MockApi.Translations
                     SupportedUICultures = supportedCultures
                 };
 
-                var userProvider = new UserRequestCultureProvider();
+                var userProvider = serviceProvider.GetRequiredService<UserRequestCultureProvider>();
+                var headerProvider = serviceProvider.GetRequiredService<LocalizationHeaderRequestCultureProvider>();
+                var defaultProvider = serviceProvider.GetRequiredService<DefaultRequestCultureProvider>();
 
                 options.RequestCultureProviders.Insert(1, userProvider);
-                options.RequestCultureProviders.Insert(2, new LocalizationHeaderRequestCultureProvider());
-                options.RequestCultureProviders.Insert(5, new DefaultRequestCultureProvider());
+                options.RequestCultureProviders.Insert(2, headerProvider);
+                options.RequestCultureProviders.Insert(5, defaultProvider);
 
                 optionsAction?.Invoke(options);
 

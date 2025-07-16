@@ -9,15 +9,19 @@ namespace MockApi.Localization
         public IDictionary<string, ILocalizationDictionary> Dictionaries { get; private set; }
 
         private readonly ILocalizationConfiguration _localizationConfiguration;
+        private readonly ILogger<XmlTranslationService> _logger;
 
-        public XmlTranslationService(ILocalizationConfiguration localizationConfiguration)
+        public XmlTranslationService(ILocalizationConfiguration localizationConfiguration, ILogger<XmlTranslationService> logger)
         {
             _localizationConfiguration = localizationConfiguration;
             Dictionaries = new Dictionary<string, ILocalizationDictionary>();
+            _logger = logger;
         }
 
         public void Initialize()
         {
+            _logger.LogDebug(string.Format("Initializing {0} localization sources.", _localizationConfiguration.Sources.Count));
+
             foreach (var source in _localizationConfiguration.Sources)
             {
                 var basePath = Path.Combine(AppContext.BaseDirectory, source.RelativePathToFolder);
@@ -64,6 +68,8 @@ namespace MockApi.Localization
                         Dictionaries[culture.Name][key] = value;
                     }
                 }
+
+                _logger.LogDebug("Initialized localization source: " + source.RelativePathToFolder);
             }
         }
 

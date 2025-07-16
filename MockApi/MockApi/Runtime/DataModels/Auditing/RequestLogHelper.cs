@@ -14,14 +14,16 @@ namespace MockApi.Runtime.DataModels.Auditing
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuditSerializer _auditSerializer;
         private readonly AppDbContext _context;
+        private readonly ILogger<RequestLogHelper> _logger;
 
-        public RequestLogHelper(IRequestLogConfiguration requestLogConfiguration, IAppSession appSession, IHttpContextAccessor httpContextAccessor, IAuditSerializer auditSerializer, AppDbContext context)
+        public RequestLogHelper(IRequestLogConfiguration requestLogConfiguration, IAppSession appSession, IHttpContextAccessor httpContextAccessor, IAuditSerializer auditSerializer, AppDbContext context, ILogger<RequestLogHelper> logger)
         {
             _requestLogConfiguration = requestLogConfiguration;
             _appSession = appSession;
             _httpContextAccessor = httpContextAccessor;
             _auditSerializer = auditSerializer;
             _context = context;
+            _logger = logger;
         }
 
         public RequestLog CreateAuditLog(Type type, MethodInfo method, IDictionary<string, object> arguments)
@@ -139,7 +141,7 @@ namespace MockApi.Runtime.DataModels.Auditing
             }
             catch (Exception ex)
             {
-
+                _logger.LogWarning(ex.ToString());
             }
             return null;
         }
@@ -176,6 +178,7 @@ namespace MockApi.Runtime.DataModels.Auditing
             }
             catch (Exception ex)
             {
+                _logger.LogWarning(ex, ex.ToString());
                 return "{}";
             }
         }

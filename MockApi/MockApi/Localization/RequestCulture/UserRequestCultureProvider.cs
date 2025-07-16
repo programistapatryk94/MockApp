@@ -11,6 +11,12 @@ namespace MockApi.Localization.RequestCulture
     {
         public CookieRequestCultureProvider CookieProvider { get; set; }
         public LocalizationHeaderRequestCultureProvider HeaderProvider { get; set; }
+        private readonly ILogger<UserRequestCultureProvider> _logger;
+
+        public UserRequestCultureProvider(ILogger<UserRequestCultureProvider> logger)
+        {
+            _logger = logger;
+        }
 
         public override async Task<ProviderCultureResult?> DetermineProviderCultureResult(HttpContext httpContext)
         {
@@ -26,6 +32,9 @@ namespace MockApi.Localization.RequestCulture
 
             if (!string.IsNullOrEmpty(userCulture))
             {
+                _logger.LogDebug(string.Format("{0} - Read from user settings", nameof(UserRequestCultureProvider)));
+                _logger.LogDebug(string.Format("Using Culture:{0} , UICulture:{1}", userCulture, userCulture));
+
                 return new ProviderCultureResult(userCulture, userCulture);
             }
 
@@ -36,6 +45,9 @@ namespace MockApi.Localization.RequestCulture
             {
                 var cookieCulture = cookieResult.Cultures.First().Value;
                 var cookieUICulture = cookieResult.UICultures.First().Value;
+
+                _logger.LogDebug(string.Format("{0} - Read from cookie", nameof(UserRequestCultureProvider)));
+                _logger.LogDebug(string.Format("Using Culture:{0} , UICulture:{1}", cookieCulture, cookieUICulture));
 
                 result = cookieResult;
                 cultureName = cookieCulture ?? cookieUICulture;
@@ -48,6 +60,9 @@ namespace MockApi.Localization.RequestCulture
                 {
                     var headerCulture = headerResult.Cultures.First().Value;
                     var headerUICulture = headerResult.UICultures.First().Value;
+
+                    _logger.LogDebug(string.Format("{0} - Read from header", nameof(UserRequestCultureProvider)));
+                    _logger.LogDebug(string.Format("Using Culture:{0} , UICulture:{1}", headerCulture, headerUICulture));
 
                     result = headerResult;
                     cultureName = headerCulture ?? headerUICulture;

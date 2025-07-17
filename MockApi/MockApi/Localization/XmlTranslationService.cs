@@ -52,14 +52,13 @@ namespace MockApi.Localization
                     }
 
                     var entries = root.Elements("text")
-                    .Where(x => x.Attribute("key") != null)
-                    .ToDictionary(
-                        x => x.Attribute("key")!.Value,
-                        x => x.Value.Trim()
-                    );
+                    .Where(x => x.Attribute("key") != null);
 
-                    foreach (var (key, value) in entries)
+                    foreach (var element in entries)
                     {
+                        var key = element.Attribute("key")!.Value;
+                        var value = element.Value.Trim();
+
                         if (Dictionaries[culture.Name].ContainsKey(key))
                         {
                             throw new AppException($"Duplicate translation key '{key}' found for language '{langCode}' in resource '{Path.GetFileName(filePath)}'.");

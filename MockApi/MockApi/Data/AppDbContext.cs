@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.ValueGeneration;
 using MockApi.Extensions;
 using MockApi.Helpers;
 using MockApi.Models;
@@ -45,13 +44,13 @@ namespace MockApi.Data
             !ApplyOwnershipFilter && !ApplyCollaborationFilter
             || (
                 (ApplyOwnershipFilter && e.CreatorUserId == CurrentUserId)
-                || (ApplyCollaborationFilter && e.ProjectMembers.Any(c => c.UserId == CurrentUserId))
+                || (ApplyCollaborationFilter && e.CreatorUser.IsCollaborationEnabled && e.ProjectMembers.Any(c => c.UserId == CurrentUserId))
             ));
             modelBuilder.Entity<Mock>().HasQueryFilter(e =>
             !ApplyOwnershipFilter && !ApplyCollaborationFilter
             || (
                 (ApplyOwnershipFilter && e.Project.CreatorUserId == CurrentUserId)
-                || (ApplyCollaborationFilter && e.Project.ProjectMembers.Any(c => c.UserId == CurrentUserId))
+                || (ApplyCollaborationFilter && e.Project.CreatorUser.IsCollaborationEnabled && e.Project.ProjectMembers.Any(c => c.UserId == CurrentUserId))
             ));
 
             modelBuilder.Entity<ProjectMember>()

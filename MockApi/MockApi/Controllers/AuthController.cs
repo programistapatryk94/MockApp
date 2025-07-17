@@ -32,7 +32,7 @@ namespace MockApi.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] CreateUserInput user)
+        public async Task<ActionResult<RegisterResultDto>> Register([FromBody] CreateUserInput user)
         {
             if (await _context.Users.AnyAsync(u => u.NormalizedEmailAddress == user.Email.ToUpperInvariant()))
             {
@@ -49,11 +49,11 @@ namespace MockApi.Controllers
             _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
 
-            return Ok(new { Token = _tokenService.GenerateToken(newUser) });
+            return Ok(new RegisterResultDto { Token = _tokenService.GenerateToken(newUser) });
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginUserInput loginData)
+        public async Task<ActionResult<LoginResultDto>> Login([FromBody] LoginUserInput loginData)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.NormalizedEmailAddress == loginData.Email.ToUpperInvariant());
             if (null == user || !BCrypt.Net.BCrypt.Verify(loginData.Password, user.PasswordHash))
@@ -61,7 +61,7 @@ namespace MockApi.Controllers
                 return Unauthorized(_translationService.Translate("invalid_credentials"));
             }
 
-            return Ok(new { token = _tokenService.GenerateToken(user) });
+            return Ok(new LoginResultDto { Token = _tokenService.GenerateToken(user) });
         }
 
         [HttpPost("changeLanguage")]

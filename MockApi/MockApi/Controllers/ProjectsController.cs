@@ -62,12 +62,9 @@ namespace MockApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProjectDto>>> GetProjects()
         {
-            var ownerId = _appSession.UserId!.Value;
-            var collaborationEnabled = await _featureChecker.IsEnabledAsync(ownerId, AppFeatures.CollaborationEnabled);
-
             List<Project> projects;
 
-            using(_context.MaybeWithFilterOff(nameof(AppDbContext.ApplyCollaborationFilter), !collaborationEnabled))
+            using(_context.WithFilterOn(nameof(AppDbContext.ApplyCollaborationFilter)))
             {
                 projects = await _context.Projects.ToListAsync();
             }
@@ -90,7 +87,7 @@ namespace MockApi.Controllers
                 projectsCount = await _context.Projects.CountAsync();
             }
 
-            if(projectsCount > maxProjectLimit)
+            if((projectsCount+1) > maxProjectLimit)
             {
                 return BadRequest(_translationService.Translate("MaxProjectLimitReached", maxProjectLimit));
             }
@@ -110,8 +107,12 @@ namespace MockApi.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<ProjectDto>> UpdateProject(Guid id, [FromBody] CreateOrUpdateProjectInput updateProjectInput)
         {
-            var ownerId = _appSession.UserId!.Value;
-            var collaborationEnabled = await _featureChecker.IsEnabledAsync(ownerId, AppFeatures.CollaborationEnabled);
+            var ownerId = await _context.Projects.Where(p => p.Id == id).Select(p => p.CreatorUserId).FirstOrDefaultAsync();
+            if (null == ownerId)
+            {
+                return NotFound(_translationService.Translate("ProjectNotFound"));
+            }
+            var collaborationEnabled = await _featureChecker.IsEnabledAsync(ownerId.Value, AppFeatures.CollaborationEnabled);
 
             Project? project;
 

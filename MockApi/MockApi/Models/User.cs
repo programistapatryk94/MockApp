@@ -24,6 +24,10 @@ namespace MockApi.Models
         //public virtual ICollection<Mock> Mocks { get; set; } = new List<Mock>();
         public virtual ICollection<ProjectMember> ProjectMembers { get; set; } = new List<ProjectMember>();
         public virtual Subscription? Subscription { get; set; }
+        /// <summary>
+        /// Flaga ustawiana, gdy użytkownik ma aktywną subskrypcję
+        /// </summary>
+        public bool IsCollaborationEnabled { get; set; }
 
         public void SetNormalizedNames()
         {

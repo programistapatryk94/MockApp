@@ -101,6 +101,7 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddScoped<IAppSession, ClaimsAppSession>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
+builder.Services.AddScoped<IStripeService, StripeService>();
 builder.Services.AddScoped<IFeatureChecker, FeatureChecker>();
 builder.Services.AddScoped<AppFeatureProvider>();
 builder.Services.AddSingleton<ILocalizationConfiguration, LocalizationConfiguration>();
@@ -151,8 +152,6 @@ var app = builder.Build();
 app.Services.GetRequiredService<IFeatureConfiguration>().Providers.Add<AppFeatureProvider>();
 
 var localizationConfig = app.Services.GetRequiredService<ILocalizationConfiguration>();
-localizationConfig.Languages.Add(new LanguageInfo("en", "English", "flag-icon us", isDefault: true));
-localizationConfig.Languages.Add(new LanguageInfo("pl", "Polski", "flag-icon pl"));
 MockApiLocalizationConfigurator.Configure(localizationConfig);
 
 var auditingConfig = app.Services.GetRequiredService<IRequestLogConfiguration>();

@@ -180,11 +180,13 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowFrontend");
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseAppRequestLocalization();
 
-app.UseCors("AllowFrontend");
 app.MapControllers();
 
 app.MapWhen(context =>

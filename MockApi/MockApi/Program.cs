@@ -163,6 +163,7 @@ MockApiLocalizationConfigurator.Configure(localizationConfig);
 var auditingConfig = app.Services.GetRequiredService<IRequestLogConfiguration>();
 auditingConfig.IgnoredTypes.Add(typeof(Stream));
 auditingConfig.IgnoredTypes.Add(typeof(Expression));
+auditingConfig.IsEnabledForAnonymousUsers = true;
 
 (app.Services.GetRequiredService<IFeatureManager>() as FeatureManager)!.Initialize();
 (app.Services.GetRequiredService<ITranslationService>() as XmlTranslationService)!.Initialize();

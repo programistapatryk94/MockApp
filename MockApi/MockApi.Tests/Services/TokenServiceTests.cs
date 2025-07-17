@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using MockApi.Models;
 using MockApi.Services;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 
 namespace MockApi.Tests.Services
 {
@@ -13,7 +15,9 @@ namespace MockApi.Tests.Services
         public TokenServiceTests()
         {
             var inMemorySettings = new Dictionary<string, string> {
-            {"Jwt:Key", "super-secret-test-key-1234567890"}
+            {"Jwt:Key", "super-secret-test-key-1234567890"},
+            {"Jwt:Issuer", "TestIssuer"},
+            {"Jwt:Audience", "TestAudience"}
         };
 
             var config = new ConfigurationBuilder()
@@ -39,11 +43,27 @@ namespace MockApi.Tests.Services
             // Assert
             Assert.False(string.IsNullOrEmpty(token));
 
-            var handler = new JwtSecurityTokenHandler();
-            var jwt = handler.ReadJwtToken(token);
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.UTF8.GetBytes("super-secret-test-key-1234567890");
 
-            Assert.Equal(user.Id.ToString(), jwt.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value);
-            Assert.Equal(user.Email, jwt.Claims.First(c => c.Type == ClaimTypes.Email).Value);
+            tokenHandler.ValidateToken(token, new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = "TestIssuer",
+                ValidAudience = "TestAudience",
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ClockSkew = TimeSpan.Zero
+            }, out SecurityToken validatedToken);
+
+            var jwtToken = (JwtSecurityToken)validatedToken;
+            var nameId = jwtToken.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            var email = jwtToken.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value;
+
+            Assert.Equal(user.Id.ToString(), nameId);
+            Assert.Equal(user.Email, email);
         }
 
         [Fact]

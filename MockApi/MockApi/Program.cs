@@ -37,13 +37,16 @@ builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("App"))
 
 builder.Services.AddHttpContextAccessor();
 
-builder.WebHost.ConfigureKestrel(options =>
+if(builder.Environment.IsDevelopment())
 {
-    options.ListenLocalhost(44313, listenOptions =>
+    builder.WebHost.ConfigureKestrel(options =>
     {
-        listenOptions.UseHttps();
+        options.ListenLocalhost(44313, listenOptions =>
+        {
+            listenOptions.UseHttps();
+        });
     });
-});
+}
 
 builder.Services.AddCors(options =>
 {
@@ -139,8 +142,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
         options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
         {
-            ValidateIssuer = false,
-            ValidateAudience = false,
+            ValidateIssuer = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+
+            ValidateAudience = true,
+            ValidAudience = builder.Configuration["Jwt:Audience"],
             ValidateIssuerSigningKey = true,
             ValidateLifetime = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
@@ -166,6 +172,11 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHsts();
 }
 
 app.UseHttpsRedirection();

@@ -16,20 +16,22 @@ namespace MockApi.Controllers
         private readonly StripeSettings _stripeSettings;
         private readonly IAppSession _appSession;
         private readonly IStripeService _stripeService;
+        private readonly ILogger<StripeController> _logger;
 
-        public StripeController(IOptions<StripeSettings> stripeSettings, IAppSession appSession, IStripeService stripeService)
+        public StripeController(IOptions<StripeSettings> stripeSettings, IAppSession appSession, IStripeService stripeService, ILogger<StripeController> logger)
         {
             _stripeSettings = stripeSettings.Value;
             StripeConfiguration.ApiKey = _stripeSettings.SecretKey;
             _appSession = appSession;
             _stripeService = stripeService;
+            _logger = logger;
         }
 
         [Authorize]
         [HttpPost("create-checkout-session")]
-        public ActionResult<CheckoutSessionDto> CreateCheckoutSession()
+        public async Task<ActionResult<CheckoutSessionDto>> CreateCheckoutSession([FromBody] CreateCheckoutSessionInput input)
         {
-            var session = _stripeService.CreateCheckoutSession(_appSession.UserId!.Value);
+            var session = await _stripeService.CreateCheckoutSessionAsync(_appSession.UserId!.Value, input.SubscriptionPlanPriceId);
 
             return Ok(new CheckoutSessionDto { Url = session.Url });
         }
@@ -50,7 +52,7 @@ namespace MockApi.Controllers
             }
             catch (StripeException ex)
             {
-                //Console.WriteLine($"❌ Stripe error: {ex.Message}");
+                _logger.LogWarning(ex, "Błąd Stripe podczas weryfikacji webhooka: {Message}", ex.Message);
                 return BadRequest();
             }
 

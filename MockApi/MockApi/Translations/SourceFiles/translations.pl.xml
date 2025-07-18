@@ -14,4 +14,5 @@
   <text key="ProjectDeleteError">Wystąpił nieoczekiwany błąd podczas usuwania projektu.</text>
   <text key="SubdomainNotFound">Subdomena nie została znaleziona.</text>
   <text key="InvalidPathPrefix">Nieprawidłowy prefiks ścieżki.</text>
+  <text key="PlanPriceNotFound">Plan cenowy nie został znaleziony.</text>
 </translations>

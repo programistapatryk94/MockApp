@@ -9,6 +9,8 @@ namespace MockApi.Models
         public const int MaxPasswordLength = 128;
         public const int MaxPlainPasswordLength = 32;
 
+        public const string AdminEmail = "admin@admin.com";
+
         [Required]
         [StringLength(MaxEmailAddressLength)]
         public string Email { get; set; } = string.Empty;

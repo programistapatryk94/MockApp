@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Castle.Core.Logging;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MockApi.Controllers;
 using MockApi.Dtos.Stripe;
@@ -22,6 +24,7 @@ namespace MockApi.Tests.Controllers
             SecretKey = "sk_test_dummy",
             WebhookSecret = "whsec_dummy"
         };
+        private readonly Mock<ILogger<StripeController>> _mockLogger = new();
 
         public StripeControllerTests()
         {
@@ -30,23 +33,30 @@ namespace MockApi.Tests.Controllers
             _controller = new StripeController(
                 optionsStripe,
                 _mockAppSession.Object,
-                _mockStripeService.Object
+                _mockStripeService.Object,
+                _mockLogger.Object
             );
         }
 
         [Fact]
-        public void CreateCheckoutSession_ReturnsOkWithUrl()
+        public async Task CreateCheckoutSession_ReturnsOkWithUrl()
         {
             // Arrange
             var userId = Guid.NewGuid();
+            var stripePriceId = Guid.NewGuid();
             _mockAppSession.Setup(s => s.UserId).Returns(userId);
 
             var fakeSession = new Session { Url = "https://stripe.com/checkout" };
-            _mockStripeService.Setup(s => s.CreateCheckoutSession(userId))
-                .Returns(fakeSession);
+            _mockStripeService.Setup(s => s.CreateCheckoutSessionAsync(userId, stripePriceId))
+                .ReturnsAsync(fakeSession);
+
+            var input = new CreateCheckoutSessionInput
+            {
+                SubscriptionPlanPriceId = stripePriceId,
+            };
 
             // Act
-            var result = _controller.CreateCheckoutSession();
+            var result = await _controller.CreateCheckoutSession(input);
 
             // Assert
             var ok = Assert.IsType<OkObjectResult>(result.Result);

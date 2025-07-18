@@ -5,7 +5,7 @@ namespace MockApi.Services
 {
     public interface IStripeService
     {
-        Session CreateCheckoutSession(Guid userId);
+        Task<Session> CreateCheckoutSessionAsync(Guid userId, Guid subsriptionPlanPriceId);
         Task HandleWebhookAsync(Event stripeEvent);
     }
 }

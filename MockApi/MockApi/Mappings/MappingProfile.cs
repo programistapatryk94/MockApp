@@ -2,6 +2,7 @@
 using MockApi.Dtos.Mock;
 using MockApi.Dtos.Project;
 using MockApi.Dtos.ProjectMember;
+using MockApi.Dtos.SubscriptionPlan;
 using MockApi.Models;
 
 namespace MockApi.Mappings
@@ -20,6 +21,9 @@ namespace MockApi.Mappings
 
             CreateMap<User, ProjectMemberDto>()
                 .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.Id));
+
+            CreateMap<SubscriptionPlan, SubscriptionPlanDto>();
+            CreateMap<SubscriptionPlanPrice, SubscriptionPlanPriceDto>();
         }
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MockApi.Data;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MockApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250717183038_SubscriptionPlan")]
+    partial class SubscriptionPlan
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -336,40 +339,16 @@ namespace MockApi.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
-
-                    b.ToTable("SubscriptionPlans");
-                });
-
-            modelBuilder.Entity("MockApi.Models.SubscriptionPlanPrice", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal>("Amount")
+                    b.Property<decimal>("Price")
                         .HasColumnType("numeric");
-
-                    b.Property<string>("Currency")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<string>("StripePriceId")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("SubscriptionPlanId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("SubscriptionPlanId");
-
-                    b.ToTable("SubscriptionPlanPrices");
+                    b.ToTable("SubscriptionPlans");
                 });
 
             modelBuilder.Entity("MockApi.Models.User", b =>
@@ -478,17 +457,6 @@ namespace MockApi.Migrations
                     b.Navigation("Subscription");
                 });
 
-            modelBuilder.Entity("MockApi.Models.SubscriptionPlanPrice", b =>
-                {
-                    b.HasOne("MockApi.Models.SubscriptionPlan", "SubscriptionPlan")
-                        .WithMany("Prices")
-                        .HasForeignKey("SubscriptionPlanId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("SubscriptionPlan");
-                });
-
             modelBuilder.Entity("MockApi.Models.Project", b =>
                 {
                     b.Navigation("Mocks");
@@ -499,11 +467,6 @@ namespace MockApi.Migrations
             modelBuilder.Entity("MockApi.Models.Subscription", b =>
                 {
                     b.Navigation("History");
-                });
-
-            modelBuilder.Entity("MockApi.Models.SubscriptionPlan", b =>
-                {
-                    b.Navigation("Prices");
                 });
 
             modelBuilder.Entity("MockApi.Models.User", b =>

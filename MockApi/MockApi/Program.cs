@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MockApi.Data;
+using MockApi.Data.Seed;
 using MockApi.Extensions;
 using MockApi.Helpers;
 using MockApi.Localization;
@@ -37,7 +38,7 @@ builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("App"))
 
 builder.Services.AddHttpContextAccessor();
 
-if(builder.Environment.IsDevelopment())
+if (builder.Environment.IsDevelopment())
 {
     builder.WebHost.ConfigureKestrel(options =>
     {
@@ -114,6 +115,7 @@ builder.Services.AddScoped<IAuditSerializer, AuditSerializer>();
 builder.Services.AddScoped<IRequestLogHelper, RequestLogHelper>();
 builder.Services.AddScoped<RequestResponseLoggingFilter>();
 builder.Services.AddScoped<AppExceptionFilter>();
+builder.Services.AddScoped<IUserManager, AppUserManager>();
 builder.Services.AddSingleton<ITranslationService, XmlTranslationService>();
 builder.Services.AddSingleton<IRequestLogConfiguration, RequestLogConfiguration>();
 builder.Services.AddSingleton<IUnitOfWorkConfiguration, UnitOfWorkConfiguration>();
@@ -154,6 +156,22 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<AppDbContext>();
+    var config = services.GetRequiredService<IConfiguration>();
+
+    context.Database.Migrate();
+
+    bool shouldSeed = config.GetValue<bool>("SeedData");
+
+    if (shouldSeed)
+    {
+        SeedData.EnsureSeedData(services);
+    }
+}
 
 app.Services.GetRequiredService<IFeatureConfiguration>().Providers.Add<AppFeatureProvider>();
 

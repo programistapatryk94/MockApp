@@ -7,6 +7,7 @@ import { TokenInterceptor } from '../../helpers/token.interceptor';
 import { SubscriptionApiService } from './subscription-api.service';
 import { LanguageTokenInterceptor } from '../../helpers/language-token.interceptor';
 import { ErrorInterceptor } from '../../helpers/error.interceptor';
+import { SubscriptionPlanApiService } from './subscription-plan-api.service';
 
 @NgModule({
   providers: [
@@ -14,6 +15,7 @@ import { ErrorInterceptor } from '../../helpers/error.interceptor';
     ProjectApiService,
     ProjectMemberApiService,
     SubscriptionApiService,
+    SubscriptionPlanApiService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,

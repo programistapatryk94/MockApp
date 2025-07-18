@@ -56,5 +56,10 @@
   "SUBSKRYPCJA": "Subskrypcja",
   "SUBSCRIPTION_INFO": "Aktywuj subskrypcję, aby tworzyć nielimitowane mocki i korzystać z pełnych możliwości aplikacji.",
   "KUP_SUBSKRYPCJE": "Kup subskrypcję – 15 zł/mies.",
-  "BLAD_SERWERA": "Wystąpił nieoczekiwany błąd serwera."
+  "BLAD_SERWERA": "Wystąpił nieoczekiwany błąd serwera.",
+  "WYSTPI_BD_PODCZAS_POBIERANIA_PLANOW_SUBSKRYPCJI": "Wystąpił błąd podczas pobierania planów subskrypcji",
+  "SUBSCRIPTION_CHOOSE": "Wybierz plan subskrypcji",
+  "PLANS_PROJECTS": "Projekty",
+  "PLANS_RESOURCES": "Zasoby",
+  "PLANS_COLLABORATION": "Współpraca"
 }

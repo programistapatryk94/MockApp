@@ -56,5 +56,10 @@
   "SUBSKRYPCJA": "Subscription",
   "SUBSCRIPTION_INFO": "Activate the subscription to create unlimited mocks and access the full potential of the application.",
   "KUP_SUBSKRYPCJE": "Buy subscription – 15 PLN/month",
-  "BLAD_SERWERA": "An unexpected server error occurred."
+  "BLAD_SERWERA": "An unexpected server error occurred.",
+  "WYSTPI_BD_PODCZAS_POBIERANIA_PLANOW_SUBSKRYPCJI": "An error occurred while retrieving subscription plans.",
+  "SUBSCRIPTION_CHOOSE": "Select a subscription plan",
+  "PLANS_PROJECTS": "Projects",
+  "PLANS_RESOURCES": "Resources",
+  "PLANS_COLLABORATION": "Collaboration"
 }

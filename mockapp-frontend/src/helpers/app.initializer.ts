@@ -6,6 +6,20 @@ import { AppConsts } from '../app/shared/AppConsts';
 import { environment } from '../environments/environment';
 import { AppSessionService } from '../app/shared/session/app-session.service';
 import { LanguageService } from './language.service';
+import localeEn from '@angular/common/locales/en';
+import localePl from '@angular/common/locales/pl';
+
+export function loadAngularLocale(locale: string) {
+  switch (locale) {
+    case 'pl':
+      registerLocaleData(localePl);
+      break;
+    case 'en':
+    default:
+      registerLocaleData(localeEn);
+      break;
+  }
+}
 
 @Injectable({
   providedIn: 'root',
@@ -31,17 +45,7 @@ export class AppInitializer {
     if (langService.shouldLoadLocale()) {
       const angularLocale = langService.getAngularLocale();
       
-      try {
-        const module = await import(
-          `@angular/common/locales/${angularLocale}`
-        );
-        registerLocaleData(module.default);
-      } catch (error) {
-        console.warn(
-          `Nie udało się załadować locale "${angularLocale}"`,
-          error
-        );
-      }
+      loadAngularLocale(angularLocale);
     }
   }
 

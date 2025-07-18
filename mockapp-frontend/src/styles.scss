@@ -6,6 +6,13 @@
   box-sizing: border-box;
 }
 
+:root {
+  --mat-primary: #2196f3; // blue
+  --mat-accent:  #43a047; // green (zmieniasz!)
+  --mat-warn:    #e53935; // czerwony
+}
+
+
 html,
 body {
   margin: 0;
@@ -118,6 +125,18 @@ mat-card {
   &.us {
     background-image: url('/assets/flags/us.svg');
   }
+}
+
+// mat-icon[color="primary"] {
+//   color: var(--mat-primary, #3f51b5);
+// }
+
+mat-icon[color="accent"] {
+  color: var(--mat-accent, #43a047) !important;
+}
+
+mat-icon[color="warn"] {
+  color: var(--mat-warn, #f44336) !important;
 }
 
 @media (max-width: 600px) {

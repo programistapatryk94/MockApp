@@ -1,0 +1,11 @@
+@use '../../../styles/variables' as *;
+
+:host {
+    .dialog-title {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+}

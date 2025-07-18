@@ -2,6 +2,7 @@
 
 @use "styles/variables" as *;
 @use "styles/utilities" as *;
+@use '@angular/material' as mat;
 
 * {
   box-sizing: border-box;
@@ -18,18 +19,26 @@
 
 html,
 body {
-  font-family: Roboto, sans-serif;
   background: #f4f4f4;
   min-height: 100vh;
 }
 
-.spacer {
-  flex: 1 1 auto;
+body {
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+
+  @include mat.theme((
+    color: (
+      theme-type: light,
+      primary: mat.$azure-palette,
+      tertiary: mat.$blue-palette,
+    ),
+    typography: Roboto,
+    density: 0,
+  ));
 }
 
-body {
-  margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+.spacer {
+  flex: 1 1 auto;
 }
 
 h2 {

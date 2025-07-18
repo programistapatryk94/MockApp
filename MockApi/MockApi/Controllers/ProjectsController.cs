@@ -66,10 +66,13 @@ namespace MockApi.Controllers
 
             using(_context.WithFilterOn(nameof(AppDbContext.ApplyCollaborationFilter)))
             {
-                projects = await _context.Projects.ToListAsync();
+                projects = await _context.Projects.Include(p => p.CreatorUser).ToListAsync();
             }
 
-            var mappedProjects = _mapper.Map<IEnumerable<ProjectDto>>(projects);
+            var mappedProjects = _mapper.Map<IEnumerable<ProjectDto>>(projects, opt =>
+            {
+                opt.Items["CurrentUserId"] = _appSession.UserId;
+            });
 
             return Ok(mappedProjects);
         }
@@ -99,7 +102,10 @@ namespace MockApi.Controllers
             _context.Projects.Add(project);
             await _context.SaveChangesAsync();
 
-            var projectDto = _mapper.Map<ProjectDto>(project);
+            var projectDto = _mapper.Map<ProjectDto>(project, opt =>
+            {
+                opt.Items["CurrentUserId"] = _appSession.UserId;
+            });
 
             return Ok(projectDto);
         }
@@ -130,7 +136,10 @@ namespace MockApi.Controllers
 
             await _context.SaveChangesAsync();
 
-            var projectDto = _mapper.Map<ProjectDto>(project);
+            var projectDto = _mapper.Map<ProjectDto>(project, opt =>
+            {
+                opt.Items["CurrentUserId"] = _appSession.UserId;
+            });
             return Ok(projectDto);
         }
 

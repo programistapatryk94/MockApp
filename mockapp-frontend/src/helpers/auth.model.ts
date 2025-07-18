@@ -1,7 +1,6 @@
-
 export interface CreateUserInput {
-    email: string;
-    password: string;
+  email: string;
+  password: string;
 }
 
 export interface AuthResponse {
@@ -25,6 +24,14 @@ export interface LocalizationConfigurationDto {
   languages: LanguageInfo[];
 }
 
+export interface Features {
+  collaborationEnabled: boolean;
+  defaultLanguage: string;
+  maxMockCreationLimit: number;
+  maxProjectCreationLimit: number;
+}
+
 export interface UserInfoDto {
   localization: LocalizationConfigurationDto;
+  features: Features;
 }

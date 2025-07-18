@@ -17,8 +17,9 @@ namespace MockApi.Services
         private readonly AppDbContext _context;
         private readonly ILogger<StripeService> _logger;
         private readonly ITranslationService _translationService;
+        private readonly IUserManager _userManager;
 
-        public StripeService(IOptions<StripeSettings> stripeOptions, IOptions<AppSettings> appSettings, AppDbContext context, ILogger<StripeService> logger, ITranslationService translationService)
+        public StripeService(IOptions<StripeSettings> stripeOptions, IOptions<AppSettings> appSettings, AppDbContext context, ILogger<StripeService> logger, ITranslationService translationService, IUserManager userManager)
         {
             _stripeSettings = stripeOptions.Value;
             _clientRootAddress = appSettings.Value.ClientRootAddress;
@@ -26,12 +27,13 @@ namespace MockApi.Services
             _context = context;
             _logger = logger;
             _translationService = translationService;
+            _userManager = userManager;
         }
 
-        public async Task<Session> CreateCheckoutSessionAsync(Guid userId, Guid subsriptionPlanPriceId)
+        public async Task<Session> CreateCheckoutSessionAsync(Guid userId, Guid subscriptionPlanPriceId)
         {
-            var planPrice = await _context.SubscriptionPlanPrices.FirstOrDefaultAsync(p => p.Id == subsriptionPlanPriceId);
-            if(null == planPrice)
+            var planPrice = await _context.SubscriptionPlanPrices.FirstOrDefaultAsync(p => p.Id == subscriptionPlanPriceId);
+            if (null == planPrice)
             {
                 throw new UserFriendlyException(_translationService.Translate("PlanPriceNotFound"));
             }
@@ -48,7 +50,8 @@ namespace MockApi.Services
                 CancelUrl = $"{_clientRootAddress}/cancel",
                 Metadata = new Dictionary<string, string>
             {
-                { "userId", userId.ToString() }
+                { "userId", userId.ToString() },
+                { "subscriptionPlanPriceId", subscriptionPlanPriceId.ToString() }
             }
             };
 
@@ -88,7 +91,7 @@ namespace MockApi.Services
                         {
                             var invoice = stripeEvent.Data.Object as Stripe.Invoice;
                             var subscriptionId = invoice.Parent?.SubscriptionDetails?.SubscriptionId;
-                            _logger.LogWarning("⚠️ Nieudana płatność. SubscriptionId: {SubscriptionId}", subscriptionId ?? "Brak");
+                            _logger.LogWarning("Nieudana płatność. SubscriptionId: {SubscriptionId}", subscriptionId ?? "Brak");
                             break;
                         }
                 }
@@ -124,6 +127,8 @@ namespace MockApi.Services
                     Status = "canceled",
                     StripeSubscriptionId = stripeSubId,
                 });
+
+                await RevokePremiumAsync(sub.UserId, save: false);
 
                 await _context.SaveChangesAsync();
                 _logger.LogInformation("Subskrypcja anulowana dla userId: {UserId}", sub.UserId);
@@ -164,8 +169,9 @@ namespace MockApi.Services
         {
             var session = stripeEvent.Data.Object as Session;
             var userIdStr = session.Metadata["userId"];
+            var subscriptionPlanPriceIdStr = session.Metadata["subscriptionPlanPriceId"];
 
-            if (Guid.TryParse(userIdStr, out var userId))
+            if (Guid.TryParse(userIdStr, out var userId) && Guid.TryParse(subscriptionPlanPriceIdStr, out var subscriptionPlanPriceId))
             {
                 var existing = await _context.Subscriptions
                     .Include(s => s.History)
@@ -207,8 +213,87 @@ namespace MockApi.Services
                     });
                 }
 
+                await GivePremiumAsync(userId, subscriptionPlanPriceId, save: false);
+
                 await _context.SaveChangesAsync();
                 _logger.LogInformation("Subskrypcja aktywowana dla userId: {UserId}", userId);
+            }
+        }
+
+        private async Task GivePremiumAsync(Guid userId, Guid subscriptionPlanPriceId, bool save = true)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(p => p.Id == userId);
+            if (user == null)
+            {
+                _logger.LogInformation("[GivePremiumAsync] Użytkownik nie istnieje dla userId: {UserId}", userId);
+                return;
+            }
+
+            var subscriptionPlanPrice = await _context.SubscriptionPlanPrices
+                .Where(p => p.Id == subscriptionPlanPriceId)
+                .Select(p => new
+                {
+                    p.Id,
+                    p.SubscriptionPlan,
+                }).FirstOrDefaultAsync();
+            if (subscriptionPlanPrice == null)
+            {
+                _logger.LogInformation("[GivePremiumAsync] Plan subskrypcji nie istnieje dla subscriptionPlanPriceId: {SubscriptionPlanPriceId}", subscriptionPlanPriceId);
+                return;
+            }
+
+            var subscriptionPlan = subscriptionPlanPrice.SubscriptionPlan;
+
+            if (user.SubscriptionPlanPriceId.HasValue && user.SubscriptionPlanPriceId == subscriptionPlanPriceId)
+            {
+                _logger.LogInformation("[GivePremiumAsync] użytkownik ma przypisane konto premium");
+                return;
+            }
+
+            await _userManager.SetFeatureValuesAsync(userId, new Dictionary<string, string>
+            {
+                { AppFeatures.CollaborationEnabled, subscriptionPlan.HasCollaboration.ToString().ToLower() },
+                { AppFeatures.MaxMockCreationLimit, subscriptionPlan.MaxResources.ToString() },
+                { AppFeatures.MaxProjectCreationLimit, subscriptionPlan.MaxProjects.ToString() }
+            });
+
+            user.SubscriptionPlanPriceId = subscriptionPlanPriceId;
+            user.IsCollaborationEnabled = subscriptionPlan.HasCollaboration;
+
+            if (save)
+            {
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        private async Task RevokePremiumAsync(Guid userId, bool save = true)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(p => p.Id == userId);
+            if (user == null)
+            {
+                _logger.LogInformation("[RevokePremiumAsync] Użytkownik nie istnieje dla userId: {UserId}", userId);
+                return;
+            }
+
+            if (user.SubscriptionPlanPriceId == null)
+            {
+                _logger.LogInformation("[RevokePremiumAsync] Użytkownik miał odebrany plan subskrypcji wcześniej: {UserId}", userId);
+                return;
+            }
+
+            await _userManager.RemoveFeaturesAsync(userId, new List<string>
+            {
+                AppFeatures.CollaborationEnabled,
+                AppFeatures.MaxMockCreationLimit,
+                AppFeatures.MaxProjectCreationLimit
+            });
+
+            user.SubscriptionPlanPriceId = null;
+            user.IsCollaborationEnabled = false;
+
+            if (save)
+            {
+                await _context.SaveChangesAsync();
             }
         }
     }

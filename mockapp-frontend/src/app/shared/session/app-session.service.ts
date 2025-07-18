@@ -1,23 +1,28 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AppConfigService } from '../app-config.service';
-import { LocalizationConfigurationDto, UserInfoDto } from '../../../helpers/auth.model';
+import {
+  Features,
+  LocalizationConfigurationDto,
+  UserInfoDto,
+} from '../../../helpers/auth.model';
 import { catchError, EMPTY, take } from 'rxjs';
-import { LanguageService } from '../../../helpers/language.service';
 
 @Injectable()
 export class AppSessionService {
   private readonly apiUrl;
   private _userInfo!: UserInfoDto;
 
-  constructor(private http: HttpClient, private config: AppConfigService,
-    private languageService: LanguageService
-  ) {
+  constructor(private http: HttpClient, private config: AppConfigService) {
     this.apiUrl = `${this.config.remoteApiUrl}/api/auth`;
   }
 
   get localization(): LocalizationConfigurationDto {
     return this._userInfo.localization;
+  }
+
+  get features(): Features {
+    return this._userInfo.features;
   }
 
   init() {

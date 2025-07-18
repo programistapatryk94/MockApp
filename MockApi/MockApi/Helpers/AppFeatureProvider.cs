@@ -6,13 +6,13 @@ namespace MockApi.Helpers
     {
         public override void SetFeatures(IFeatureDefinitionContext context)
         {
-            context.Create(AppFeatures.MaxProjectCreationLimit, "1");
+            context.Create<int>(AppFeatures.MaxProjectCreationLimit, "1");
 
-            context.Create(AppFeatures.MaxMockCreationLimit, "3");
+            context.Create<int>(AppFeatures.MaxMockCreationLimit, "3");
 
-            context.Create(AppFeatures.CollaborationEnabled, "false");
+            context.Create<bool>(AppFeatures.CollaborationEnabled, "false");
 
-            context.Create(AppFeatures.DefaultLanguage, "en");
+            context.Create<string>(AppFeatures.DefaultLanguage, "en");
         }
     }
 }

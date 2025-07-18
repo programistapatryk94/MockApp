@@ -22,7 +22,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { ICreateCheckoutSessionInput } from '../../../services/models/subscription.model';
 
 type SubscriptionFormModel = {
-  selectedPlanId: string;
+  selectedPriceId: string;
 };
 
 @Component({
@@ -83,10 +83,8 @@ export class SubscriptionDialogComponent implements OnInit {
 
     const value = this.form.value;
 
-    var selectedPlan = this.plans.find((p) => p.id == value.selectedPlanId)!;
-
     const dto: ICreateCheckoutSessionInput = {
-      subscriptionPlanPriceId: selectedPlan.prices[0].id,
+      subscriptionPlanPriceId: value.selectedPriceId!,
     };
 
     this.subscriptionApiService
@@ -124,7 +122,7 @@ export class SubscriptionDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      selectedPlanId: ['', Validators.required],
+      selectedPriceId: ['', Validators.required],
     }) as FormGroup<TypedFormControls<SubscriptionFormModel>>;
 
     this.loading = true;
@@ -142,7 +140,7 @@ export class SubscriptionDialogComponent implements OnInit {
           this.plans = items;
           var selectedPlanPriceId = this.plans?.[0]?.prices?.[0]?.id ?? null;
           if (selectedPlanPriceId != null) {
-            this.form.controls.selectedPlanId.setValue(selectedPlanPriceId);
+            this.form.controls.selectedPriceId.setValue(selectedPlanPriceId);
           }
         },
         error: (err) => {

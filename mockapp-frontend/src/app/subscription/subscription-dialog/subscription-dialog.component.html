@@ -2,7 +2,7 @@
 
 <div mat-dialog-content>
   <form [formGroup]="form" [class.form-disabled]="form.disabled">
-    <mat-radio-group formControlName="selectedPlanId" class="plan-radio-group">
+    <mat-radio-group formControlName="selectedPriceId" class="plan-radio-group">
       <ng-container *ngFor="let plan of plans">
         <mat-radio-button *ngFor="let price of plan.prices" [value]="price.id" class="plan-radio-button">
           <div class="plan-card">

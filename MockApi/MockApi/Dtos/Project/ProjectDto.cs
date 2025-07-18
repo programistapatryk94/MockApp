@@ -6,6 +6,7 @@
         public string Name { get; set; } = string.Empty;
         public string Secret { get; set; } = string.Empty;
         public string ApiPrefix { get; set; } = string.Empty;
+        public bool MembersEnabled { get; set; }
         public DateTime CreatedAt { get; set; }
 
         public Guid CreatorUserId { get; set; }

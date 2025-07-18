@@ -12,5 +12,7 @@ namespace MockApi.Models
 
         public Guid SubscriptionPlanId { get; set; }
         public virtual SubscriptionPlan SubscriptionPlan { get; set; } = default!;
+
+        public virtual ICollection<User> Users { get; set; } = new List<User>();
     }
 }

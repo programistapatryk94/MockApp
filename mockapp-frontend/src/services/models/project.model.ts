@@ -5,6 +5,7 @@ export interface Project {
     apiPrefix: string;
     secret: string;
     createdAt: Date;
+    membersEnabled: boolean;
 }
 
 export interface CreateProjectInput {

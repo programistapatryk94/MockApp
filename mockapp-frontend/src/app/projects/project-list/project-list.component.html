@@ -18,7 +18,7 @@
       <mat-icon>more_vert</mat-icon>
     </button>
     <mat-menu #menu="matMenu">
-      <button mat-menu-item (click)="manageMembers(project)">
+      <button *ngIf="project.membersEnabled" mat-menu-item (click)="manageMembers(project)">
         <mat-icon>group</mat-icon>
         {{ "ZARZADZAJ_CZLONKAMI" | translate }}
       </button>

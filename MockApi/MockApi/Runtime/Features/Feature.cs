@@ -1,5 +1,6 @@
 ﻿using MockApi.Extensions;
 using System.Collections.Immutable;
+using System.Globalization;
 
 namespace MockApi.Runtime.Features
 {
@@ -23,10 +24,13 @@ namespace MockApi.Runtime.Features
 
         private readonly List<Feature> _children;
 
-        public Feature(string name, string defaultValue)
+        public Type ValueType { get; set; } = typeof(string);
+
+        public Feature(string name, string defaultValue, Type valueType = null!)
         {
             Name = name ?? throw new ArgumentNullException("name");
             DefaultValue = defaultValue;
+            ValueType = valueType ?? typeof(string);
 
             _children = new List<Feature>();
             Attributes = new Dictionary<string, object>();
@@ -44,6 +48,23 @@ namespace MockApi.Runtime.Features
             var featureToRemove = _children.FirstOrDefault(f => f.Name == name);
 
             _children.Remove(featureToRemove);
+        }
+
+        public object GetTypedValue()
+        {
+            return GetTypedValue(DefaultValue);
+        }
+
+        public object GetTypedValue(string rawValue)
+        {
+            try
+            {
+                return Convert.ChangeType(rawValue, ValueType, CultureInfo.InvariantCulture);
+            }
+            catch
+            {
+                return DefaultValue;
+            }
         }
 
         public override string ToString()

@@ -5,6 +5,7 @@ using MockApi.Data;
 using MockApi.Dtos.Auth;
 using MockApi.Localization;
 using MockApi.Models;
+using MockApi.Runtime.Features;
 using MockApi.Runtime.Session;
 using MockApi.Services;
 
@@ -20,8 +21,10 @@ namespace MockApi.Controllers
         private readonly ILanguageManager _languageManager;
         private readonly IAppSession _appSession;
         private readonly ILanguageService _languageService;
+        private readonly IUserManager _userManager;
+        private readonly IFeatureManager _featureManager;
 
-        public AuthController(AppDbContext context, ITokenService tokenService, ITranslationService translationService, ILanguageManager languageManager, IAppSession appSession, ILanguageService languageService)
+        public AuthController(AppDbContext context, ITokenService tokenService, ITranslationService translationService, ILanguageManager languageManager, IAppSession appSession, ILanguageService languageService, IUserManager userManager, IFeatureManager featureManager)
         {
             _context = context;
             _tokenService = tokenService;
@@ -29,6 +32,8 @@ namespace MockApi.Controllers
             _languageManager = languageManager;
             _appSession = appSession;
             _languageService = languageService;
+            _userManager = userManager;
+            _featureManager = featureManager;
         }
 
         [HttpPost("register")]
@@ -78,6 +83,30 @@ namespace MockApi.Controllers
         {
             var currentCulture = _languageManager.CurrentLanguage;
 
+            var features = _featureManager.GetAll();
+            Dictionary<string, string> userFeatures = new Dictionary<string, string>();
+            if(_appSession.UserId.HasValue)
+            {
+                userFeatures = await _userManager.GetAllFeaturesAsync(_appSession.UserId.Value);
+            }
+
+            Dictionary<string, object> allFeatures = new Dictionary<string, object>();
+
+            foreach (Feature feature in features)
+            {
+                string camelCaseKey = char.ToLowerInvariant(feature.Name[0]) + feature.Name.Substring(1);
+
+                // Jeśli użytkownik ma nadpisaną wartość, weź ją, jeśli nie — użyj domyślnej
+                if (userFeatures.TryGetValue(feature.Name, out var userValue))
+                {
+                    allFeatures[camelCaseKey] = feature.GetTypedValue(userValue);
+                }
+                else
+                {
+                    allFeatures[camelCaseKey] = feature.GetTypedValue();
+                }
+            }
+
             var dto = new UserInfoDto
             {
                 Localization = new LocalizationConfigurationDto
@@ -88,7 +117,8 @@ namespace MockApi.Controllers
                         DisplayName = currentCulture.DisplayName,
                     },
                     Languages = _languageManager.GetLanguages().ToList()
-                }
+                },
+                Features = allFeatures
             };
 
             return Ok(dto);

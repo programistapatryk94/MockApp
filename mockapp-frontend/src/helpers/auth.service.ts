@@ -5,6 +5,7 @@ import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { AuthResponse, CreateUserInput } from './auth.model';
 import { AppConfigService } from '../app/shared/app-config.service';
+import { AppConsts } from '../app/shared/AppConsts';
 
 @Injectable({
   providedIn: 'root',
@@ -48,7 +49,7 @@ export class AuthService {
   logout() {
     localStorage.removeItem('token');
     this.tokenSubject.next(null);
-    this.router.navigate(['/login']);
+    location.href = AppConsts.appBaseUrl;
   }
 
   isLoggedIn(): boolean {
@@ -82,6 +83,7 @@ export class AuthService {
   private handleAuthSuccess(token: string): void {
     localStorage.setItem('token', token);
     this.tokenSubject.next(token);
-    this.router.navigate(['/mocks']);
+    
+    location.href = AppConsts.appBaseUrl;
   }
 }

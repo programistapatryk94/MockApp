@@ -1,0 +1,15 @@
+@use 'variables' as *;
+
+.mt-sm { margin-top: $spacing-sm; }
+.mt-md { margin-top: $spacing-md; }
+.mt-lg { margin-top: $spacing-lg; }
+
+.mb-md { margin-bottom: $spacing-md; }
+
+.text-center { text-align: center; }
+.full-width { width: 100%; }
+
+.flex { display: flex; }
+.flex-column { flex-direction: column; }
+.justify-between { justify-content: space-between; }
+.align-center { align-items: center; }

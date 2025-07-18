@@ -1,9 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
 
 @use "styles/variables" as *;
+@use "styles/utilities" as *;
 
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 :root {
@@ -15,8 +18,6 @@
 
 html,
 body {
-  margin: 0;
-  padding: 0;
   font-family: Roboto, sans-serif;
   background: #f4f4f4;
   min-height: 100vh;
@@ -79,10 +80,10 @@ mat-card {
   border: none !important;
 }
 
-.full-width {
-  width: 100%;
-  margin-bottom: 16px;
-}
+// .full-width {
+//   width: 100%;
+//   margin-bottom: 16px;
+// }
 
 .success-snackbar {
   --mdc-snackbar-container-color: #4caf50; // zielony

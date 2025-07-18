@@ -38,7 +38,6 @@ export interface CreateOrUpdateProjectDialogData {
 @Component({
   selector: 'app-create-or-update-project',
   templateUrl: './create-or-update-project.component.html',
-  styleUrls: ['./create-or-update-project.component.scss'],
   imports: [
     MatDialogModule,
     MatFormFieldModule,

@@ -36,7 +36,6 @@ export interface CreateOrUpdateMockDialogData {
 @Component({
   selector: 'app-create-or-update-mock',
   templateUrl: './create-or-update-mock.component.html',
-  styleUrls: ['./create-or-update-mock.component.scss'],
   imports: [
     MatDialogModule,
     MatFormFieldModule,

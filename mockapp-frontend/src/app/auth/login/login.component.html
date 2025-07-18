@@ -16,14 +16,14 @@
         <input matInput type="password" formControlName="password" />
       </mat-form-field>
 
-      <button mat-flat-button color="primary" type="submit" [disabled]="saving">
+      <button mat-flat-button class="full-width" color="primary" type="submit" [disabled]="saving">
         <app-spinner-content [loading]="saving">
           <span>{{ "ZALOGUJ_SIE" | translate }}</span>
         </app-spinner-content>
       </button>
     </form>
 
-    <div class="register-link mat-caption">
+    <div class="register-link mat-caption mt-md">
       <span>{{ "NIE_MASZ_KONTA" | translate }}</span>
       <a routerLink="/register">{{ "ZAREJESTRUJ_SIE" | translate }}</a>
     </div>

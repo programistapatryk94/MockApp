@@ -1,15 +1,17 @@
+@use '../../../styles/variables' as *;
+
 :host {
   .register-link {
-    margin-top: 16px;
+    margin-top: $spacing-md;
     text-align: center;
 
     span {
-      margin-right: 4px;
+      margin-right: $spacing-xs;
       color: rgba(0, 0, 0, 0.6); // Material hint color
     }
 
     a {
-      color: #1976d2; // Material primary
+      color: var(--mat-primary, #1976d2); // lepiej przez zmienną
       text-decoration: none;
       font-weight: 500;
 

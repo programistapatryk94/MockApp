@@ -1,7 +1,6 @@
 <mat-card>
   <div class="container">
     <h2>{{ "REJESTRACJA" | translate }}</h2>
-
     <form
       [formGroup]="form"
       (ngSubmit)="submit()"
@@ -17,14 +16,14 @@
         <input matInput type="password" formControlName="password" />
       </mat-form-field>
 
-      <button mat-flat-button color="primary" type="submit" [disabled]="saving">
+      <button mat-flat-button class="full-width" color="primary" type="submit" [disabled]="saving">
         <app-spinner-content [loading]="saving">
           <span>{{ "ZAREJESTRUJ_SIE" | translate }}</span>
         </app-spinner-content>
       </button>
     </form>
 
-    <div class="login-link mat-caption">
+    <div class="login-link mat-caption mat-md">
       <span>{{ "MASZ_JUZ_KONTO" | translate }}</span>
       <a routerLink="/login">{{ "ZALOGUJ_SIE" | translate }}</a>
     </div>

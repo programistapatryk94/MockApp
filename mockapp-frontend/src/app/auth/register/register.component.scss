@@ -1,15 +1,17 @@
+@use '../../../styles/variables' as *;
+
 :host {
   .login-link {
-    margin-top: 16px;
+    margin-top: $spacing-md;
     text-align: center;
 
     span {
-      margin-right: 4px;
+      margin-right: $spacing-xs;
       color: rgba(0, 0, 0, 0.6); // subtelny tekst
     }
 
     a {
-      color: #1976d2; // primary
+      color: var(--mat-primary, #1976d2);
       text-decoration: none;
       font-weight: 500;
 
@@ -20,9 +22,9 @@
   }
 
   .spinner-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 36px; // dopasuj do wysokości przycisku
-}
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 36px; // dopasuj do wysokości przycisku
+  }
 }

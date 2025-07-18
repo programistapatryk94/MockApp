@@ -1,14 +1,16 @@
+@use '../../../styles/variables' as *;
+
 :host {
   .plan-radio-group {
     display: flex;
     flex-direction: row;
-    gap: 16px;
+    gap: $spacing-md; // 16px
   }
 
   .plan-radio-button {
     padding: 0;
     margin: 0;
-    border-radius: 12px;
+    border-radius: $border-radius-lg;
     overflow: hidden;
   }
 
@@ -16,24 +18,24 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 16px;
-    border: 1px solid #ccc;
-    border-radius: 12px;
+    padding: $spacing-md;
+    border: 1px solid $neutral-border; // zdefiniuj w _variables.scss
+    border-radius: $border-radius-lg;
     min-width: 140px;
     background-color: white;
     cursor: pointer;
   }
 
   .plan-price {
-    font-size: 1.2rem;
+    font-size: 1.2rem; // OK — można zostawić jako wyrazisty
     font-weight: bold;
-    margin-bottom: 8px;
+    margin-bottom: $spacing-sm;
   }
 
   .plan-details {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: $spacing-xs;
 
     .plan-details-element {
       display: flex;
@@ -41,5 +43,4 @@
       align-items: center;
     }
   }
-
 }

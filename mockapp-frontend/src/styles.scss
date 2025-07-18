@@ -140,6 +140,10 @@ mat-icon[color="warn"] {
   color: var(--mat-warn, #f44336) !important;
 }
 
+// button[color="warn"] {
+//   background-color: var(--mat-warn, #f44336) !important;
+// }
+
 @media (max-width: 600px) {
   .container {
     padding: 1rem;

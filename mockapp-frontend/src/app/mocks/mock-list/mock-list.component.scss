@@ -1,12 +1,14 @@
+@use '../../../styles/variables' as *;
+
 :host {
   .mock-tile {
     display: flex;
     align-items: center;
     justify-content: space-between;
     background: white;
-    border-radius: 1rem;
-    padding: 1rem 1.5rem;
-    margin: 1rem 0;
+    border-radius: $border-radius-lg;
+    padding: $spacing-md $spacing-lg;
+    margin: $spacing-md 0;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
 
     &.disabled {
@@ -14,7 +16,6 @@
       filter: grayscale(50%);
     }
 
-    /* Wyjątek dla akcji (trzy kropki po prawej) */
     &.disabled .actions {
       opacity: 1;
       filter: none;
@@ -24,25 +25,25 @@
 
   .actions {
     display: flex;
-    gap: 0.5rem;
+    gap: $spacing-sm;
     align-items: center;
   }
 
   .mock-card {
-    margin-bottom: 10px;
-    padding: 12px 16px;
+    margin-bottom: $spacing-10; // np. zdefiniuj jako 10px w variables.scss
+    padding: $spacing-sm $spacing-md;
   }
 
   .mock-header {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: $spacing-sm;
 
     .method-chip {
-      font-size: 12px;
+      font-size: $font-size-sm;
       font-weight: 600;
-      border-radius: 12px;
-      padding: 4px 8px;
+      border-radius: $border-radius-xl;
+      padding: $spacing-xs $spacing-sm;
       text-transform: uppercase;
       color: white;
 
@@ -78,15 +79,14 @@
 
     &:hover {
       background-color: rgba(59, 130, 246, 0.06);
-      border-radius: 6px;
+      border-radius: $border-radius-sm;
       padding: 1px 3px;
     }
   }
 
-  // Styl każdego segmentu adresu URL:
   .url-chunk {
     padding: 1px 4px;
-    border-radius: 6px;
+    border-radius: $border-radius-sm;
     font-size: 0.85rem;
     font-weight: 500;
 
@@ -106,7 +106,7 @@
     }
 
     &.method {
-      // dynamiczne klasy dodawane przez ngClass
+      // dynamiczne klasy z ngClass
     }
 
     &.get {
@@ -136,24 +136,24 @@
   }
 
   .project-info-card {
-    margin-top: 16px;
-    padding: 16px 20px;
-    background-color: #f7faff; // delikatny niebieski odcień
-    border-radius: 10px;
+    margin-top: $spacing-md;
+    padding: $spacing-md $spacing-lg;
+    background-color: #f7faff;
+    border-radius: $border-radius-md;
 
     .header {
       display: flex;
       align-items: center;
-      gap: 10px;
-      font-size: 18px;
+      gap: $spacing-sm;
+      font-size: 1.125rem;
       font-weight: 600;
-      margin-bottom: 12px;
+      margin-bottom: $spacing-sm;
       color: #222;
     }
 
     .info-row {
       margin: 6px 0;
-      font-size: 14px;
+      font-size: $font-size-base;
       display: flex;
       gap: 6px;
       color: #444;
@@ -178,7 +178,7 @@
 
       .mock-header {
         flex-wrap: wrap;
-        gap: 4px;
+        gap: $spacing-xs;
       }
 
       .mock-url {

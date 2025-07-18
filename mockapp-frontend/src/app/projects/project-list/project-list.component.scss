@@ -1,16 +1,13 @@
-:host {
-  // tr[mat-row]:hover {
-  //     background-color: #f5f5f5;
-  //     cursor: pointer;
-  // }
+@use '../../../styles/variables' as *;
 
+:host {
   .project-tile {
     display: flex;
     align-items: center;
     background-color: white;
-    border-radius: 1.25rem;
-    padding: 1rem;
-    margin-bottom: 1rem;
+    border-radius: $border-radius-xl; // np. 20px = 1.25rem
+    padding: $spacing-md;
+    margin-bottom: $spacing-md;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
     transition: box-shadow 0.2s;
 
@@ -19,10 +16,8 @@
     }
 
     .avatar {
-      // background-color: #a855f7;
-      // border-radius: 0.75rem;
       border-radius: 50%;
-      background: #3b82f6;
+      background: var(--mat-primary, #3b82f6);
       color: white;
       font-weight: bold;
       font-size: 1.2rem;
@@ -31,7 +26,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-right: 1rem;
+      margin-right: $spacing-md;
     }
 
     .name {
@@ -43,7 +38,7 @@
     .actions {
       display: flex;
       align-items: center;
-      gap: 0.25rem;
+      gap: $spacing-xs; // 4px
     }
   }
 }

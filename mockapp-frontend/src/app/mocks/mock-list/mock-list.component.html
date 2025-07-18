@@ -10,7 +10,8 @@
 
 <mat-card class="project-info-card" *ngIf="project">
   <div class="header">
-    <mat-icon color="primary">folder</mat-icon>
+    <!-- <mat-icon color="primary">folder</mat-icon> -->
+     <app-project-logo [project]="project"></app-project-logo>
     <h3>{{ project.name }}</h3>
   </div>
   <div class="info-row">

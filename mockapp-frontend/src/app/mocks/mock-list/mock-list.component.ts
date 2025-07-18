@@ -28,6 +28,7 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from '../../shared/confirm-dialog/confirm-dialog.component';
+import { ProjectLogoComponent } from '../../projects/project-logo/project-logo.component';
 
 @Component({
   selector: 'app-mock-list',
@@ -46,6 +47,7 @@ import {
     MatMenuModule,
     MatTooltipModule,
     TranslateModule,
+    ProjectLogoComponent
   ],
 })
 export class MockListComponent implements OnInit {

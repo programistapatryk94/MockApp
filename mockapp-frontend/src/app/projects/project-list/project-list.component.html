@@ -11,7 +11,7 @@
 <mat-card *ngIf="loading">{{ "LADOWANIE_Z_KROPKAMI" | translate }}</mat-card>
 
 <div *ngFor="let project of projects" class="project-tile">
-  <div class="avatar">{{ project.name[0] }}</div>
+  <app-project-logo [project]="project"></app-project-logo>
   <div class="name">{{ project.name }}</div>
   <div class="actions">
     <button mat-icon-button [matMenuTriggerFor]="menu">

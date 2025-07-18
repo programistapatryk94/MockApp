@@ -28,6 +28,7 @@ import {
   ProjectMembersDialogComponent,
   ProjectMembersDialogData,
 } from '../project-members-dialog/project-members-dialog.component';
+import { ProjectLogoComponent } from '../project-logo/project-logo.component';
 
 @Component({
   selector: 'app-project-list',
@@ -45,6 +46,7 @@ import {
     MatIconModule,
     MatMenuModule,
     TranslateModule,
+    ProjectLogoComponent
   ],
 })
 export class ProjectListComponent implements OnInit {

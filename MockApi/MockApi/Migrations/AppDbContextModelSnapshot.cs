@@ -22,6 +22,51 @@ namespace MockApi.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("MockApi.Models.CurrentSubscription", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("BillingCycleAnchor")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatorUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsCanceling")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid?>("LastModifierUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("SubscriptionPlanPriceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("ValidUntil")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubscriptionPlanPriceId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("CurrentSubscriptions", (string)null);
+                });
+
             modelBuilder.Entity("MockApi.Models.FeatureSetting", b =>
                 {
                     b.Property<long>("Id")
@@ -57,7 +102,7 @@ namespace MockApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FeatureSettings");
+                    b.ToTable("FeatureSettings", (string)null);
                 });
 
             modelBuilder.Entity("MockApi.Models.Mock", b =>
@@ -113,7 +158,7 @@ namespace MockApi.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("Mocks");
+                    b.ToTable("Mocks", (string)null);
                 });
 
             modelBuilder.Entity("MockApi.Models.Project", b =>
@@ -158,7 +203,7 @@ namespace MockApi.Migrations
                     b.HasIndex("Secret")
                         .IsUnique();
 
-                    b.ToTable("Projects");
+                    b.ToTable("Projects", (string)null);
                 });
 
             modelBuilder.Entity("MockApi.Models.ProjectMember", b =>
@@ -173,7 +218,7 @@ namespace MockApi.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ProjectMembers");
+                    b.ToTable("ProjectMembers", (string)null);
                 });
 
             modelBuilder.Entity("MockApi.Models.RequestLog", b =>
@@ -231,7 +276,7 @@ namespace MockApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("RequestLogs");
+                    b.ToTable("RequestLogs", (string)null);
                 });
 
             modelBuilder.Entity("MockApi.Models.Subscription", b =>
@@ -272,7 +317,7 @@ namespace MockApi.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Subscriptions");
+                    b.ToTable("Subscriptions", (string)null);
                 });
 
             modelBuilder.Entity("MockApi.Models.SubscriptionHistory", b =>
@@ -311,7 +356,7 @@ namespace MockApi.Migrations
 
                     b.HasIndex("SubscriptionId");
 
-                    b.ToTable("SubscriptionHistories");
+                    b.ToTable("SubscriptionHistories", (string)null);
                 });
 
             modelBuilder.Entity("MockApi.Models.SubscriptionPlan", b =>
@@ -338,7 +383,7 @@ namespace MockApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SubscriptionPlans");
+                    b.ToTable("SubscriptionPlans", (string)null);
                 });
 
             modelBuilder.Entity("MockApi.Models.SubscriptionPlanPrice", b =>
@@ -369,7 +414,7 @@ namespace MockApi.Migrations
 
                     b.HasIndex("SubscriptionPlanId");
 
-                    b.ToTable("SubscriptionPlanPrices");
+                    b.ToTable("SubscriptionPlanPrices", (string)null);
                 });
 
             modelBuilder.Entity("MockApi.Models.User", b =>
@@ -403,7 +448,24 @@ namespace MockApi.Migrations
 
                     b.HasIndex("SubscriptionPlanPriceId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
+                });
+
+            modelBuilder.Entity("MockApi.Models.CurrentSubscription", b =>
+                {
+                    b.HasOne("MockApi.Models.SubscriptionPlanPrice", "SubscriptionPlanPrice")
+                        .WithMany()
+                        .HasForeignKey("SubscriptionPlanPriceId");
+
+                    b.HasOne("MockApi.Models.User", "User")
+                        .WithOne("CurrentSubscription")
+                        .HasForeignKey("MockApi.Models.CurrentSubscription", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SubscriptionPlanPrice");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("MockApi.Models.Mock", b =>
@@ -527,6 +589,8 @@ namespace MockApi.Migrations
 
             modelBuilder.Entity("MockApi.Models.User", b =>
                 {
+                    b.Navigation("CurrentSubscription");
+
                     b.Navigation("ProjectMembers");
 
                     b.Navigation("Subscription");

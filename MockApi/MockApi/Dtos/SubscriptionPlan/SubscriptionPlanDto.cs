@@ -6,6 +6,8 @@
         public int MaxProjects { get; set; }
         public int MaxResources { get; set; }
         public bool HasCollaboration { get; set; }
+        public bool IsCanceling { get; set; }
+        public DateTime CurrentPeriodEnd { get; set; }
 
         public List<SubscriptionPlanPriceDto> Prices { get; set; } = new();
     }

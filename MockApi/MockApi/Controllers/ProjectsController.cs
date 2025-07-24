@@ -54,7 +54,10 @@ namespace MockApi.Controllers
 
             if (null == project) return NotFound(_translationService.Translate("ProjectNotFound"));
 
-            var projectDto = _mapper.Map<ProjectDto>(project);
+            var projectDto = _mapper.Map<ProjectDto>(project, opt =>
+            {
+                opt.Items["CurrentUserId"] = _appSession.UserId;
+            });
 
             return Ok(projectDto);
         }

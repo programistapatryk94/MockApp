@@ -1,5 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Metadata;
+using MockApi.Data.Utils;
+using MockApi.Data.ValueConverters;
 using MockApi.Extensions;
 using MockApi.Helpers;
 using MockApi.Models;
@@ -35,6 +38,7 @@ namespace MockApi.Data
         public DbSet<RequestLog> RequestLogs => Set<RequestLog>();
         public DbSet<SubscriptionPlan> SubscriptionPlans => Set<SubscriptionPlan>();
         public DbSet<SubscriptionPlanPrice> SubscriptionPlanPrices => Set<SubscriptionPlanPrice>();
+        public DbSet<CurrentSubscription> CurrentSubscriptions => Set<CurrentSubscription>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -73,6 +77,15 @@ namespace MockApi.Data
                 .WithOne(h => h.Subscription)
                 .HasForeignKey(h => h.SubscriptionId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<User>()
+                .HasOne(p => p.CurrentSubscription)
+                .WithOne(p => p.User)
+                .HasForeignKey<CurrentSubscription>(p => p.UserId);
+
+            modelBuilder.Entity<Subscription>()
+           .HasIndex(s => s.UserId)
+           .IsUnique(); // <- ustawia unikalny indeks
         }
 
         public override int SaveChanges()
@@ -155,6 +168,26 @@ namespace MockApi.Data
         private Guid? GetAuditUserId()
         {
             return _appSession.UserId;
+        }
+
+        public void ConfigureGlobalValueConverter<TEntity>(ModelBuilder modelBuilder, IMutableEntityType entityType)
+            where TEntity : class
+        {
+            if (entityType.BaseType == null &&
+            //!typeof(TEntity).IsDefined(typeof(DisableDateTimeNormalizationAttribute), true) &&
+            !typeof(TEntity).IsDefined(typeof(OwnedAttribute), true) &&
+            !entityType.IsOwned())
+            {
+                var dateTimeValueConverter = new DateTimeValueConverter();
+                var dateTimePropertyInfos = DateTimePropertyInfoHelper.GetDatePropertyInfos(typeof(TEntity));
+                dateTimePropertyInfos.DateTimePropertyInfos.ForEach(property =>
+                {
+                    modelBuilder
+                        .Entity<TEntity>()
+                        .Property(property.Name)
+                        .HasConversion(dateTimeValueConverter);
+                });
+            }
         }
     }
 }

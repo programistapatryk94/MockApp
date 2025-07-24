@@ -1,0 +1,24 @@
+<div [busy]="loading">
+  <mat-card class="header-card">
+    <div *ngIf="loading"></div>
+    <div *ngIf="!loading && paymentInfo != null">
+      <ng-container [ngSwitch]="paymentInfo.paymentStatus">
+        <p *ngSwitchCase="'paid'" style="color: green;">
+          ✅ {{ 'StripePaidSuccess' | translate }}
+        </p>
+        <p *ngSwitchCase="'unpaid'" style="color: red;">
+          ❌ {{ 'StripeUnpaidFailure' | translate }}
+        </p>
+        <p *ngSwitchCase="'no_payment_required'" style="color: orange;">
+          ℹ️ {{ 'StripeNoPaymentRequired' | translate }}
+        </p>
+        <p *ngSwitchDefault>
+          🔍 {{ 'StripeUnknownStatus' | translate:{status: paymentInfo.paymentStatus} }}
+        </p>
+      </ng-container>
+      <p *ngIf="paymentInfo.paymentStatus === 'paid'" style="margin-top: 16px;">
+        {{ 'RedirectingToProjects' | translate }}
+      </p>
+    </div>
+  </mat-card>
+</div>

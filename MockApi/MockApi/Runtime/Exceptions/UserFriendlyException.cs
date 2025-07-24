@@ -1,7 +1,9 @@
-﻿namespace MockApi.Runtime.Exceptions
+﻿using MockApi.Runtime.Exceptions.Handling;
+
+namespace MockApi.Runtime.Exceptions
 {
     [Serializable]
-    public class UserFriendlyException : Exception
+    public class UserFriendlyException : AppException, IHasErrorCode
     {
         public UserFriendlyException()
         {
@@ -19,5 +21,7 @@
         {
 
         }
+
+        public int Code { get; set; }
     }
 }

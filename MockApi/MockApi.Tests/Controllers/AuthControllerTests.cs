@@ -5,6 +5,7 @@ using MockApi.Data;
 using MockApi.Dtos.Auth;
 using MockApi.Localization;
 using MockApi.Models;
+using MockApi.Runtime.Features;
 using MockApi.Runtime.Session;
 using MockApi.Services;
 using Moq;
@@ -20,6 +21,8 @@ namespace MockApi.Tests.Controllers
         private readonly Mock<ILanguageManager> _mockLanguageManager;
         private readonly Mock<IAppSession> _mockAppSession;
         private readonly Mock<ILanguageService> _mockLanguageService;
+        private readonly Mock<IUserManager> _mockUserManager;
+        private readonly Mock<IFeatureManager> _mockFeatureManager;
 
         public AuthControllerTests()
         {
@@ -29,6 +32,8 @@ namespace MockApi.Tests.Controllers
             _mockLanguageManager = new Mock<ILanguageManager>();
             _mockAppSession = new Mock<IAppSession>();
             _mockLanguageService = new Mock<ILanguageService>();
+            _mockUserManager = new Mock<IUserManager>();
+            _mockFeatureManager = new Mock<IFeatureManager>();
 
             // InMemory database
             var options = new DbContextOptionsBuilder<AppDbContext>()
@@ -43,7 +48,9 @@ namespace MockApi.Tests.Controllers
                 _mockTranslationService.Object,
                 _mockLanguageManager.Object,
                 _mockAppSession.Object,
-                _mockLanguageService.Object
+                _mockLanguageService.Object,
+                _mockUserManager.Object,
+                _mockFeatureManager.Object
             );
         }
 
@@ -192,6 +199,7 @@ namespace MockApi.Tests.Controllers
         {
             // Arrange
             var currentCulture = new LanguageInfo("pl", "Polski", "flag-icon pl");
+            var userId = Guid.NewGuid();
 
             var languages = new List<LanguageInfo>
     {
@@ -199,8 +207,14 @@ namespace MockApi.Tests.Controllers
         new LanguageInfo("pl", "Polski", "flag-icon pl")
     };
 
+            var userFeatures = new Dictionary<string, string>();
+            var features = new List<Feature>();
+
             _mockLanguageManager.SetupGet(x => x.CurrentLanguage).Returns(currentCulture);
             _mockLanguageManager.Setup(x => x.GetLanguages()).Returns(languages);
+            _mockAppSession.SetupGet(p => p.UserId).Returns(userId);
+            _mockUserManager.Setup(p => p.GetAllFeaturesAsync(userId)).ReturnsAsync(userFeatures);
+            _mockFeatureManager.Setup(p => p.GetAll()).Returns(features);
 
             // Act
             var result = await _controller.Me();

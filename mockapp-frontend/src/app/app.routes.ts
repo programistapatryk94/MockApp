@@ -31,6 +31,14 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'payments/success',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./payments/success/success.component').then(
+        (p) => p.SuccessComponent
+      ),
+  },
+  {
     path: '',
     pathMatch: 'full',
     redirectTo: 'projects',

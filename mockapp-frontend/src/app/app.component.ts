@@ -12,7 +12,6 @@ import { catchError, EMPTY } from 'rxjs';
 import { SnackbarService } from './shared/snackbar/snackbar.service';
 import { MatMenuModule } from '@angular/material/menu';
 import { LanguageInfo } from '../helpers/auth.model';
-import { AppSessionService } from './shared/session/app-session.service';
 
 @Component({
   selector: 'app-root',
@@ -31,15 +30,13 @@ import { AppSessionService } from './shared/session/app-session.service';
 export class AppComponent {
   title: string = 'SimpliAPI';
   currentLanguage: LanguageInfo;
-  subscriptionEnabled: boolean = true;
 
   constructor(
     private auth: AuthService,
     private translate: TranslateService,
     private dialog: MatDialog,
     public languageService: LanguageService,
-    private snackbarService: SnackbarService,
-    private sessionService: AppSessionService
+    private snackbarService: SnackbarService
   ) {
     translate.addLangs(this.languageService.getAvailableLanguageNames());
 
@@ -49,7 +46,6 @@ export class AppComponent {
     translate.use(appLang);
 
     this.currentLanguage = this.languageService.currentLanguage;
-    this.subscriptionEnabled = !this.sessionService.features.collaborationEnabled;
   }
 
   manageSubscription() {

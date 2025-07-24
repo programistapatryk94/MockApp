@@ -12,11 +12,13 @@ namespace MockApi.Runtime.Exceptions.Handling
     {
         private readonly ILogger<AppExceptionFilter> _logger;
         private readonly IAppConfiguration _appConfiguration;
+        private readonly IErrorInfoBuilder _errorInfoBuilder;
 
-        public AppExceptionFilter(ILogger<AppExceptionFilter> logger, IAppConfiguration appConfiguration)
+        public AppExceptionFilter(ILogger<AppExceptionFilter> logger, IAppConfiguration appConfiguration, IErrorInfoBuilder errorInfoBuilder)
         {
             _logger = logger;
             _appConfiguration = appConfiguration;
+            _errorInfoBuilder = errorInfoBuilder;
         }
 
         public void OnException(ExceptionContext context)
@@ -26,7 +28,7 @@ namespace MockApi.Runtime.Exceptions.Handling
                 return;
             }
 
-            var wrapExceptionAttribute = ReflectionHelper.GetSingleAttributeOfMemberOrDeclaringTypeOrDefault(context.ActionDescriptor.GetMethodInfo(), _appConfiguration.DefaultWrapExceptionAttribute);
+            var wrapExceptionAttribute = ReflectionHelper.GetSingleAttributeOfMemberOrDeclaringTypeOrDefault(context.ActionDescriptor.GetMethodInfo(), _appConfiguration.DefaultWrapResultAttribute);
 
             if(wrapExceptionAttribute.LogError)
             {
@@ -36,13 +38,12 @@ namespace MockApi.Runtime.Exceptions.Handling
             HandleAndWrapException(context, wrapExceptionAttribute);
         }
 
-        private void HandleAndWrapException(ExceptionContext context, WrapExceptionAttribute wrapExceptionAttribute)
+        private void HandleAndWrapException(ExceptionContext context, WrapResultAttribute wrapExceptionAttribute)
         {
             if(!context.ActionDescriptor.IsReturnTypeObjectResult())
             {
                 return;
             }
-            var displayUrl = context.HttpContext.Request.GetDisplayUrl();
 
             context.HttpContext.Response.StatusCode = GetStatusCode(context, wrapExceptionAttribute.WrapOnError);
 
@@ -56,7 +57,7 @@ namespace MockApi.Runtime.Exceptions.Handling
 
         private void HandleError(ExceptionContext context)
         {
-            context.Result = new ObjectResult(context.Result);
+            context.Result = new ObjectResult(_errorInfoBuilder.BuildForException(context.Exception));
 
             context.Exception = null;
         }

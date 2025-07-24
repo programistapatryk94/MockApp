@@ -15,4 +15,8 @@
   <text key="SubdomainNotFound">Subdomena nie została znaleziona.</text>
   <text key="InvalidPathPrefix">Nieprawidłowy prefiks ścieżki.</text>
   <text key="PlanPriceNotFound">Plan cenowy nie został znaleziony.</text>
+  <text key="ActiveSubscriptionToCancelNotFound">Nie znaleziono aktywnej subskrypcji do anulowania.</text>
+  <text key="ActiveSubscriptionNotFound">Nie znaleziono aktywnej subskrypcji.</text>
+  <text key="InternalServerError">Wystąpił nieznany błąd dla Twojego żądania!</text>
+  <text key="StripeSessionNotFound">Nie znaleziono sesji płatności.</text>
 </translations>

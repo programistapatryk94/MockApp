@@ -32,6 +32,7 @@ namespace MockApi.Models
         /// Flaga ustawiana, gdy użytkownik ma aktywną subskrypcję
         /// </summary>
         public bool IsCollaborationEnabled { get; set; }
+        public virtual CurrentSubscription? CurrentSubscription { get; set; }
 
         public void SetNormalizedNames()
         {

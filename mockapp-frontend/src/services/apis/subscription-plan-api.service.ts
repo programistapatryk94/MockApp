@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AppConfigService } from '../../app/shared/app-config.service';
 import { Observable } from 'rxjs';
-import { ISubscriptionPlanDto } from '../models/subscription-plan.model';
+import { ICurrentSubscriptionInfo, ISubscriptionPlanDto } from '../models/subscription-plan.model';
 
 @Injectable()
 export class SubscriptionPlanApiService {
@@ -14,5 +14,9 @@ export class SubscriptionPlanApiService {
 
   getAll(): Observable<ISubscriptionPlanDto[]> {
     return this.http.get<ISubscriptionPlanDto[]>(`${this.apiUrl}`);
+  }
+
+  getCurrentSubscription(): Observable<ICurrentSubscriptionInfo> {
+    return this.http.get<ICurrentSubscriptionInfo>(`${this.apiUrl}/currentSubscription`);
   }
 }

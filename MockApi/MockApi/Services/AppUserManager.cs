@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
 using MockApi.Data;
+using MockApi.Services.Models;
 
 namespace MockApi.Services
 {
@@ -20,6 +21,41 @@ namespace MockApi.Services
                 .ToDictionaryAsync(f => f.Name, f => f.Value);
 
             return features;
+        }
+
+        public async Task<CurrentSubscriptionInfo?> GetCurrentSubscriptionAsync(Guid userId)
+        {
+            var item = (await _context.Users
+                .Include(p => p.SubscriptionPlanPrice)
+                .ThenInclude(p => p.SubscriptionPlan)
+                .Include(p => p.CurrentSubscription)
+                .Where(p => p.CurrentSubscription != null)
+                .FirstOrDefaultAsync(p => p.Id == userId));
+                
+            if(item == null)
+            {
+                return null;
+            }
+
+            return new CurrentSubscriptionInfo
+            {
+                CurrentPeriodEnd = item.CurrentSubscription!.BillingCycleAnchor,
+                Id = item.SubscriptionPlanPrice.SubscriptionPlan.Id,
+                HasCollaboration = item.SubscriptionPlanPrice.SubscriptionPlan.HasCollaboration,
+                IsCanceling = item.CurrentSubscription.IsCanceling,
+                MaxProjects = item.SubscriptionPlanPrice.SubscriptionPlan.MaxProjects,
+                MaxResources = item.SubscriptionPlanPrice.SubscriptionPlan.MaxResources,
+                Prices = new List<CurrentSubscriptionPlanPriceInfo>
+                {
+                    new CurrentSubscriptionPlanPriceInfo
+                    {
+                        Id = item.SubscriptionPlanPrice.Id,
+                        Amount = item.SubscriptionPlanPrice.Amount,
+                        Currency = item.SubscriptionPlanPrice.Currency,
+                        Name = item.SubscriptionPlanPrice.Name,
+                    }
+                }
+            };
         }
 
         public async Task RemoveFeatureAsync(Guid userId, string featureName)
@@ -56,7 +92,7 @@ namespace MockApi.Services
 
             if (null == feature)
             {
-                feature = new Models.FeatureSetting
+                feature = new MockApi.Models.FeatureSetting
                 {
                     UserId = userId,
                     Name = featureName,
@@ -83,7 +119,7 @@ namespace MockApi.Services
                 var current = existing.FirstOrDefault(f => f.Name == feature.Key);
                 if (current == null)
                 {
-                    _context.FeatureSettings.Add(new Models.FeatureSetting
+                    _context.FeatureSettings.Add(new MockApi.Models.FeatureSetting
                     {
                         UserId = userId,
                         Name = feature.Key,

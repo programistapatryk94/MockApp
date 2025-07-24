@@ -61,5 +61,16 @@
   "SUBSCRIPTION_CHOOSE": "Wybierz plan subskrypcji",
   "PLANS_PROJECTS": "Projekty",
   "PLANS_RESOURCES": "Zasoby",
-  "PLANS_COLLABORATION": "Współpraca"
+  "PLANS_COLLABORATION": "Współpraca",
+  "WYSTPI_BD_PODCZAS_POBIERANIA_AKTUALNEJ_SUBSKRYPCJI": "Wystąpił błąd podczas pobierania bieżącego planu",
+  "ANULUJ_SUBSKRYPCJE": "Anuluj subskrypcję",
+  "SUBSKRYPCJA_ANULOWANA_Z_KONCEM_OKRESU": "Subskrypcja zostanie anulowana z końcem okresu rozliczeniowego.",
+  "BLAD_PODCZAS_ANULOWANIA_SUBSKRYPCJI": "Wystąpił błąd podczas anulowania subskrypcji.",
+  "MASZ_AKTYWNA_SUBSKRYPCJE": "Masz aktywną subskrypcję",
+  "SUBSKRYPCJA_AKTYWNA_DO": "Subskrypcja aktywna do",
+  "StripePaidSuccess": "Dziękujemy! Płatność zakończona pomyślnie.",
+  "StripeUnpaidFailure": "Płatność nie powiodła się. Spróbuj ponownie lub skontaktuj się z nami.",
+  "StripeNoPaymentRequired": "Płatność nie była wymagana.",
+  "StripeUnknownStatus": "Nieznany status płatności: {{status}}.",
+  "RedirectingToProjects": "Za chwilę zostaniesz przekierowany do swoich projektów..."
 }

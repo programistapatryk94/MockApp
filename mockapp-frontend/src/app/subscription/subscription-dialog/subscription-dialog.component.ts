@@ -4,12 +4,15 @@ import { SubscriptionApiService } from '../../../services/apis/subscription-api.
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { SpinnerContentComponent } from '../../shared/spinner-content/spinner-content.component';
-import { catchError, EMPTY, finalize } from 'rxjs';
+import { finalize, forkJoin } from 'rxjs';
 import { SnackbarService } from '../../shared/snackbar/snackbar.service';
 import { MatButtonModule } from '@angular/material/button';
 import { SubscriptionPlanApiService } from '../../../services/apis/subscription-plan-api.service';
-import { ISubscriptionPlanDto } from '../../../services/models/subscription-plan.model';
-import { LanguageService } from '../../../helpers/language.service';
+import {
+  ICurrentSubscriptionInfo,
+  ISubscriptionPlanDto,
+  ISubscriptionPlanPriceDto,
+} from '../../../services/models/subscription-plan.model';
 import { MatRadioModule } from '@angular/material/radio';
 import {
   FormBuilder,
@@ -45,6 +48,11 @@ export class SubscriptionDialogComponent implements OnInit {
   plans: ISubscriptionPlanDto[] = [];
   form!: FormGroup<TypedFormControls<SubscriptionFormModel>>;
   private _saving = false;
+  currentSubscription: ICurrentSubscriptionInfo | null = null;
+
+  get currentSubscriptionPrice(): ISubscriptionPlanPriceDto | undefined {
+    return this.currentSubscription?.prices[0];
+  }
 
   get saving(): boolean {
     return this._saving;
@@ -66,9 +74,28 @@ export class SubscriptionDialogComponent implements OnInit {
     private translate: TranslateService,
     private snackbarService: SnackbarService,
     private subscriptionPlanApiService: SubscriptionPlanApiService,
-    private languageService: LanguageService,
     private fb: FormBuilder
   ) {}
+
+  cancelSubscription() {
+    if (this.saving) return;
+
+    this.saving = true;
+
+    this.subscriptionApiService
+      .cancelSubscription()
+      .pipe(finalize(() => (this.saving = false)))
+      .subscribe(() => {
+        this.snackbarService.show({
+          message: this.translate.instant(
+            'SUBSKRYPCJA_ANULOWANA_Z_KONCEM_OKRESU'
+          ),
+          type: 'success',
+        });
+
+        this.dialogRef.close(true);
+      });
+  }
 
   subscribe() {
     if (this.saving) {
@@ -89,30 +116,9 @@ export class SubscriptionDialogComponent implements OnInit {
 
     this.subscriptionApiService
       .startSubscription(dto)
-      .pipe(
-        catchError((err) => {
-          this.snackbarService.show({
-            message:
-              err.error ??
-              this.translate.instant('WYSTAPIL_NIEOCZEKIWANY_BLAD'),
-            type: 'error',
-          });
-          return EMPTY;
-        }),
-        finalize(() => (this.saving = false))
-      )
-      .subscribe({
-        next: (res) => {
-          window.location.href = res.url;
-        },
-        error: (err) => {
-          this.snackbarService.show({
-            message:
-              err.error ??
-              this.translate.instant('WYSTAPIL_NIEOCZEKIWANY_BLAD'),
-            type: 'error',
-          });
-        },
+      .pipe(finalize(() => (this.saving = false)))
+      .subscribe((res) => {
+        window.location.href = res.url;
       });
   }
 
@@ -126,46 +132,25 @@ export class SubscriptionDialogComponent implements OnInit {
     }) as FormGroup<TypedFormControls<SubscriptionFormModel>>;
 
     this.loading = true;
-    var currency = this.getCurrency();
 
-    this.subscriptionPlanApiService
-      .getAll()
+    forkJoin({
+      currentSubscription:
+        this.subscriptionPlanApiService.getCurrentSubscription(),
+      plans: this.subscriptionPlanApiService.getAll(),
+    })
       .pipe(finalize(() => (this.loading = false)))
-      .subscribe({
-        next: (items) => {
-          for (var i = 0; i < items.length; i++) {
-            var item = items[i];
-            item.prices = item.prices.filter((p) => p.currency == currency);
-          }
-          this.plans = items;
-          var selectedPlanPriceId = this.plans?.[0]?.prices?.[0]?.id ?? null;
-          if (selectedPlanPriceId != null) {
-            this.form.controls.selectedPriceId.setValue(selectedPlanPriceId);
-          }
-        },
-        error: (err) => {
-          this.snackbarService.show({
-            message:
-              err.error ??
-              this.translate.instant(
-                'WYSTPI_BD_PODCZAS_POBIERANIA_PLANOW_SUBSKRYPCJI'
-              ),
-            type: 'error',
-          });
-        },
+      .subscribe(({ currentSubscription, plans }) => {
+        this.currentSubscription = currentSubscription;
+
+        if (currentSubscription) {
+          return;
+        }
+
+        this.plans = plans;
+        var selectedPlanPriceId = this.plans?.[0]?.prices?.[0]?.id ?? null;
+        if (selectedPlanPriceId != null) {
+          this.form.controls.selectedPriceId.setValue(selectedPlanPriceId);
+        }
       });
-  }
-
-  private getCurrency(): string {
-    var currentLanguage = this.languageService.currentLanguage;
-
-    switch (currentLanguage.name) {
-      case 'pl':
-        return 'PLN';
-      case 'en':
-        return 'USD';
-      default:
-        throw new Error('Not supported currency');
-    }
   }
 }

@@ -4,14 +4,24 @@ import {
   HttpHandler,
   HttpInterceptor,
   HttpRequest,
+  HttpResponseBase,
 } from '@angular/common/http';
 import { Injectable, Injector } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { catchError, Observable, throwError } from 'rxjs';
+import { SnackbarService } from '../app/shared/snackbar/snackbar.service';
+
+export interface IErrorInfo {
+  code: number;
+  error: string;
+}
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
-  constructor(private injector: Injector) {}
+  constructor(
+    private injector: Injector,
+    private snackbarService: SnackbarService
+  ) {}
 
   intercept(
     req: HttpRequest<any>,
@@ -37,6 +47,19 @@ export class ErrorInterceptor implements HttpInterceptor {
             null
           );
         } else {
+          if (this.isErrorInfo(error?.error)) {
+            var errorInfo = error.error;
+
+            this.showError(errorInfo);
+
+            return throwException(
+              errorInfo.error,
+              error.status,
+              error.message,
+              error.headers,
+              null
+            );
+          }
           return throwError(() => error);
         }
       } else {
@@ -50,6 +73,21 @@ export class ErrorInterceptor implements HttpInterceptor {
       }
     }
     return throwError(() => error);
+  }
+
+  private isErrorInfo(error: any): error is IErrorInfo {
+    return (
+      error != null &&
+      typeof error['__appError'] === 'boolean' &&
+      error['__appError'] === true
+    );
+  }
+
+  private showError(error: IErrorInfo) {
+    return this.snackbarService.show({
+      message: error.error,
+      type: 'error',
+    });
   }
 }
 

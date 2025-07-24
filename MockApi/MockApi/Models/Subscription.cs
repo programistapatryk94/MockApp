@@ -1,4 +1,5 @@
-﻿using MockApi.Runtime.DataModels.Auditing;
+﻿using Microsoft.EntityFrameworkCore;
+using MockApi.Runtime.DataModels.Auditing;
 using System.ComponentModel.DataAnnotations;
 
 namespace MockApi.Models

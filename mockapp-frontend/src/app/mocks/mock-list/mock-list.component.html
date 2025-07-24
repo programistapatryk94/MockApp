@@ -1,84 +1,74 @@
-<mat-card class="header-card">
-  <div class="header-content">
-    <h2><mat-icon>inventory_2</mat-icon> {{ "TWOJE_MOCKI" | translate }}</h2>
-    <button mat-flat-button color="primary" (click)="createMock()">
-      <mat-icon>add</mat-icon>
-      {{ "NOWY_MOCK" | translate }}
-    </button>
-  </div>
-</mat-card>
+<div>
+  <mat-card class="header-card">
+    <div class="header-content">
+      <h2><mat-icon>inventory_2</mat-icon> {{ "TWOJE_MOCKI" | translate }}</h2>
+      <button mat-flat-button color="primary" (click)="createMock()">
+        <mat-icon>add</mat-icon>
+        {{ "NOWY_MOCK" | translate }}
+      </button>
+    </div>
+  </mat-card>
 
-<mat-card class="project-info-card" *ngIf="project">
-  <div class="header">
-    <!-- <mat-icon color="primary">folder</mat-icon> -->
-     <app-project-logo [project]="project"></app-project-logo>
-    <h3>{{ project.name }}</h3>
-  </div>
-  <div class="info-row">
-    <span class="label">{{ "API_PREFIX" | translate }}:</span>
-    <span class="value">{{ project.apiPrefix || "-" }}</span>
-  </div>
-  <div class="info-row">
-    <span class="label">{{ "PROJECT_SECRET" | translate }}:</span>
-    <span class="value">{{ project.secret }}</span>
-  </div>
-</mat-card>
+  <mat-card class="project-info-card" *ngIf="project">
+    <div class="header">
+      <app-project-logo [project]="project"></app-project-logo>
+      <h3>{{ project.name }}</h3>
+    </div>
+    <div class="info-row">
+      <span class="label">{{ "API_PREFIX" | translate }}:</span>
+      <span class="value">{{ project.apiPrefix || "-" }}</span>
+    </div>
+    <div class="info-row">
+      <span class="label">{{ "PROJECT_SECRET" | translate }}:</span>
+      <span class="value">{{ project.secret }}</span>
+    </div>
+  </mat-card>
 
-<mat-card *ngIf="loading">{{ "LADOWANIE_Z_KROPKAMI" | translate }}</mat-card>
+  <mat-card *ngIf="loading">{{ "LADOWANIE_Z_KROPKAMI" | translate }}</mat-card>
 
-<div
-  *ngFor="let mock of mocks"
-  class="mock-tile"
-  [class.disabled]="!mock.enabled"
->
-  <div class="mock-header">
-    <span class="method-chip" [ngClass]="mock.method">{{ mock.method }}</span>
-    <span class="url-path">{{ mock.urlPath }}</span>
-  </div>
+  <div *ngFor="let mock of mocks" class="mock-tile" [class.disabled]="!mock.enabled">
+    <div class="mock-header">
+      <span class="method-chip" [ngClass]="mock.method">{{ mock.method }}</span>
+      <span class="url-path">{{ mock.urlPath }}</span>
+    </div>
 
-  <span
-    class="mock-url"
-    (click)="copyToClipboard(mock)"
-    [matTooltip]="
+    <span class="mock-url" (click)="copyToClipboard(mock)" [matTooltip]="
       copiedMockId === mock.id
         ? ('SKOPIOWANO' | translate)
         : ('KLIKNIJ_ABY_SKOPIOWAC' | translate)
-    "
-    matTooltipPosition="above"
-    matTooltipShowDelay="200"
-    matTooltipHideDelay="300"
-  >
-    <span class="url-chunk protocol">https://</span>
-    <span class="url-chunk project">{{ project?.secret }}</span>
-    <span class="url-chunk neutral">.localhost:44313</span>
-    <ng-container *ngIf="project?.apiPrefix">
-      <span class="url-chunk project">{{ project?.apiPrefix }}</span>
-    </ng-container>
-    <span class="url-chunk neutral" *ngIf="project?.apiPrefix !== '/'">/</span>
-    <span class="url-chunk method" [ngClass]="getMethodClass(mock.method)">
-      {{ mock.urlPath.slice(1) }}
+    " matTooltipPosition="above" matTooltipShowDelay="200" matTooltipHideDelay="300">
+      <span class="url-chunk protocol">https://</span>
+      <span class="url-chunk project">{{ project?.secret }}</span>
+      <span class="url-chunk neutral">.localhost:44313</span>
+      <ng-container *ngIf="project?.apiPrefix">
+        <span class="url-chunk project">{{ project?.apiPrefix }}</span>
+      </ng-container>
+      <span class="url-chunk neutral" *ngIf="project?.apiPrefix !== '/'">/</span>
+      <span class="url-chunk method" [ngClass]="getMethodClass(mock.method)">
+        {{ mock.urlPath.slice(1) }}
+      </span>
     </span>
-  </span>
 
-  <div class="actions">
-    <button mat-icon-button [matMenuTriggerFor]="menu">
-      <mat-icon>more_vert</mat-icon>
-    </button>
-    <mat-menu #menu="matMenu">
-      <button mat-menu-item (click)="editMock(mock)">
-        <mat-icon>edit</mat-icon>
-        {{ "EDYTUJ" | translate }}
+    <div class="actions">
+      <button mat-icon-button [matMenuTriggerFor]="menu">
+        <mat-icon>more_vert</mat-icon>
       </button>
-      <button mat-menu-item (click)="deleteMock(mock)">
-        <mat-icon>delete</mat-icon>
-        {{ "USUN" | translate }}
-      </button>
-    </mat-menu>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="editMock(mock)">
+          <mat-icon>edit</mat-icon>
+          {{ "EDYTUJ" | translate }}
+        </button>
+        <button mat-menu-item (click)="deleteMock(mock)">
+          <mat-icon>delete</mat-icon>
+          {{ "USUN" | translate }}
+        </button>
+      </mat-menu>
+    </div>
   </div>
+
+  <mat-card *ngIf="!loading && mocks.length === 0">
+    <div class="container full-width">
+      <p>{{ "BRAK_MOCKOW" | translate }}</p>
+    </div>
+  </mat-card>
 </div>
-
-<mat-card *ngIf="!loading && mocks.length === 0">
-  <div class="container full-width">
-    <p>{{ "BRAK_MOCKOW" | translate }}</p>
-  </div>
-</mat-card>

@@ -5,6 +5,7 @@ using MockApi.Helpers;
 using MockApi.Localization;
 using MockApi.Models;
 using MockApi.Runtime.Exceptions;
+using MockApi.Services.Models;
 using Stripe;
 using Stripe.Checkout;
 
@@ -33,9 +34,14 @@ namespace MockApi.Services
         public async Task<Session> CreateCheckoutSessionAsync(Guid userId, Guid subscriptionPlanPriceId)
         {
             var planPrice = await _context.SubscriptionPlanPrices.FirstOrDefaultAsync(p => p.Id == subscriptionPlanPriceId);
-            if (null == planPrice)
+            if (planPrice == null)
             {
                 throw new UserFriendlyException(_translationService.Translate("PlanPriceNotFound"));
+            }
+
+            if (await _context.Subscriptions.AnyAsync(p => p.UserId == userId && p.Status != "canceled"))
+            {
+                throw new UserFriendlyException("Subskrypcja istnieje");
             }
 
             var options = new SessionCreateOptions
@@ -43,16 +49,16 @@ namespace MockApi.Services
                 PaymentMethodTypes = new List<string> { "card" },
                 Mode = "subscription",
                 LineItems = new List<SessionLineItemOptions>
-            {
-                new() { Price = planPrice.StripePriceId, Quantity = 1 }
-            },
-                SuccessUrl = $"{_clientRootAddress}/success?session_id={{CHECKOUT_SESSION_ID}}",
-                CancelUrl = $"{_clientRootAddress}/cancel",
+                {
+                    new() { Price = planPrice.StripePriceId, Quantity = 1 }
+                },
+                SuccessUrl = $"{_clientRootAddress}/payments/success?session_id={{CHECKOUT_SESSION_ID}}",
+                CancelUrl = $"{_clientRootAddress}/payments/cancel",
                 Metadata = new Dictionary<string, string>
-            {
-                { "userId", userId.ToString() },
-                { "subscriptionPlanPriceId", subscriptionPlanPriceId.ToString() }
-            }
+                {
+                    { "userId", userId.ToString() },
+                    { "subscriptionPlanPriceId", subscriptionPlanPriceId.ToString() }
+                }
             };
 
             var service = new SessionService();
@@ -196,7 +202,7 @@ namespace MockApi.Services
                 }
                 else
                 {
-                    var newSub = new Models.Subscription
+                    var newSub = new MockApi.Models.Subscription
                     {
                         UserId = userId,
                         StripeCustomerId = session.CustomerId,
@@ -213,14 +219,14 @@ namespace MockApi.Services
                     });
                 }
 
-                await GivePremiumAsync(userId, subscriptionPlanPriceId, save: false);
+                await GivePremiumAsync(userId, subscriptionPlanPriceId, session.SubscriptionId, save: false);
 
                 await _context.SaveChangesAsync();
                 _logger.LogInformation("Subskrypcja aktywowana dla userId: {UserId}", userId);
             }
         }
 
-        private async Task GivePremiumAsync(Guid userId, Guid subscriptionPlanPriceId, bool save = true)
+        private async Task GivePremiumAsync(Guid userId, Guid subscriptionPlanPriceId, string stripeSubId, bool save = true)
         {
             var user = await _context.Users.FirstOrDefaultAsync(p => p.Id == userId);
             if (user == null)
@@ -260,6 +266,34 @@ namespace MockApi.Services
             user.SubscriptionPlanPriceId = subscriptionPlanPriceId;
             user.IsCollaborationEnabled = subscriptionPlan.HasCollaboration;
 
+            var stripeSubService = new Stripe.SubscriptionService();
+            var stripeSub = await stripeSubService.GetAsync(stripeSubId);
+
+            var subscriptionItem = stripeSub.Items.Data.FirstOrDefault();
+
+            DateTime endDate = subscriptionItem?.CurrentPeriodEnd ?? stripeSub.BillingCycleAnchor;
+
+            var existing = await _context.CurrentSubscriptions.FirstOrDefaultAsync(x => x.UserId == userId);
+            if (existing == null)
+            {
+                _context.CurrentSubscriptions.Add(new CurrentSubscription
+                {
+                    UserId = userId,
+                    SubscriptionPlanPriceId = subscriptionPlanPriceId,
+                    IsCanceling = false,
+                    ValidUntil = null,
+                    BillingCycleAnchor = endDate
+                });
+            }
+            else
+            {
+                // Aktualizacja istniejącej subskrypcji (np. przedłużenie lub nowa po anulowaniu)
+                existing.SubscriptionPlanPriceId = subscriptionPlanPriceId;
+                existing.IsCanceling = false;
+                existing.ValidUntil = null;
+                existing.BillingCycleAnchor = endDate;
+            }
+
             if (save)
             {
                 await _context.SaveChangesAsync();
@@ -268,18 +302,21 @@ namespace MockApi.Services
 
         private async Task RevokePremiumAsync(Guid userId, bool save = true)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(p => p.Id == userId);
+            var user = await _context.Users
+                .Include(p => p.CurrentSubscription)
+                .FirstOrDefaultAsync(p => p.Id == userId);
             if (user == null)
             {
                 _logger.LogInformation("[RevokePremiumAsync] Użytkownik nie istnieje dla userId: {UserId}", userId);
                 return;
             }
 
-            if (user.SubscriptionPlanPriceId == null)
+            if (user.SubscriptionPlanPriceId == null || user.CurrentSubscription == null)
             {
                 _logger.LogInformation("[RevokePremiumAsync] Użytkownik miał odebrany plan subskrypcji wcześniej: {UserId}", userId);
                 return;
             }
+
 
             await _userManager.RemoveFeaturesAsync(userId, new List<string>
             {
@@ -290,11 +327,65 @@ namespace MockApi.Services
 
             user.SubscriptionPlanPriceId = null;
             user.IsCollaborationEnabled = false;
+            _context.CurrentSubscriptions.Remove(user.CurrentSubscription);
 
             if (save)
             {
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task CancelSubscriptionAtPeriodEndAsync(Guid userId)
+        {
+            var subscription = await _context.Subscriptions
+                .FirstOrDefaultAsync(p => p.UserId == userId && p.Status == "active");
+
+            var currentSubscription = await _context.CurrentSubscriptions
+               .Include(cs => cs.SubscriptionPlanPrice)
+               .FirstOrDefaultAsync(cs => cs.UserId == userId);
+
+            if (subscription == null || currentSubscription == null || currentSubscription.IsCanceling)
+            {
+                throw new UserFriendlyException(_translationService.Translate("ActiveSubscriptionToCancelNotFound"));
+            }
+
+            var service = new Stripe.SubscriptionService();
+            var options = new SubscriptionUpdateOptions
+            {
+                CancelAtPeriodEnd = true,
+            };
+
+            var updatedSubscription = await service.UpdateAsync(subscription.StripeSubscriptionId, options);
+
+            currentSubscription.IsCanceling = true;
+
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Ustawiono anulowanie subskrypcji na koniec okresu dla userId: {UserId}", userId);
+        }
+
+        public async Task<PaymentInfo> GetPaymentInfo(Guid userId, string sessionId)
+        {
+            var sessionService = new SessionService();
+            var session = await sessionService.GetAsync(sessionId);
+
+            if (session == null)
+            {
+                throw new UserFriendlyException(_translationService.Translate("StripeSessionNotFound"));
+            }
+
+            var sessionUserId = Guid.Parse(session.Metadata["userId"]);
+            var subscriptionPlanPriceId = Guid.Parse(session.Metadata["subscriptionPlanPriceId"]);
+
+            if(sessionUserId != userId)
+            {
+                throw new UserFriendlyException(_translationService.Translate("StripeSessionNotFound"));
+            }
+
+            return new PaymentInfo
+            {
+                PaymentStatus = session.PaymentStatus
+            };
         }
     }
 

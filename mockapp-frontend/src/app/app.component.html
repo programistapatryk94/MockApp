@@ -21,7 +21,7 @@
   <button mat-button routerLink="/projects" *ngIf="isLoggedIn()" type="button">
     {{ "PROJEKTY" | translate }}
   </button>
-  <button mat-button (click)="manageSubscription()" *ngIf="subscriptionEnabled">
+  <button mat-button (click)="manageSubscription()" *ngIf="isLoggedIn()">
     {{ "SUBSKRYPCJA" | translate }}
   </button>
   <button mat-button (click)="logout()" *ngIf="isLoggedIn()">

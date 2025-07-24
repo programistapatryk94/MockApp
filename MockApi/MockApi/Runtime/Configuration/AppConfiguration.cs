@@ -4,11 +4,11 @@ namespace MockApi.Runtime.Configuration
 {
     public class AppConfiguration : IAppConfiguration
     {
-        public WrapExceptionAttribute DefaultWrapExceptionAttribute { get; }
+        public WrapResultAttribute DefaultWrapResultAttribute { get; }
 
         public AppConfiguration()
         {
-            DefaultWrapExceptionAttribute = new WrapExceptionAttribute();
+            DefaultWrapResultAttribute = new WrapResultAttribute();
         }
     }
 }

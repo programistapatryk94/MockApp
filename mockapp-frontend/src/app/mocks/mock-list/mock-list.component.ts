@@ -48,7 +48,7 @@ import { ProjectLogoComponent } from '../../projects/project-logo/project-logo.c
     MatTooltipModule,
     TranslateModule,
     ProjectLogoComponent
-  ],
+  ]
 })
 export class MockListComponent implements OnInit {
   mocks: Mock[] = [];

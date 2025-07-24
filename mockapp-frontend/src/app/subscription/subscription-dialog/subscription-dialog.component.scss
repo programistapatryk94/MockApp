@@ -43,4 +43,32 @@
       align-items: center;
     }
   }
+
+  .active-subscription-info {
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    font-size: 15px;
+
+    ul {
+      padding-left: 20px;
+      margin: 8px 0;
+
+      li {
+        margin-bottom: 6px;
+      }
+    }
+
+    mat-icon {
+      vertical-align: middle;
+      margin-left: 4px;
+    }
+
+    p {
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+  }
+
 }

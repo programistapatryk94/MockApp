@@ -25,6 +25,7 @@ import { ServiceApiModule } from '../services/apis/service-api.module';
 import { LanguageService } from '../helpers/language.service';
 import { LanguageTokenInterceptor } from '../helpers/language-token.interceptor';
 import { ErrorInterceptor } from '../helpers/error.interceptor';
+import { provideAnimations } from '@angular/platform-browser/animations';
 
 export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -83,6 +84,7 @@ export const appConfig: ApplicationConfig = {
         languageService.currentLocale,
       deps: [LanguageService],
     },
+    provideAnimations(),
     provideHttpClient(withInterceptorsFromDi()),
   ],
 };

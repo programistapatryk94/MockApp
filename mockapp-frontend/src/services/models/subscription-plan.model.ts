@@ -13,3 +13,13 @@ export interface ISubscriptionPlanPriceDto {
     currency: string;
     amount: number;
 }
+
+export interface ICurrentSubscriptionInfo {
+    id: string;
+    maxProjects: number;
+    maxResources: number;
+    hasCollaboration: boolean;
+    isCanceling: boolean;
+    currentPeriodEnd: Date;
+    prices: ISubscriptionPlanPriceDto[];
+}

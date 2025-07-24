@@ -1,6 +1,32 @@
 <h1 mat-dialog-title>{{ "SUBSCRIPTION_CHOOSE" | translate }}</h1>
 
 <div mat-dialog-content>
+  <div *ngIf="currentSubscription; else subscriptionFormBlock" class="active-subscription-info">
+    <p>
+      {{ "MASZ_AKTYWNA_SUBSKRYPCJE" | translate }}:
+    </p>
+    <ul>
+      <li><strong>{{ currentSubscriptionPrice?.amount | currency: currentSubscriptionPrice?.currency:'symbol':'1.2-2'
+          }}</strong>
+      </li>
+      <li>{{ "PLANS_PROJECTS" | translate }}: {{ currentSubscription.maxProjects }}</li>
+      <li>{{ "PLANS_RESOURCES" | translate }}: {{ currentSubscription.maxResources }}</li>
+      <li>{{ "SUBSKRYPCJA_AKTYWNA_DO" | translate }}: {{ currentSubscription.currentPeriodEnd | date }}</li>
+      <li>{{ "PLANS_COLLABORATION" | translate }}:
+        <mat-icon color="accent">check</mat-icon>
+      </li>
+    </ul>
+
+    <button mat-stroked-button color="warn" (click)="cancelSubscription()"
+      [disabled]="saving || currentSubscription.isCanceling">
+      <app-spinner-content [loading]="saving">
+        <span>{{ "ANULUJ_SUBSKRYPCJE" | translate }}</span>
+      </app-spinner-content>
+    </button>
+  </div>
+</div>
+
+<ng-template #subscriptionFormBlock>
   <form [formGroup]="form" [class.form-disabled]="form.disabled">
     <mat-radio-group formControlName="selectedPriceId" class="plan-radio-group">
       <ng-container *ngFor="let plan of plans">
@@ -10,24 +36,25 @@
               <strong>{{ price.amount | currency:price.currency:'symbol':'1.2-2' }}</strong>
             </div>
             <div class="plan-details">
-              <div class="plan-details-element">{{ "PLANS_PROJECTS" | translate }}: <span>{{ plan.maxProjects }}</span></div>
-              <div class="plan-details-element">{{ "PLANS_RESOURCES" | translate }}: <span>{{ plan.maxResources }}</span></div>
-              <div class="plan-details-element">{{ "PLANS_COLLABORATION" | translate }}: <mat-icon color="accent">check</mat-icon></div>
+              <div class="plan-details-element">{{ "PLANS_PROJECTS" | translate }}: <span>{{ plan.maxProjects }}</span>
+              </div>
+              <div class="plan-details-element">{{ "PLANS_RESOURCES" | translate }}: <span>{{ plan.maxResources
+                  }}</span></div>
+              <div class="plan-details-element">{{ "PLANS_COLLABORATION" | translate }}: <mat-icon
+                  color="accent">check</mat-icon></div>
             </div>
           </div>
         </mat-radio-button>
       </ng-container>
     </mat-radio-group>
   </form>
-</div>
-<code>
+</ng-template>
 
-</code>
 <div mat-dialog-actions align="end">
   <button mat-button (click)="cancel()" [disabled]="saving">
     {{ "ANULUJ" | translate }}
   </button>
-  <button mat-flat-button color="primary" (click)="subscribe()" [disabled]="loading || saving">
+  <button mat-flat-button color="primary" *ngIf="plans.length > 0" (click)="subscribe()" [disabled]="loading || saving">
     <app-spinner-content [loading]="loading || saving">
       <span>{{ "ZAPISZ" | translate }}</span>
     </app-spinner-content>

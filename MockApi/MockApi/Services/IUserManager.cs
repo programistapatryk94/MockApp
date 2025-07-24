@@ -1,4 +1,6 @@
-﻿namespace MockApi.Services
+﻿using MockApi.Services.Models;
+
+namespace MockApi.Services
 {
     public interface IUserManager
     {
@@ -7,5 +9,6 @@
         Task SetFeatureValuesAsync(Guid userId, Dictionary<string, string> features);
         Task RemoveFeaturesAsync(Guid userId, List<string> features);
         Task<Dictionary<string, string>> GetAllFeaturesAsync(Guid userId);
+        Task<CurrentSubscriptionInfo?> GetCurrentSubscriptionAsync(Guid userId);
     }
 }

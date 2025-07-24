@@ -32,21 +32,28 @@ export class AppInitializer {
   ) {}
 
   async init(): Promise<void> {
-    AppConsts.appBaseHref = this.getBaseHref();
-    const appBaseUrl = this.getDocumentOrigin() + AppConsts.appBaseHref;
-    await this.getApplicationConfig(appBaseUrl);
-    const appSessionService = this._injector.get(AppSessionService);
-    const langService = this._injector.get(LanguageService);
-    await appSessionService.init();
-    langService.currentLocale =
-      appSessionService.localization.currentCulture.name;
-    langService.localization = appSessionService.localization;
+    app.ui.setBusy();
+    try {
+      AppConsts.appBaseHref = this.getBaseHref();
+      const appBaseUrl = this.getDocumentOrigin() + AppConsts.appBaseHref;
+      await this.getApplicationConfig(appBaseUrl);
+      const appSessionService = this._injector.get(AppSessionService);
+      const langService = this._injector.get(LanguageService);
+      await appSessionService.init();
+      langService.currentLocale =
+        appSessionService.localization.currentCulture.name;
+      langService.localization = appSessionService.localization;
 
-    if (langService.shouldLoadLocale()) {
-      const angularLocale = langService.getAngularLocale();
-      
-      loadAngularLocale(angularLocale);
+      if (langService.shouldLoadLocale()) {
+        const angularLocale = langService.getAngularLocale();
+
+        loadAngularLocale(angularLocale);
+      }
+    } catch (err) {
+      app.ui.clearBusy();
+      throw err;
     }
+    app.ui.clearBusy();
   }
 
   private getBaseHref(): string {

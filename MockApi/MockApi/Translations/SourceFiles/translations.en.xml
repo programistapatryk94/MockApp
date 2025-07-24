@@ -15,4 +15,8 @@
   <text key="SubdomainNotFound">Subdomain not found.</text>
   <text key="InvalidPathPrefix">Invalid path prefix.</text>
   <text key="PlanPriceNotFound">Plan price was not found.</text>
+  <text key="ActiveSubscriptionToCancelNotFound">Active subscription not found for cancellation.</text>
+  <text key="ActiveSubscriptionNotFound">Active subscription not found.</text>
+  <text key="InternalServerError">An internal error occurred during your request!</text>
+  <text key="StripeSessionNotFound">Payment session not found.</text>
 </translations>

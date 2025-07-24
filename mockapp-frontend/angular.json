@@ -33,9 +33,13 @@
               }
             ],
             "styles": [
+              "src/assets/freeze-ui/freeze-ui.css",
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [
+              "src/assets/freeze-ui/freeze-ui.js",
+              "src/assets/app/app.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -99,9 +103,13 @@
               }
             ],
             "styles": [
+              "src/assets/freeze-ui/freeze-ui.css",
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [
+              "src/assets/freeze-ui/freeze-ui.js",
+              "src/assets/app/app.js"
+            ]
           }
         }
       }

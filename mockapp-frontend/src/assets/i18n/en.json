@@ -61,5 +61,16 @@
   "SUBSCRIPTION_CHOOSE": "Select a subscription plan",
   "PLANS_PROJECTS": "Projects",
   "PLANS_RESOURCES": "Resources",
-  "PLANS_COLLABORATION": "Collaboration"
+  "PLANS_COLLABORATION": "Collaboration",
+  "WYSTPI_BD_PODCZAS_POBIERANIA_AKTUALNEJ_SUBSKRYPCJI": "An error occurred while retrieving plan.",
+  "ANULUJ_SUBSKRYPCJE": "Cancel subscription",
+  "SUBSKRYPCJA_ANULOWANA_Z_KONCEM_OKRESU": "Your subscription will be canceled at the end of the current billing period.",
+  "BLAD_PODCZAS_ANULOWANIA_SUBSKRYPCJI": "An error occurred while canceling your subscription.",
+  "MASZ_AKTYWNA_SUBSKRYPCJE": "You have an active subscription",
+  "SUBSKRYPCJA_AKTYWNA_DO": "Subscription valid until",
+  "StripePaidSuccess": "Thank you! Payment was successful.",
+  "StripeUnpaidFailure": "Payment failed. Please try again or contact support.",
+  "StripeNoPaymentRequired": "No payment was required.",
+  "StripeUnknownStatus": "Unknown payment status: {{status}}.",
+  "RedirectingToProjects": "You will be redirected to your projects shortly..."
 }

@@ -14,6 +14,7 @@ using MockApi.Runtime.DataModels.Auditing;
 using MockApi.Runtime.DataModels.UoW;
 using MockApi.Runtime.Exceptions.Handling;
 using MockApi.Runtime.Features;
+using MockApi.Runtime.Results;
 using MockApi.Runtime.Session;
 using MockApi.Services;
 using MockApi.Translations;
@@ -121,12 +122,15 @@ builder.Services.AddSingleton<IRequestLogConfiguration, RequestLogConfiguration>
 builder.Services.AddSingleton<IUnitOfWorkConfiguration, UnitOfWorkConfiguration>();
 builder.Services.AddSingleton<IAppConfiguration, AppConfiguration>();
 builder.Services.AddScoped<UowFilter>();
+builder.Services.AddScoped<AppResultFilter>();
 builder.Services.AddSingleton<LocalizationHeaderRequestCultureProvider>();
 builder.Services.AddSingleton<DefaultRequestCultureProvider>();
 builder.Services.AddSingleton<UserRequestCultureProvider>();
+builder.Services.AddSingleton<IErrorInfoBuilder, ErrorInfoBuilder>();
 
 builder.Services.AddSingleton<IFeatureConfiguration, FeatureConfiguration>();
 builder.Services.AddSingleton<IFeatureManager, FeatureManager>();
+builder.Services.AddScoped<IAppActionResultWrapperFactory, AppActionResultWrapperFactory>();
 
 builder.Services.AddAutoMapper(typeof(Program));
 
@@ -135,6 +139,7 @@ builder.Services.Configure<MvcOptions>(options =>
     options.Filters.AddService<RequestResponseLoggingFilter>();
     options.Filters.AddService<UowFilter>();
     options.Filters.AddService<AppExceptionFilter>();
+    options.Filters.AddService<AppResultFilter>();
 });
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

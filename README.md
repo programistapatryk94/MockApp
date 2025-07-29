@@ -40,3 +40,11 @@ npm install
 ```bash
 npm start
 ```
+
+## 🔒 Licencja / License
+
+**PL:** Kod objęty prawami autorskimi. Udostępniony wyłącznie do przeglądania. Nie wolno go kopiować, modyfikować ani używać bez zgody autora.
+
+**EN:** This code is protected by copyright. Shared for viewing purposes only. Do not copy, modify, or use it without the author's permission.
+
+📩 programistapatryk94@gmail.com
